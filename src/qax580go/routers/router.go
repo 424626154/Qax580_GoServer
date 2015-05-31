@@ -1,10 +1,12 @@
 package routers
 
 import (
-	"qax580go/controllers"
 	"github.com/astaxie/beego"
+	"qax580go/controllers"
 )
 
 func init() {
-    beego.Router("/", &controllers.MainController{})
+	beego.Router("/", &controllers.HomeController{})
+	beego.Router("/uplode", &controllers.UplodeController{})
+	beego.Router("/content", &controllers.ContentController{})
 }
