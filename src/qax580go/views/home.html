@@ -1,0 +1,35 @@
+{{template "header.html" .}}
+<div id="menu">
+  <a type="button" class="btn btn-default" href="/wxlist">推荐公众号</a>  
+</div>
+   <ul class="list-group">
+      {{range .Posts}}
+      <a id="list_bg" href="/content?op=con&id={{.Id}}" class="list-group-item">
+      <div  id="list_item">
+      <div>
+      <img src="/static/img/type1.jpg" height="100%" width="100%" />
+      </div>
+        <div><font  id="title_fnot" >{{.Title}}</font></div>
+        <div id="info_fnot" >{{.Info}}</div>
+        {{if eq .Image ""}}
+            {{.Image}}
+          {{else}}
+           <div id="image_fnot" >
+          <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://127.0.0.1:8080/imagehosting/{{.Image}}" width="auto" height="60px">
+          </div>
+        {{end}}
+        <div id="my_label">
+        <span class="label label-success">已审核</span>
+        {{if eq .Label 1}}
+        <span class="label label-primary">个人</span>
+        {{end}} 
+        {{if eq .Label 2}}
+         <span class="label label-primary">官方</span>
+        {{end}}
+        </div>
+        <div id="time_font">{{.CreateTime}}</div>
+      </div>
+      </a>
+      {{end}}
+    </ul>
+{{template "footer.html" .}}

@@ -1,0 +1,23 @@
+{{template "header.html" .}}
+<div class="panel panel-default">
+  <div id="con_title"><font id="title_fnot" >{{.Post.Title}}</font></div>
+  <div  class="panel-body" id="con_info">
+    <font id="info_fnot">{{.Post.Info}}</font>
+    <div id="my_label">
+    <span class="label label-success">已审核</span>
+     {{if eq .Post.Label 1}}
+      <span class="label label-primary">个人</span>
+      {{end}} 
+      {{if eq .Post.Label 2}}
+       <span class="label label-primary">官方</span>
+      {{end}}
+    </div>
+    <div id="time_font">{{.Post.CreateTime}}</div>
+  </div>
+</div>
+
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
+{{template "footer.html" .}}
