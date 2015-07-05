@@ -18,5 +18,7 @@ func main() {
 	// 自动建表
 	orm.RunSyncdb("default", false, true)
 
+	beego.SetStaticPath("/game", "game")
+
 	beego.Run()
 }

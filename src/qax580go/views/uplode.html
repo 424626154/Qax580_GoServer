@@ -1,38 +1,21 @@
-<!DOCTYPE html>
+{{template "header.html" .}}
 
-<html>
-    <head>
-    <link rel="shortcut icon" href="/static/img/logo32.png" />
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-     <!-- Stylesheets -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
-      <title>庆安县580</title>
-    </head> 
-  <body>
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="/">
-          <img alt="Brand" src="/static/img/logo32.png" >
-          庆安县580
-        </a>
-      </div>
-    </div>
-  </nav>
-
-<form class="form-inline" method="GET" action="/uplode">
+<form class="form-inline" method="post" action="/uplode" enctype="multipart/form-data">
   <div class="form-group">
     <label for="">标题</label>
     <input type="text" class="form-control" id="title" name="title" placeholder="输入标题">
   </div>
   <div class="form-group">
     <label for="">内容</label>
-    <input type="text" class="form-control" id="info" name="info" placeholder="输入内容">
+    <input type="text" style="width:100%;height:80px;text-align:left; vertical-align:top" class="form-control" rows="3"id="info" name="info" placeholder="输入内容">
   </div>
-  <button type="submit" class="btn btn-default">添加</button>
+  <div class="form-group">
+          <label>选择图片：</label>
+          <input type="file" class="form-control" name="image" id="image" >
+        </div>
+  <div>
+  	<h5>发布内容将在12小时内审核</h5>
+  </div>
+  <button type="submit" class="btn btn-default">发布</button>
 </form>
-    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-  </body>
-</html>
+{{template "footer.html" .}}

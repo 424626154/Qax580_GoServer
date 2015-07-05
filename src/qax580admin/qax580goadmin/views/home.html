@@ -1,0 +1,29 @@
+{{template "header.html" .}}
+<div class="btn-group" role="group" aria-label="...">
+  <a type="button" class="btn btn-default" href="/uplode">发布</a> 
+  <a type="button" class="btn btn-default" href="/wxlist">推荐公众号</a>
+  <a type="button" class="btn btn-default" href="/feedbacklist">意见反馈</a>    
+</div>
+   <ul class="list-group">
+      {{range .Posts}}
+      <li class="list-group-item">
+      <div><a href="/content?op=con&id={{.Id}}"><h1>{{.Title}}</h1></a></div>
+      <div>{{.Info}}</div>
+      <div>{{.CreateTime}}</div>
+      {{if eq .Label 1}}
+      <div><span class="label label-primary">个人</span></div>
+      {{end}} 
+      {{if eq .Label 2}}
+       <div><span class="label label-primary">官方</span></div>
+      {{end}}
+      <a href="/?op=del&id={{.Id}}" >删除</a>
+      <a href="/?op=update&id={{.Id}}" >修改</a>
+      {{if eq .Examine 0}}
+       <a href="/?op=examine&id={{.Id}}" >审核</a>
+       {{else}}
+       <a href="/?op=examine1&id={{.Id}}" >已审核</a>
+       {{end}}
+      </li>
+      {{end}}
+    </ul>
+{{template "footer.html" .}}

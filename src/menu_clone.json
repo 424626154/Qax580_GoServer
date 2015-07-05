@@ -1,0 +1,45 @@
+{
+        "button": [
+            {
+                "type": "view", 
+                "name": "庆安县580", 
+                "url": "http://www.baoguangguang.cn", 
+                "sub_button": [ ]
+            }, 
+            {
+                "type": "click", 
+                "name": "推荐信息", 
+                "key": "recommend", 
+                "sub_button": [ ]
+            }, 
+            {
+                "name": "更多", 
+                "sub_button": [
+                    {
+                        "type": "view", 
+                        "name": "580社区", 
+                        "url": "http://m.wsq.qq.com/264554650", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "发布信息", 
+                        "url": "http://www.baoguangguang.cn/uplode", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "意见反馈", 
+                        "url": "http://www.baoguangguang.cn/feedback", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "click", 
+                        "name": "联系我们", 
+                        "key": "about", 
+                        "sub_button": [ ]
+                    }
+                ]
+            }
+        ]
+    }

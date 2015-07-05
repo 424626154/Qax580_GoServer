@@ -1,0 +1,27 @@
+{{template "header.html" .}}
+<div class="panel panel-default">
+  <div class="panel-heading"><h3 id="title_fnot" >{{.Post.Title}}<h3 id="title_fnot" ></h3></div>
+  <div id="info_fnot" class="panel-body">
+    {{.Post.Info}}
+    <div id="my_label">
+    {{if eq .Post.Examine 0}}
+           <span class="label label-success">未审核</span>
+       {{else}}
+           <span class="label label-success">已审核</span>
+       {{end}}
+     {{if eq .Post.Label 1}}
+      <span class="label label-primary">个人</span>
+      {{end}} 
+      {{if eq .Post.Label 2}}
+       <span class="label label-primary">官方</span>
+      {{end}}
+    </div>
+    <div id="time_font">{{.Post.CreateTime}}</div>
+  </div>
+</div>
+
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
+{{template "footer.html" .}}

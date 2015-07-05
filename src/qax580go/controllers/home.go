@@ -15,6 +15,7 @@ func (c *HomeController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
+	beego.Debug(posts)
 	c.TplNames = "home.html"
 	c.Data["Posts"] = posts
 	op := c.Input().Get("op")
