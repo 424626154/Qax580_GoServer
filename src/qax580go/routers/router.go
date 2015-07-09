@@ -19,4 +19,12 @@ func init() {
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})
+
+	beego.Router("/admin", &controllers.AdminHomeController{})
+	beego.Router("/admin/modify", &controllers.AdminModifyController{})
+	beego.Router("/admin/uplode", &controllers.AdminUplodeController{})
+	beego.Router("/admin/wxlist", &controllers.AdminWcListController{})
+	beego.Router("/admin/feedbacklist", &controllers.AdminFeedbackListController{})
+	beego.Router("/admin/feedbackcontent", &controllers.AdminFeedbackContentController{})
+	beego.Router("/admin/addwxlist", &controllers.AdminAddPublicNumberController{})
 }

@@ -1,0 +1,15 @@
+{{template "adminheader.html" .}}
+
+<form class="form-inline" method="GET" action="/admin/modify">
+  <div class="form-group">
+  	<input name="id" id="id" type=hidden value="{{ .Post.Id}}">
+    <label for="">标题</label>
+    <input type="text" class="form-control" id="title" name="title" placeholder="输入标题" value="{{ .Post.Title}}">
+  </div>
+  <div class="form-group">
+    <label for="">内容</label>
+     <input type="text" style="width:100%;height:80px;text-align:left; vertical-align:top" class="form-control" rows="3"id="info" name="info" placeholder="输入内容" value="{{.Post.Info}}">
+  </div>
+  <button type="submit" class="btn btn-default">修改</button>
+</form>
+{{template "footer.html" .}}

@@ -7,7 +7,6 @@
       <a id="list_bg" href="/content?op=con&id={{.Id}}" class="list-group-item">
       <div  id="list_item">
       <div>
-      <img src="/static/img/type1.jpg" height="100%" width="100%" />
       </div>
         <div><font  id="title_fnot" >{{.Title}}</font></div>
         <div id="info_fnot" >{{.Info}}</div>
@@ -15,7 +14,8 @@
             {{.Image}}
           {{else}}
            <div id="image_fnot" >
-          <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://127.0.0.1:8080/imagehosting/{{.Image}}" width="auto" height="60px">
+          <img src="http://182.92.167.29:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px">
+         <!--  <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px"> -->
           </div>
         {{end}}
         <div id="my_label">

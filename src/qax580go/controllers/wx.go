@@ -291,6 +291,7 @@ func responseImageTextXML(toUserName string, content string, posts []models.Post
 			imageTextResponseItem := ImageTextResponseItem{}
 			imageTextResponseItem.Title = value2CDATA(posts[i].Title)
 			imageTextResponseItem.Description = value2CDATA(posts[i].Info)
+			imageTextResponseItem.PicUrl = value2CDATA("http://182.92.167.29:8080/static/img/type0.jpg")
 			imageTextResponseItem.Url = value2CDATA(strings.Replace(content_url, "s%", fmt.Sprintf("%d", posts[i].Id), -1))
 			imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
 		}

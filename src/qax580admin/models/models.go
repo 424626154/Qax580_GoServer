@@ -16,6 +16,7 @@ type Post struct {
 	Examine    int16
 	Label      int16 // 1个人 2 官方
 	Image      string
+	Type       int16 //0 默认 1房产 2 二手 3 出兑 4 招聘
 }
 
 //意见反馈
@@ -28,8 +29,8 @@ type Feedback struct {
 
 func RegisterDB() {
 	// set default database
-	orm.RegisterDataBase("default", "mysql", "root:@/qax580?charset=utf8")
-	// orm.RegisterDataBase("default", "mysql", "root:sbb890503@/qax580go?charset=utf8")
+	// orm.RegisterDataBase("default", "mysql", "root:@/qax580?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", "root:sbb890503@/qax580go?charset=utf8")
 	// register model
 	orm.RegisterModel(new(Post))
 	orm.RegisterModel(new(Feedback))

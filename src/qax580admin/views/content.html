@@ -3,6 +3,14 @@
   <div class="panel-heading"><h3 id="title_fnot" >{{.Post.Title}}<h3 id="title_fnot" ></h3></div>
   <div id="info_fnot" class="panel-body">
     {{.Post.Info}}
+        {{if eq .Post.Image ""}}
+            {{.Post.Image}}
+          {{else}}
+           <div id="image_fnot" >
+          <img src="http://182.92.167.29:8080/imagehosting/{{.Post.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Post.Image}}" width="auto" height="60px">
+      <!--     <img src="http://127.0.0.1:8080/imagehosting/{{.Post.Image}}" alt="http://172.0.0.1:8080/imagehosting/{{.Post.Image}}" width="auto" height="60px"> -->
+          </div>
+        {{end}}
     <div id="my_label">
     {{if eq .Post.Examine 0}}
            <span class="label label-success">未审核</span>

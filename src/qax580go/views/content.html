@@ -3,6 +3,14 @@
   <div id="con_title"><font id="title_fnot" >{{.Post.Title}}</font></div>
   <div  class="panel-body" id="con_info">
     <font id="info_fnot">{{.Post.Info}}</font>
+    {{if eq .Post.Image ""}}
+            {{.Post.Image}}
+          {{else}}
+           <div id="image_fnot" >
+          <img src="http://182.92.167.29:8080/imagehosting/{{.Post.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Post.Image}}" width="auto" height="60px">
+         <!--  <img src="http://127.0.0.1:8080/imagehosting/{{.Post.Image}}" alt="http://172.0.0.1:8080/imagehosting/{{.Post.Image}}" width="auto" height="60px"> -->
+          </div>
+        {{end}}
     <div id="my_label">
     <span class="label label-success">已审核</span>
      {{if eq .Post.Label 1}}
