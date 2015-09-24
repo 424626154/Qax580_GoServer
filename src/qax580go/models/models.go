@@ -1,6 +1,8 @@
 package models
 
 import (
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql" // import your used driver
 	"strconv"
@@ -37,14 +39,56 @@ type Wxnum struct {
 	Image      string
 }
 
+type Admin struct {
+	Id       int64
+	Username string `orm:"size(100)"`
+	Password string `orm:"size(1000)"`
+}
+
+type AccessTokenJson struct {
+	AccessToken  string `json:"access_token"`
+	ExpiresIn    int64  `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	OpenID       string `json:"openid"`
+	Scope        string `json:"scope"`
+	Unionid      string `json:"unionid"`
+	ErrCode      int64  `json:"errcode"`
+	ErrMsg       string `json:"errmsg"`
+}
+
+type UserInfoJson struct {
+	OpenId     string   `json:"openid"`
+	NickeName  string   `json:"nickname"`
+	Sex        int32    `json:"sex"`
+	Province   string   `json:"province"`
+	City       string   `json:"city"`
+	Country    string   `json:"country"`
+	HeadImgurl string   `json:"headimgurl"`
+	Privilege  []string `json:"privilege"`
+	Unionid    string   `json:"unionid"`
+	ErrCode    int64    `json:"errcode"`
+	ErrMsg     string   `json:"errmsg"`
+}
+
 func RegisterDB() {
 	// set default database
-	// orm.RegisterDataBase("default", "mysql", "root:@/qax580?charset=utf8")
-	orm.RegisterDataBase("default", "mysql", "root:sbb890503@/qax580go?charset=utf8")
+	isdebug := "true"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+	}
+	if isdebug == "true" {
+		orm.RegisterDataBase("default", "mysql", "root:@/qax580?charset=utf8")
+	} else {
+		orm.RegisterDataBase("default", "mysql", "root:sbb890503@/qax580go?charset=utf8")
+	}
 	// register model
 	orm.RegisterModel(new(Post))
 	orm.RegisterModel(new(Feedback))
 	orm.RegisterModel(new(Wxnum))
+	orm.RegisterModel(new(Admin))
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -248,4 +292,55 @@ func GetAllWxnums() ([]Wxnum, error) {
 	var wxnums []Wxnum
 	_, err := o.Raw("SELECT * FROM wxnum  ORDER BY id DESC").QueryRows(&wxnums)
 	return wxnums, err
+}
+
+/*
+添加后台用户
+*/
+func AddAdmin(username string, password string) error {
+	o := orm.NewOrm()
+
+	admin := &Admin{Username: username, Password: password}
+	// 查询数据
+	qs := o.QueryTable("admin")
+	err := qs.Filter("username", username).One(admin)
+	if err == nil {
+		return err
+	}
+	// 插入数据
+	_, err = o.Insert(admin)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetOneAdmin(username string) (*Admin, error) {
+	o := orm.NewOrm()
+	var admins []Admin
+	_, err := o.Raw("SELECT * FROM admin WHERE username = ? ", username).QueryRows(&admins)
+	admin := &Admin{}
+	if len(admins) > 0 {
+		admin = &admins[0]
+	}
+	return admin, err
+}
+
+func GetAllAdmins() ([]Admin, error) {
+	o := orm.NewOrm()
+	var admins []Admin
+	_, err := o.Raw("SELECT * FROM admin  ORDER BY id DESC").QueryRows(&admins)
+	return admins, err
+}
+
+func DeleteAdmin(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	admin := &Admin{Id: cid}
+	_, err = o.Delete(admin)
+	return err
 }

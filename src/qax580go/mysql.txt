@@ -1,0 +1,2 @@
+select * from qax580.user
+INSERT INTO qax580.admin (username,password) VALUES('3','3');
