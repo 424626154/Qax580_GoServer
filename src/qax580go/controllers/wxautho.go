@@ -119,7 +119,7 @@ func getUserInfo(access_toke, openid string, c *WxAuthoController) {
 	} else {
 		beego.Debug(string(body))
 	}
-	var uij models.UserInfoJson
+	var uij models.Wxuserinfo
 	if err := json.Unmarshal(body, &uij); err == nil {
 		beego.Debug("----------------get UserInfo json--------------------")
 		beego.Debug(uij)

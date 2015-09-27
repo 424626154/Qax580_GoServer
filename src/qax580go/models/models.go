@@ -56,18 +56,19 @@ type AccessTokenJson struct {
 	ErrMsg       string `json:"errmsg"`
 }
 
-type UserInfoJson struct {
-	OpenId     string   `json:"openid"`
-	NickeName  string   `json:"nickname"`
-	Sex        int32    `json:"sex"`
-	Province   string   `json:"province"`
-	City       string   `json:"city"`
-	Country    string   `json:"country"`
-	HeadImgurl string   `json:"headimgurl"`
-	Privilege  []string `json:"privilege"`
-	Unionid    string   `json:"unionid"`
-	ErrCode    int64    `json:"errcode"`
-	ErrMsg     string   `json:"errmsg"`
+type Wxuserinfo struct {
+	Id         int64
+	OpenId     string `json:"openid"`
+	NickeName  string `json:"nickname"`
+	Sex        int32  `json:"sex"`
+	Province   string `json:"province"`
+	City       string `json:"city"`
+	Country    string `json:"country"`
+	HeadImgurl string `json:"headimgurl"`
+	// Privilege  []string `json:"privilege"`
+	Unionid string `json:"unionid"`
+	ErrCode int64  `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
 }
 
 func RegisterDB() {
@@ -81,14 +82,17 @@ func RegisterDB() {
 	}
 	if isdebug == "true" {
 		orm.RegisterDataBase("default", "mysql", "root:@/qax580?charset=utf8")
+		beego.Debug("root:@/qax580?charset=utf8")
 	} else {
 		orm.RegisterDataBase("default", "mysql", "root:sbb890503@/qax580go?charset=utf8")
+		beego.Debug("root:sbb890503@/qax580go?charset=utf8")
 	}
 	// register model
 	orm.RegisterModel(new(Post))
 	orm.RegisterModel(new(Feedback))
 	orm.RegisterModel(new(Wxnum))
 	orm.RegisterModel(new(Admin))
+	orm.RegisterModel(new(Wxuserinfo)) //微信用户
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -343,4 +347,41 @@ func DeleteAdmin(id string) error {
 	admin := &Admin{Id: cid}
 	_, err = o.Delete(admin)
 	return err
+}
+
+//--------------------微信用户-------------
+func AddWxUserInfo(wxUserInfo Wxuserinfo) error {
+	beego.Debug("-----------AddWxUserInfo----------")
+	beego.Debug(wxUserInfo)
+	o := orm.NewOrm()
+	cate := &Wxuserinfo{OpenId: wxUserInfo.OpenId, NickeName: wxUserInfo.NickeName, Sex: wxUserInfo.Sex,
+		Province: wxUserInfo.Province, City: wxUserInfo.City, Country: wxUserInfo.Country,
+		HeadImgurl: wxUserInfo.HeadImgurl, Unionid: wxUserInfo.Unionid,
+		ErrCode: wxUserInfo.ErrCode, ErrMsg: wxUserInfo.ErrMsg}
+
+	// 查询数据
+	qs := o.QueryTable("wxuserinfo")
+	err := qs.Filter("open_id", wxUserInfo.OpenId).One(cate)
+	if err == nil {
+		return err
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetOneWxUserInfo(open_id string) (*Wxuserinfo, error) {
+	o := orm.NewOrm()
+	var wxusers []Wxuserinfo
+	_, err := o.Raw("SELECT * FROM wxuserinfo WHERE open_id = ? ", open_id).QueryRows(&wxusers)
+	wxuser := &Wxuserinfo{}
+	if len(wxusers) > 0 {
+		wxuser = &wxusers[0]
+	}
+	return wxuser, err
 }

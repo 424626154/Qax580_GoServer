@@ -19,4 +19,10 @@
      <a href="/" style="color:#fff; font-size:20px ;text-decoration:none">
           庆安县580
       </a> 
+      {{ if .isUser}}
+      <span style="float:right ">
+          <font style="color: #ffffff">{{.WxUser.NickeName}}</font>
+          <img src="{{.WxUser.HeadImgurl}}" width="40px" height="40px"></img>
+      </span>
+      {{ end}}
   </div>

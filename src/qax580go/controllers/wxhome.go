@@ -119,14 +119,26 @@ func getHomeUserInfo(access_toke, openid string, c *WxHomeController) {
 	} else {
 		beego.Debug(string(body))
 	}
-	var uij models.UserInfoJson
+	var uij models.Wxuserinfo
 	if err := json.Unmarshal(body, &uij); err == nil {
 		beego.Debug("----------------get UserInfo json--------------------")
 		beego.Debug(uij)
 		if uij.ErrCode == 0 {
 			c.Data["Uij"] = uij
 		}
-		c.Redirect("/", 302)
+		err = models.AddWxUserInfo(uij)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			// wx_home := "/?logtype=wx&openid=[OPENID]"
+			// wx_home = strings.Replace(wx_home, "[OPENID]", uij.OpenId, -1)
+			// beego.Debug("----------------wx_home--------------------")
+			// beego.Debug(wx_home)
+			// c.Redirect(wx_home, 302)
+			maxAge := 1<<31 - 1
+			c.Ctx.SetCookie("wx_openid", uij.OpenId, maxAge, "/")
+			c.Redirect("/", 302)
+		}
 		return
 	} else {
 		beego.Debug("----------------get UserInfo json error--------------------")
