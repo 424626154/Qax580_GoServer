@@ -17,6 +17,8 @@ func init() {
 	beego.Router("/feedback", &controllers.FeedbackController{})
 	beego.Router("/wxautho", &controllers.WxAuthoController{})
 	beego.Router("/wxhome", &controllers.WxHomeController{})
+	beego.Router("/wxuplode", &controllers.WxUplodeController{})
+	beego.Router("/wxfeedback", &controllers.WxFeedbackController{})
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})
@@ -32,4 +34,5 @@ func init() {
 	beego.Router("/admin/userlist", &controllers.AdminUserListController{})
 	beego.Router("/admin/adduser", &controllers.AdminAddUserController{})
 	beego.Router("/admin/content", &controllers.AdminContentController{})
+	beego.Router("/admin/wxuserlist", &controllers.WxUserListController{})
 }

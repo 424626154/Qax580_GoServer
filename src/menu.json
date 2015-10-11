@@ -3,7 +3,7 @@
             {
                 "type": "view", 
                 "name": "庆安县580", 
-                "url": "http://www.baoguangguang.cn", 
+                "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                 "sub_button": [ ]
             }, 
             {
@@ -18,13 +18,13 @@
                     {
                         "type": "view", 
                         "name": "发布信息", 
-                        "url": "http://www.baoguangguang.cn/uplode", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
                         "type": "view", 
                         "name": "意见反馈", 
-                        "url": "http://www.baoguangguang.cn/feedback", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.baoguangguang.cn%2fwxfeedback&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {

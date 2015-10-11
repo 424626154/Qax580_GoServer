@@ -1,0 +1,10 @@
+{{template "adminheader.html" .}}
+   <ul class="list-group">
+      {{range .WxUsers}}
+      <li class="list-group-item">
+        <div>{{.NickeName}}</div>
+        <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
+      </li>
+      {{end}}
+    </ul>
+{{template "footer.html" .}}

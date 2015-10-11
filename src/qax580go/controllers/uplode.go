@@ -16,13 +16,12 @@ type UplodeController struct {
 }
 
 func (c *UplodeController) Get() {
-
+	getUplodeCookie(c)
 	c.TplNames = "uplode.html"
 }
 
 func (c *UplodeController) Post() {
 	image_name := ""
-
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")
 	if len(title) != 0 && len(info) != 0 {
@@ -54,14 +53,40 @@ func (c *UplodeController) Post() {
 	} else {
 		c.Redirect("/uplode", 302)
 	}
-
 	if len(title) != 0 && len(info) != 0 {
-		err := models.AddPostLabel(title, info, 1, image_name)
+		openid := getUplodeCookie(c)
+		wxuser, err := models.GetOneWxUserInfo(openid)
+		if err != nil {
+			beego.Error(err)
+		}
+		beego.Debug("----------AddPostLabelWx--------")
+		beego.Debug(openid)
+		beego.Debug(wxuser)
+		err = models.AddPostLabelWx(title, info, 1, image_name, openid, wxuser.NickeName, wxuser.Sex, wxuser.HeadImgurl)
 		if err != nil {
 			beego.Error(err)
 		}
 		beego.Info(info)
 		c.Redirect("/", 302)
 	}
+}
 
+func getUplodeCookie(c *UplodeController) string {
+	isUser := false
+	openid := c.Ctx.GetCookie("wx_openid")
+	beego.Debug("------------openid--------")
+	beego.Debug(openid)
+	if len(openid) != 0 {
+		wxuser, err := models.GetOneWxUserInfo(openid)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			isUser = true
+			beego.Debug("--------------wxuser----------")
+			beego.Debug(wxuser)
+			c.Data["WxUser"] = wxuser
+		}
+	}
+	c.Data["isUser"] = isUser
+	return openid
 }

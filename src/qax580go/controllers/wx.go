@@ -21,6 +21,8 @@ const (
 	subscribe_info = "欢迎关注庆安兄弟微盟，我们正在努力成为一个有情怀的免费信息发布平台，为庆安人服务"
 	about_info     = "【客服服务】\n关注我们\n公众号:qax580\n微信:qax580kf\n腾讯微博:庆安兄弟微盟\nQQ : 2063883729\n邮箱：qaxiongdiweimeng@163.com"
 	content_url    = "http://www.baoguangguang.cn/content?op=con&id=s%"
+	jieshao_info   = "【帮助】\n你好，庆安县580是免费的信息发布平台，在这里您可以发布信息也可以搜索相关信息，相关功能在功能菜单中"
+	function_info  = "【帮助】\n发布信息－》更多－》发布信息，意见反馈－》更多－》意见反馈"
 )
 
 //接收文本消息
@@ -177,6 +179,10 @@ func responseTypeMsg(body []byte, msgType string) string {
 			err := xml.Unmarshal(body, requestBody)
 			if err != nil {
 				response_xml = responseTextMsg(requestBody.FromUserName, error_info)
+			} else if requestBody.Content == "你好" || requestBody.Content == "您好" {
+				response_xml = responseTextMsg(requestBody.FromUserName, jieshao_info)
+			} else if strings.Index(requestBody.Content, "发布") >= 0 {
+				response_xml = responseTextMsg(requestBody.FromUserName, function_info)
 			} else {
 				beego.Debug(requestBody.Content)
 				posts, err := models.QueryFuzzyLimitPost(requestBody.Content, 5)

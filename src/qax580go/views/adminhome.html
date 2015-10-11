@@ -4,7 +4,8 @@
   <a type="button" class="btn btn-default" href="/admin/addwxlist">添加公众号</a>
   <a type="button" class="btn btn-default" href="/admin/wxlist">推荐公众号</a>
   <a type="button" class="btn btn-default" href="/admin/feedbacklist">意见反馈</a>
-  <a type="button" class="btn btn-default" href="/admin/userlist">用户管理</a>     
+  <a type="button" class="btn btn-default" href="/admin/userlist">用户管理</a>
+  <a type="button" class="btn btn-default" href="/admin/wxuserlist">微信用户</a>      
 </div>
    <ul class="list-group">
       {{range .Posts}}
@@ -19,6 +20,16 @@
          <!--   <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px"> -->
           </div>
         {{end}}
+          {{ if eq .OpenId ""}}
+
+        {{else}}
+        <div>
+          <span >
+            <font style="color: #000">{{ .NickeName}}</font>
+            <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
+        </span>
+        </div>
+        {{ end}}
       <div>{{.CreateTime}}</div>
       {{if eq .Label 1}}
       <div><span class="label label-primary">个人</span></div>

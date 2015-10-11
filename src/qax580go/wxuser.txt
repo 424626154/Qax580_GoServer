@@ -1,3 +1,11 @@
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxautho&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
 
  {"openid":"o3AhEuB_wdTELvlErL4F1Em4Nck4","nickname":"寰","sex":2,"language":"zh_CN","city":"","province":"","country":"涓","headimgurl":"http:\/\/wx.qlogo.cn\/mmopen\/lQyhZL8HdN24nyDtggslekaRNoUEApk3pNpPUk6Ahw5iadM8CEZU5g7s0wYDY3voMN6jfOGvvtBglicPNYJHFQXqwYGaiaVbN5F\/0","privilege":[]}
+
+
+ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+
+
+ https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.baoguangguang.cn%2fwxfeedback&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+
+  https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect

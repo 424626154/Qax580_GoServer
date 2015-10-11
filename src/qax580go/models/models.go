@@ -18,7 +18,11 @@ type Post struct {
 	Examine    int16
 	Label      int16 // 1个人 2 官方
 	Image      string
-	Type       int16 //0 默认 1房产 2 二手 3 出兑 4 招聘
+	Type       int16  //0 默认 1房产 2 二手 3 出兑 4 招聘
+	OpenId     string `orm:"size(500)"`
+	NickeName  string `orm:"size(100)"`
+	Sex        int32
+	HeadImgurl string `orm:"size(500)"`
 }
 
 //意见反馈
@@ -27,6 +31,10 @@ type Feedback struct {
 	Info       string    `orm:"size(1000)"`
 	CreateTime time.Time `orm:"index"`
 	State      int16
+	OpenId     string `orm:"size(500)"`
+	NickeName  string `orm:"size(100)"`
+	Sex        int32
+	HeadImgurl string `orm:"size(500)"`
 }
 
 //微信公众号
@@ -201,6 +209,26 @@ func AddPostLabel(title string, info string, label int16, image string) error {
 
 	return nil
 }
+func AddPostLabelWx(title string, info string, label int16, image string, openid string, name string, sex int32, head string) error {
+	o := orm.NewOrm()
+
+	cate := &Post{Title: title, Info: info, CreateTime: time.Now(), Label: label, Image: image, OpenId: openid, NickeName: name, Sex: sex, HeadImgurl: head}
+
+	// 查询数据
+	qs := o.QueryTable("post")
+	err := qs.Filter("title", title).One(cate)
+	if err == nil {
+		return err
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func DeletePost(id string) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
@@ -228,10 +256,10 @@ func QueryFuzzyLimitPost(fuzzy string, nums int64) ([]Post, error) {
 
 /*******************意见反馈********************/
 
-func AddFeedback(info string) error {
+func AddFeedback(info string, openid string, name string, sex int32, head string) error {
 	o := orm.NewOrm()
 	time := time.Now()
-	cate := &Feedback{Info: info, CreateTime: time}
+	cate := &Feedback{Info: info, CreateTime: time, OpenId: openid, NickeName: name, Sex: sex, HeadImgurl: head}
 
 	// 查询数据
 	qs := o.QueryTable("feedback")
@@ -384,4 +412,11 @@ func GetOneWxUserInfo(open_id string) (*Wxuserinfo, error) {
 		wxuser = &wxusers[0]
 	}
 	return wxuser, err
+}
+
+func GetAllWxUsers() ([]Wxuserinfo, error) {
+	o := orm.NewOrm()
+	var wxusers []Wxuserinfo
+	_, err := o.Raw("SELECT * FROM wxuserinfo  ORDER BY id DESC").QueryRows(&wxusers)
+	return wxusers, err
 }

@@ -4,6 +4,16 @@
       <li class="list-group-item">
         <div><a href="/admin/feedbackcontent?op=con&id={{.Id}}"><h1>{{.Info}}</h1></a></div>
         <div>{{.CreateTime}}</div>
+       	{{ if eq .OpenId ""}}
+
+	      {{else}}
+	      <div>
+	      	<span >
+	          <font style="color: #000">{{ .NickeName}}</font>
+	          <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
+	      </span>
+	      </div>
+      	{{ end}}
       </li>
       {{end}}
     </ul>
