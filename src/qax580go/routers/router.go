@@ -19,6 +19,13 @@ func init() {
 	beego.Router("/wxhome", &controllers.WxHomeController{})
 	beego.Router("/wxuplode", &controllers.WxUplodeController{})
 	beego.Router("/wxfeedback", &controllers.WxFeedbackController{})
+	beego.Router("/weather", &controllers.WeatherController{})
+	beego.Router("/traintickets", &controllers.TrainTicketsController{})
+	beego.Router("/querystation", &controllers.QueryStationController{})
+	beego.Router("/querytrain", &controllers.QueryTrainController{})
+	beego.Router("/queryrealtime", &controllers.QueryRealTimeController{})
+	beego.Router("/queryqutlets", &controllers.QueryQutletsController{})
+	beego.Router("/querypeccancy", &controllers.QueryPeccancyController{})
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})

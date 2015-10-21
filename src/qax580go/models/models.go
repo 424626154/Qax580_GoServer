@@ -78,6 +78,38 @@ type Wxuserinfo struct {
 	ErrCode int64  `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
 }
+type JsApiTicketJson struct {
+	Id        int64
+	Ticket    string `json:"ticket"`
+	ExpiresIn int64  `json:"expires_in"`
+	ErrCode   int64  `json:"errcode"`
+	ErrMsg    string `json:"errmsg"`
+}
+
+type WeatherJson struct {
+	Resultcode string `json:"resultcode"`
+	Reason     string `json:"reason"`
+	Result     Result `json:"result"`
+	ErrorCode  int64  `json:"error_code"`
+}
+
+type Result struct {
+	Today Today `json:"today"`
+}
+type Today struct {
+	City           string `json:"city"`
+	DateY          string `json:"date_y"`
+	Week           string `json:"week"`
+	Temperature    string `json:"temperature"`
+	Weather        string `json:"weather"`
+	Wind           string `json:"wind"`
+	Dressingindex  string `json:"dressing_index"`
+	DressingAdvice string `json:"dressing_advice"`
+	UvIndex        string `json:"uv_index"`
+	WashIndex      string `json:"wash_index"`
+	WravelIndex    string `json:"wravel_index"`
+	WxerciseIndex  string `json:"wxercise_index"`
+}
 
 func RegisterDB() {
 	// set default database
