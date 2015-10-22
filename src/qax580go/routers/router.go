@@ -42,4 +42,7 @@ func init() {
 	beego.Router("/admin/adduser", &controllers.AdminAddUserController{})
 	beego.Router("/admin/content", &controllers.AdminContentController{})
 	beego.Router("/admin/wxuserlist", &controllers.WxUserListController{})
+	beego.Router("/admin/juhe", &controllers.AdminJuheController{})
+	beego.Router("/admin/updatelog", &controllers.AdminUpdateLogController{})
+	beego.Router("/admin/newskey", &controllers.AdminNewsKeyController{}) //新闻关键词
 }

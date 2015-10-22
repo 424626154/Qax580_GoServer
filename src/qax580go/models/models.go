@@ -111,6 +111,13 @@ type Today struct {
 	WxerciseIndex  string `json:"wxercise_index"`
 }
 
+type NewsKey struct {
+	Id         int64
+	Info       string    `orm:"size(1000)"`
+	CreateTime time.Time `orm:"index"`
+	Op         int32
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -133,6 +140,7 @@ func RegisterDB() {
 	orm.RegisterModel(new(Wxnum))
 	orm.RegisterModel(new(Admin))
 	orm.RegisterModel(new(Wxuserinfo)) //微信用户
+	orm.RegisterModel(new(NewsKey))
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -451,4 +459,61 @@ func GetAllWxUsers() ([]Wxuserinfo, error) {
 	var wxusers []Wxuserinfo
 	_, err := o.Raw("SELECT * FROM wxuserinfo  ORDER BY id DESC").QueryRows(&wxusers)
 	return wxusers, err
+}
+
+func AddNewsKey(info string) error {
+	o := orm.NewOrm()
+
+	time := time.Now()
+	cate := &NewsKey{Info: info, CreateTime: time, Op: 0}
+	// 查询数据
+	qs := o.QueryTable("news_key")
+	err := qs.Filter("info", info).One(cate)
+	if err == nil {
+		return err
+	}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllNewsKey() ([]NewsKey, error) {
+	o := orm.NewOrm()
+	var newskey []NewsKey
+	_, err := o.Raw("SELECT * FROM news_key  ORDER BY id DESC").QueryRows(&newskey)
+	return newskey, err
+}
+
+func UpdateNewsKey(id string, op int32) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &NewsKey{Id: cid}
+	cate.Op = op
+	_, err = o.Update(cate, "op")
+	return err
+}
+
+func DeleteNewsKey(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &NewsKey{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+func GetOpNewsKey(op int32) ([]NewsKey, error) {
+	o := orm.NewOrm()
+	var newskey []NewsKey
+	_, err := o.Raw("SELECT * FROM news_key WHERE op = ? ORDER BY id DESC", 1).QueryRows(&newskey)
+	return newskey, err
 }

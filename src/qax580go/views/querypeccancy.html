@@ -1,4 +1,4 @@
-{{template "trainheader.html" .}}
+{{template "header.html" .}}
 <script type="text/javascript" src="static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
 <script type="text/javascript"> 
 var url = "http://v.juhe.cn/wz/citys?key=6bd5c3ffa52bca14090b62833e5bfc05"
@@ -101,17 +101,17 @@ function onclikBtn(){
 }
     
 </script> 
-<body class="uplode_bg">
+<div class="uplode_bg">
 	<form action="" method="post" id="queryForm">
 		<div class="form-group">
 		      <font class="up_fnt" for="" style="color:#000">查询城市:</font>
-		    <select style="width:200px;font-size:40px" id="province" name="province"onchange="onclikProvince(this[selectedIndex].value);"></select>
-		    <select style="width:200px;font-size:40px" id="city" name="city"></select>
+		    <select style="width:100px;font-size:20px" id="province" name="province"onchange="onclikProvince(this[selectedIndex].value);"></select>
+		    <select style="width:100px;font-size:20px" id="city" name="city"></select>
 	    </div>
 	    <div class="form-group">
 		      <font class="up_fnt" for="" style="color:#000">车牌号码:</font>
-		    <select style="width:100px;font-size:40px" id="citychat" name="citychat"></select>
-		    <select style="width:100px;font-size:40px" id="cityeng" name="cityeng"></select>
+		    <select style="width:100px;font-size:20px" id="citychat" name="citychat"></select>
+		    <select style="width:100px;font-size:20px" id="cityeng" name="cityeng"></select>
 		    <input type="text" class="form-control" id="cph" name="cph" placeholder="车牌号码后5位">
 	    </div>
 	    <div class="form-group">
@@ -126,7 +126,8 @@ function onclikBtn(){
 <div>
   {{if eq .IsShow "true"}}
       {{if eq .ErrorCode 0}}
-       <div>查询车辆:{{ .Hphm}}</div>
+       <h3>查询车辆:{{ .Hphm}}</h3>
+       <div>{{.Tips}}</div>
          <ul class="list-group">
           {{range .Peccancys}}
           <div class="list-group-item">
@@ -152,5 +153,5 @@ function onclikBtn(){
       {{end}}
     {{end}}
 </div>
-</body>
+</div>
 {{template "trainfooter.html" .}}

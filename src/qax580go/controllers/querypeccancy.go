@@ -110,6 +110,13 @@ func queryPeccancy(city string, hphm string, engineno string, c *QueryPeccancyCo
 		} else {
 			c.Data["Hphm"] = obj.PResult.Hphm
 			c.Data["Peccancys"] = obj.PResult.Peccancys
+			Tips := ""
+			if len(obj.PResult.Peccancys) > 0 {
+				Tips = "以下为您的违章记录"
+			} else {
+				Tips = "暂无违章记录"
+			}
+			c.Data["Tips"] = Tips
 		}
 	} else {
 		beego.Debug(err)
