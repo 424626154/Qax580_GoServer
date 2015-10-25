@@ -26,9 +26,16 @@
             {
                 "name": "生活助手", 
                 "sub_button": [
+                
+                    {
+                        "type": "click", 
+                        "name": "今日580", 
+                        "key": "today", 
+                        "sub_button": [ ]
+                    },
                     {
                         "type": "view", 
-                        "name": "今日天气", 
+                        "name": "天气预报", 
                         "url": "http://www.baoguangguang.cn/weather", 
                         "sub_button": [ ]
                     }, 
@@ -43,12 +50,24 @@
                         "name": "车辆违章查询", 
                         "url": "http://www.baoguangguang.cn/querypeccancy", 
                         "sub_button": [ ]
+                    },
+                    {
+                        "type": "view", 
+                        "name": "快递查询", 
+                        "url": "http://www.baoguangguang.cn/kuaidi", 
+                        "sub_button": [ ]
                     }
                 ]
             }, 
             {
                 "name": "更多", 
-                "sub_button": [
+                "sub_button": [               
+                    {
+                        "type": "view", 
+                        "name": "580部落", 
+                        "url": "http://s.p.qq.com/pub/jump?d=AAAUkV9k", 
+                        "sub_button": [ ]
+                    }, 
                     {
                         "type": "view", 
                         "name": "意见反馈", 

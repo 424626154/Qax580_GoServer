@@ -35,6 +35,9 @@
 #title_font{
 	color: #01ac20
 }
+.lable1_font{
+    font-weight:bold
+}
 
 #list_bg{
 	background-color: #fff;

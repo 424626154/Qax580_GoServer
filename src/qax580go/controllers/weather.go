@@ -30,35 +30,35 @@ type WeatherController struct {
 
 func (c *WeatherController) Get() {
 
-	// op := c.Input().Get("op")
-	// switch op {
-	// case "location":
-	// 	latitude := c.Input().Get("latitude")
-	// 	longitude := c.Input().Get("longitude")
-	// 	c.Data["latitude"] = latitude
-	// 	c.Data["longitude"] = longitude
-	// 	beego.Debug("latitude:", latitude)
-	// 	beego.Debug("longitude:", longitude)
-	// 	getWeather(longitude, latitude)
-	// 	c.TplNames = "location.html"
-	// 	return
-	// }
-	// c.TplNames = "weather.html"
-	// appId := ""
-	// iniconf, err := config.NewConfig("json", "conf/myconfig.json")
-	// if err != nil {
-	// 	beego.Debug(err)
-	// } else {
-	// 	appId = iniconf.String("qax580::appid")
-	// }
-	// timestamp := time.Now().Unix()
-	// noncestr := getNonceStr(16, KC_RAND_KIND_ALL)
-	// c.Data["AppId"] = appId
-	// c.Data["TimesTamp"] = timestamp
-	// c.Data["NonceStr"] = noncestr
-	// getWeatherToken(noncestr, timestamp, c)
-	getWeather(c)
-	c.TplNames = "location.html"
+	op := c.Input().Get("op")
+	switch op {
+	case "location":
+		latitude := c.Input().Get("latitude")
+		longitude := c.Input().Get("longitude")
+		c.Data["latitude"] = latitude
+		c.Data["longitude"] = longitude
+		beego.Debug("latitude:", latitude)
+		beego.Debug("longitude:", longitude)
+		getWeather(longitude, latitude, c)
+		c.TplNames = "location.html"
+		return
+	}
+	c.TplNames = "weather.html"
+	appId := ""
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		appId = iniconf.String("qax580::appid")
+	}
+	timestamp := time.Now().Unix()
+	noncestr := getNonceStr(16, KC_RAND_KIND_ALL)
+	c.Data["AppId"] = appId
+	c.Data["TimesTamp"] = timestamp
+	c.Data["NonceStr"] = noncestr
+	getWeatherToken(noncestr, timestamp, c)
+	// getWeather(c)
+	c.TplNames = "weather.html"
 }
 
 func (c *WeatherController) Post() {
@@ -168,7 +168,7 @@ func getJsapiTicket(access_toke string, noncestr string, timestamp int64, c *Wea
 		beego.Debug("----------------getJsapiTicket json--------------------")
 		beego.Debug(ticket)
 		if ticket.ErrCode == 0 {
-			c.Data["Ticket"] = signatureWxJs(ticket.Ticket, noncestr, timestamp, c)
+			c.Data["Ticket"] = signatureWxJs(ticket.Ticket, noncestr, timestamp, "http://www.baoguangguang.cn/weather")
 		}
 
 		return
@@ -179,14 +179,14 @@ func getJsapiTicket(access_toke string, noncestr string, timestamp int64, c *Wea
 }
 
 //验证签名
-func signatureWxJs(jsapi_ticket string, noncestr string, timestamp int64, c *WeatherController) string {
+func signatureWxJs(jsapi_ticket string, noncestr string, timestamp int64, url string) string {
 	// timestamp_str := strconv.Itoa(timestamp)
 	timestamp_str := fmt.Sprintf("%d", timestamp)
 	signature_str := "jsapi_ticket=[JSAPI_TICKET]&noncestr=[NONCESTR]&timestamp=[TIMESTAMP]&url=[URL]"
 	signature_str = strings.Replace(signature_str, "[JSAPI_TICKET]", jsapi_ticket, -1)
 	signature_str = strings.Replace(signature_str, "[NONCESTR]", noncestr, -1)
 	signature_str = strings.Replace(signature_str, "[TIMESTAMP]", timestamp_str, -1)
-	signature_str = strings.Replace(signature_str, "[URL]", "http://www.baoguangguang.cn/weather", -1)
+	signature_str = strings.Replace(signature_str, "[URL]", url, -1)
 	beego.Debug("signature_str:", signature_str)
 	signature := goWxJsSha1(signature_str)
 	beego.Debug("signature:", signature)
@@ -200,15 +200,14 @@ func goWxJsSha1(str string) string {
 	return hex.EncodeToString(s.Sum(nil))
 }
 
-// func getWeather(lon string, lat string) {
-func getWeather(c *WeatherController) {
+func getWeather(lon string, lat string, c *WeatherController) {
 	url := "[REALM]?format=[FORMAT]&key=[KEY]&lon=[LON]&lat=[LAT]"
-	// url = strings.Replace(url, "[REALM]", "http://v.juhe.cn/weather/geo", -1)
-	// url = strings.Replace(url, "[FORMAT]", "2", -1)
-	// url = strings.Replace(url, "[KEY]", "f99ee0d9fe9af2a3ae272c33331a61dc", -1)
-	// url = strings.Replace(url, "[LON]", lon, -1)
-	// url = strings.Replace(url, "[LAT]", lat, -1)
-	url = "http://v.juhe.cn/weather/geo?format=2&key=f99ee0d9fe9af2a3ae272c33331a61dc&lon=116.39277&lat=39.933748"
+	url = strings.Replace(url, "[REALM]", "http://v.juhe.cn/weather/geo", -1)
+	url = strings.Replace(url, "[FORMAT]", "2", -1)
+	url = strings.Replace(url, "[KEY]", "f99ee0d9fe9af2a3ae272c33331a61dc", -1)
+	url = strings.Replace(url, "[LON]", lon, -1)
+	url = strings.Replace(url, "[LAT]", lat, -1)
+	// url = "http://v.juhe.cn/weather/geo?format=2&key=f99ee0d9fe9af2a3ae272c33331a61dc&lon=116.39277&lat=39.933748"
 	beego.Debug("url:", url)
 
 	resp, err := http.Get(url)

@@ -230,6 +230,8 @@ func responseTypeMsg(body []byte, msgType string) string {
 					//关于
 				} else if requestBody.EventKey == "about" {
 					response_xml = responseAbout(requestBody.FromUserName)
+				} else if requestBody.EventKey == "today" { //今日580
+					response_xml = responseToday(requestBody.FromUserName)
 				} else {
 
 				}
@@ -316,6 +318,55 @@ func responseImageTextXML(toUserName string, content string, posts []models.Post
 		}
 	} else {
 		articles = analysisNull(toUserName, content)
+	}
+
+	return articles
+}
+
+func responseToday(toUserName string) string {
+	articles := ""
+	imageTextResponseItems := []ImageTextResponseItem{}
+	//添加历史今天
+	imageTextResponseItem := ImageTextResponseItem{}
+	imageTextResponseItem.Title = value2CDATA("历史今天")
+	imageTextResponseItem.Description = value2CDATA("回顾历史的长河，历史是生活的一面镜子")
+	imageTextResponseItem.PicUrl = value2CDATA("http://182.92.167.29:8080/static/img/lishi.png")
+	imageTextResponseItem.Url = value2CDATA("http://www.baoguangguang.cn/history")
+	imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
+
+	//添加老黄历
+	imageTextResponseItem.Title = value2CDATA("老黄历")
+	imageTextResponseItem.Description = value2CDATA("每日吉凶宜忌")
+	imageTextResponseItem.PicUrl = value2CDATA("http://182.92.167.29:8080/static/img/laohuangli.png")
+	imageTextResponseItem.Url = value2CDATA("http://www.baoguangguang.cn/laohuangli")
+	imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
+
+	//周边Wi-Fi
+	imageTextResponseItem.Title = value2CDATA("周边Wi-Fi")
+	imageTextResponseItem.Description = value2CDATA("周边免费的WIFI热点分布")
+	imageTextResponseItem.PicUrl = value2CDATA("http://182.92.167.29:8080/static/img/wifi.png")
+	imageTextResponseItem.Url = value2CDATA("http://www.baoguangguang.cn/zhoubianwifiwx")
+	imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
+
+	//天气预报
+	imageTextResponseItem.Title = value2CDATA("天气预报")
+	imageTextResponseItem.Description = value2CDATA("阴晴冷暖早知道")
+	imageTextResponseItem.PicUrl = value2CDATA("http://182.92.167.29:8080/static/img/tianqi.png")
+	imageTextResponseItem.Url = value2CDATA("http://www.baoguangguang.cn/tianqiwx")
+	imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
+
+	textResponseBody := &ImageTextResponseBody{}
+	textResponseBody.MsgType = value2CDATA("news")
+	textResponseBody.ArticleCount = len(imageTextResponseItems)
+	textResponseBody.Articles = imageTextResponseItems
+	textResponseBody.FromUserName = value2CDATA(qax580_name)
+	textResponseBody.ToUserName = value2CDATA(toUserName)
+	res, err := xml.MarshalIndent(textResponseBody, " ", "  ")
+
+	if err != nil {
+		beego.Debug(err.Error())
+	} else {
+		articles = string(res)
 	}
 
 	return articles
