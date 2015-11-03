@@ -40,6 +40,7 @@ func (c *AdminAddPublicNumberController) Post() {
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")
 	number := c.Input().Get("number")
+	evaluate := c.Input().Get("evaluate")
 	if len(title) != 0 && len(info) != 0 && len(number) != 0 {
 		// 获取附件
 		_, fh, err := c.GetFile("image")
@@ -71,7 +72,7 @@ func (c *AdminAddPublicNumberController) Post() {
 	}
 
 	if len(title) != 0 && len(info) != 0 && len(number) != 0 {
-		err := models.AddPublicNumber(title, info, number, image_name)
+		err := models.AddPublicNumber(title, info, number, evaluate, image_name)
 		if err != nil {
 			beego.Error(err)
 		}

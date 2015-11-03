@@ -32,6 +32,10 @@ func init() {
 	beego.Router("/zhoubianwifiwx", &controllers.ZhouBianWifiWXController{})
 	beego.Router("/kuaidi", &controllers.KuaidiController{})
 	beego.Router("/tianqiwx", &controllers.TianqiWXController{})
+	beego.Router("/recommend", &controllers.RecommendController{})
+	beego.Router("/contactus", &controllers.ContactusController{}) //联系我们
+	beego.Router("updatelog", &controllers.UpdateLogController{})  //更新日志
+	beego.Router("/guanggaocontent", &controllers.GuanggaoContentController{})
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})
@@ -49,6 +53,10 @@ func init() {
 	beego.Router("/admin/content", &controllers.AdminContentController{})
 	beego.Router("/admin/wxuserlist", &controllers.WxUserListController{})
 	beego.Router("/admin/juhe", &controllers.AdminJuheController{})
-	beego.Router("/admin/updatelog", &controllers.AdminUpdateLogController{})
 	beego.Router("/admin/newskey", &controllers.AdminNewsKeyController{}) //新闻关键词
+	beego.Router("/admin/addguanggao", &controllers.AdminaAddGuanggaoController{})
+	beego.Router("/admin/guanggaos", &controllers.AdminGuanggaosController{})
+	beego.Router("/admin/guanggaocontent", &controllers.AdminGuanggaoContentController{})
+	beego.Router("/admin/upguanggao", &controllers.AdminUpGuanggaoController{})
+
 }

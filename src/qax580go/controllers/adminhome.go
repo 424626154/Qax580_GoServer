@@ -73,6 +73,5 @@ func (c *AdminHomeController) Get() {
 		c.Ctx.SetCookie("password", "", -1, "/")
 		c.Redirect("/admin", 302)
 		return
-		return
 	}
 }

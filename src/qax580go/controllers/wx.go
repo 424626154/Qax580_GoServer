@@ -222,11 +222,24 @@ func responseTypeMsg(body []byte, msgType string) string {
 			if requestBody.Event == "CLICK" {
 				//推荐
 				if requestBody.EventKey == "recommend" {
-					posts, err := models.QueryLimitPost(5)
+					// posts, err := models.QueryLimitPost(5)
+					// if err != nil {
+					// 	beego.Error(err)
+					// }
+					// response_xml = responseImageTextXML(requestBody.FromUserName, "", posts)
+					index, err := models.GetQueryIndex(requestBody.FromUserName)
 					if err != nil {
 						beego.Error(err)
 					}
-					response_xml = responseImageTextXML(requestBody.FromUserName, "", posts)
+					posts, err := models.QueryPagePost(index, 5)
+					if err != nil {
+						beego.Error(err)
+					}
+					if len(posts) != 0 {
+						response_xml = responseImageTextXML(requestBody.FromUserName, "", posts)
+					} else {
+						response_xml = responseTextMsg(requestBody.FromUserName, "今日已无更多推荐信息")
+					}
 					//关于
 				} else if requestBody.EventKey == "about" {
 					response_xml = responseAbout(requestBody.FromUserName)

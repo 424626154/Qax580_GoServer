@@ -9,12 +9,28 @@ type WcListController struct {
 	beego.Controller
 }
 
-func (this *WcListController) Get() {
+func (c *WcListController) Get() {
+	getWXListUser(c)
 	wxnums, err := models.GetAllWxnums()
 	if err != nil {
 		beego.Error(err)
 	}
 	beego.Debug(wxnums)
-	this.TplNames = "wxlist.html"
-	this.Data["Wxnums"] = wxnums
+	c.TplNames = "wxlist.html"
+	c.Data["Wxnums"] = wxnums
+}
+func getWXListUser(c *WcListController) {
+	isUser := false
+	openid := c.Ctx.GetCookie(COOKIE_WX_OPENID)
+	beego.Debug(openid)
+	if len(openid) != 0 {
+		wxuser, err := models.GetOneWxUserInfo(openid)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			isUser = true
+			c.Data["WxUser"] = wxuser
+		}
+	}
+	c.Data["isUser"] = isUser
 }

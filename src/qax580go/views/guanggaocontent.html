@@ -1,0 +1,27 @@
+{{template "header.html" .}}
+<div id="cont_bg">
+    {{if eq .Guanggao.Image ""}}
+            {{.Guanggao.Image}}
+          {{else}}
+           <div id="image_fnot" >
+         <img src="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" width="auto" height="100px">
+          <!-- <img src="http://127.0.0.1:8080/imagehosting/{{.Guanggao.Image}}" alt="http://172.0.0.1:8080/imagehosting/{{.Guanggao.Image}}" width="auto" height="100px"> -->
+          </div>
+        {{end}}
+  <div >
+    <font class="title_fnot" >{{.Guanggao.Title}}</font>
+  </div>
+  <div class="cont_info">
+    <font class="info_fnot">{{.Guanggao.Info}}</font>
+   </div>
+    <div class="time_font">{{timeformat .Guanggao.Time}}</div>
+    {{if eq .Guanggao.Blink true}}
+          <a href="{{ .Guanggao.Link}}">阅读原文</a>
+        {{end}}
+  </div>
+
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
+{{template "footer.html" .}}

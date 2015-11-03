@@ -66,14 +66,14 @@ func (c *UplodeController) Post() {
 		if err != nil {
 			beego.Error(err)
 		}
-		beego.Info(info)
+		beego.Debug("inset ok")
 		c.Redirect("/", 302)
 	}
 }
 
 func getUplodeCookie(c *UplodeController) string {
 	isUser := false
-	openid := c.Ctx.GetCookie("wx_openid")
+	openid := c.Ctx.GetCookie(COOKIE_WX_OPENID)
 	beego.Debug("------------openid--------")
 	beego.Debug(openid)
 	if len(openid) != 0 {

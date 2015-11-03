@@ -7,8 +7,9 @@
   <a type="button" class="btn btn-default" href="/admin/userlist">用户管理</a>
   <a type="button" class="btn btn-default" href="/admin/wxuserlist">微信用户</a>
   <a type="button" class="btn btn-default" href="/admin/juhe">聚合数据</a>
-  <a type="button" class="btn btn-default" href="/admin/updatelog">更新记录</a>  
-  <a type="button" class="btn btn-default" href="/admin/newskey">新闻关键词</a>        
+  <a type="button" class="btn btn-default" href="/updatelog">更新记录</a>  
+  <a type="button" class="btn btn-default" href="/admin/newskey">新闻关键词</a>  
+  <a type="button" class="btn btn-default" href="/admin/guanggaos">广告管理</a>       
 </div>
    <ul class="list-group">
       {{range .Posts}}
@@ -26,14 +27,14 @@
           {{ if eq .OpenId ""}}
 
         {{else}}
-        <div>
+        <div class="time_font">
           <span >
-            <font style="color: #000">{{ .NickeName}}</font>
+            <font style="color: #000;font-size:12px;">{{ .NickeName}}</font>
             <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
         </span>
         </div>
         {{ end}}
-      <div>{{.CreateTime}}</div>
+       <div class="time_font">{{timeformat .Time}}</div>
       {{if eq .Label 1}}
       <div><span class="label label-primary">个人</span></div>
       {{end}} 

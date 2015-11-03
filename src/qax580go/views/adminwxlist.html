@@ -14,6 +14,10 @@
         <h3>{{.Title}}</h3>
         <p>{{.Info}}</p>
         <p>公众号:{{.Num}}</p>
+        {{if eq .Evaluate ""}}
+        {{else}}
+          <p>评价:{{.Evaluate}}</p>
+        {{end}}
       </div>
      </div>
   </div>
