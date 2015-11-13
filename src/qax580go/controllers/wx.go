@@ -104,6 +104,14 @@ type ImageTextResponseItem struct {
 	Url         CDATAText
 }
 
+//多客服
+type CustomServiceResponseBody struct {
+	XMLName      xml.Name `xml:"xml"`
+	ToUserName   CDATAText
+	FromUserName CDATAText
+	CreateTime   time.Duration
+	MsgType      CDATAText
+}
 type WXController struct {
 	beego.Controller
 }
@@ -189,9 +197,13 @@ func responseTypeMsg(body []byte, msgType string) string {
 				if err != nil {
 					beego.Error(err)
 				}
-				beego.Debug(requestBody.FromUserName)
-				beego.Debug(requestBody.ToUserName)
-				response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Content, posts)
+				// beego.Debug(requestBody.FromUserName)
+				// beego.Debug(requestBody.ToUserName)
+				if len(posts) > 0 {
+					response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Content, posts)
+				} else {
+					response_xml = responseCustomerService(requestBody.FromUserName, requestBody.ToUserName)
+				}
 
 			}
 		}
@@ -383,4 +395,15 @@ func responseToday(toUserName string) string {
 	}
 
 	return articles
+}
+
+//多客服消息
+func responseCustomerService(fromUserName string, toUserName string) string {
+	body := &CustomServiceResponseBody{}
+	body.FromUserName = value2CDATA(toUserName)
+	body.ToUserName = value2CDATA(fromUserName)
+	body.CreateTime = time.Duration(time.Now().Unix())
+	body.MsgType = value2CDATA("transfer_customer_service")
+	about_xml, _ := xml.MarshalIndent(body, " ", "  ")
+	return string(about_xml)
 }

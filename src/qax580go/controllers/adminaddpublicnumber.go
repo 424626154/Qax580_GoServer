@@ -68,7 +68,7 @@ func (c *AdminAddPublicNumberController) Post() {
 			beego.Error(err)
 		}
 	} else {
-		c.Redirect("/admin", 302)
+		c.Redirect("/admin/wxlist", 302)
 	}
 
 	if len(title) != 0 && len(info) != 0 && len(number) != 0 {

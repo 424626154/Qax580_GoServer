@@ -11,7 +11,7 @@ type WcListController struct {
 
 func (c *WcListController) Get() {
 	getWXListUser(c)
-	wxnums, err := models.GetAllWxnums()
+	wxnums, err := models.GetAllWxnumsState1()
 	if err != nil {
 		beego.Error(err)
 	}

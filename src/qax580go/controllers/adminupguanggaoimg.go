@@ -11,28 +11,29 @@ import (
 	"time"
 )
 
-type AdminUpGuanggaoController struct {
+type AdminUpGuanggaoImgController struct {
 	beego.Controller
 }
 
-func (c *AdminUpGuanggaoController) Get() {
+func (c *AdminUpGuanggaoImgController) Get() {
 	id := c.Input().Get("id")
+	if len(id) == 0 {
+		c.Redirect("/admin/guanggaos", 302)
+		return
+	}
 	// beego.Debug(id)
 	guangao, err := models.GetOneGuanggao(id)
 	if err != nil {
 		beego.Error(err)
 	}
 	c.Data["Guanggao"] = guangao
-	c.TplNames = "adminupguanggao.html"
+	c.TplNames = "adminupguanggaoimg.html"
 }
-func (c *AdminUpGuanggaoController) Post() {
-	image_name := ""
-	c.Data["Image"] = image_name
-	op := c.Input().Get("op")
-	id := c.Input().Get("id")
-	switch op {
-	case "upimg": //上传图片
+func (c *AdminUpGuanggaoImgController) Post() {
 
+	id := c.Input().Get("id")
+	image_name := ""
+	if len(id) != 0 {
 		// 获取附件
 		_, fh, err := c.GetFile("image")
 		beego.Debug("上传图片:", fh)
@@ -65,31 +66,6 @@ func (c *AdminUpGuanggaoController) Post() {
 				return
 			}
 		}
-		guangao, err := models.GetOneGuanggao(id)
-		if err != nil {
-			beego.Error(err)
-		}
-		c.Data["Guanggao"] = guangao
-	case "add":
-		title := c.Input().Get("title")
-		info := c.Input().Get("info")
-		blink := c.Input().Get("blink")
-		link := c.Input().Get("link")
-		if len(title) != 0 && len(info) != 0 {
-			b_link := false
-			s_link := ""
-			if blink == "true" {
-				b_link = true
-				s_link = link
-			}
-
-			err := models.UpdateGuanggaoInfo(id, title, info, b_link, s_link)
-			if err != nil {
-				beego.Error(err)
-			}
-			c.Redirect("/admin/guanggaos", 302)
-			return
-		}
 	}
-	c.TplNames = "adminupguanggao.html"
+	c.TplNames = "adminupguanggaoimg.html"
 }

@@ -10,7 +10,14 @@ type AdminNewsKeyController struct {
 }
 
 func (c *AdminNewsKeyController) Get() {
-
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+		c.Data["isUser"] = bool
+		c.Data["User"] = username
+	} else {
+		c.Redirect("/admin", 302)
+		return
+	}
 	op := c.Input().Get("op")
 	switch op {
 	case "add":

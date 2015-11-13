@@ -1,23 +1,17 @@
 {{template "adminheader.html" .}}
+<script type="text/javascript" src="/static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
 <script type="text/javascript">
+$(document).ready(function(){
+            document.getElementById("title_font").href="/admin/guanggaos"
+        });
+
 var img_path = "";
-	function onclikBtn(){
-		if(img_path == ""){
-			alert("请选择图片");
-			return;
-		}
-	   document.getElementById("add").action = "/admin/addguanggao?op=upimg";
-	   document.getElementById("add").method = "post";   
-	   document.getElementById("add").enctype = "multipart/form-data"
-	   document.getElementById("add").submit(); 
-	}
 	function setImage(obj){  
     var value = obj.value;  
     img_path = value;
  	} 
  	function addGuangao(){
- 		var img = {{.Image}};
- 		if(img == ""){
+ 		if(img_path == ""){
 			alert("请选择图片");
 			return;
 		}
@@ -42,7 +36,7 @@ var img_path = "";
 				return;
 			}
 		}
-		var url = "/admin/addguanggao?op=add&img="+img+"&title="+title+"&info="+info+"&blink="+blink+"&link="+link;
+		var url = "/admin/addguanggao?title="+title+"&info="+info+"&blink="+blink+"&link="+link;
 		// alert(url)
 		document.getElementById("add").action = url;
 	   document.getElementById("add").method = "post";   
@@ -85,15 +79,9 @@ var img_path = "";
     <input type="text" class="form-control" id="link" name="link" placeholder="输入链接地址">
   </div>
   <div>
-  		{{if eq .Image ""}}
-  		{{else}}
-  		<img src="http://182.92.167.29:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="100px">
-  		<!-- <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="100px"> -->
-  		{{end}}
 	  <div class="form-group">
           <label>选择图片：尺寸为 450*250</label>
           <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)">
-                 <button type="button" class="my_button my_gray" onclick="onclikBtn();">上传图片</button>
        </div>
 	</div>
   <button type="button" class="my_button my_gray" onclick="addGuangao();">发布</button>

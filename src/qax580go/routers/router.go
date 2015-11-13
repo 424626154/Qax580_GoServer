@@ -36,6 +36,10 @@ func init() {
 	beego.Router("/contactus", &controllers.ContactusController{}) //联系我们
 	beego.Router("updatelog", &controllers.UpdateLogController{})  //更新日志
 	beego.Router("/guanggaocontent", &controllers.GuanggaoContentController{})
+	beego.Router("/waimailist", &controllers.WaimaiListController{}) //外卖订餐
+	beego.Router("/caidans", &controllers.CaidansController{})       //菜单
+	beego.Router("/weixinnumberlist", &controllers.WeixinNumberListController{})
+	beego.Router("/about", &controllers.AboutController{})
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})
@@ -47,6 +51,8 @@ func init() {
 	beego.Router("/admin/feedbacklist", &controllers.AdminFeedbackListController{})
 	beego.Router("/admin/feedbackcontent", &controllers.AdminFeedbackContentController{})
 	beego.Router("/admin/addwxlist", &controllers.AdminAddPublicNumberController{})
+	beego.Router("/admin/upwxnuminfo", &controllers.AdminUpWxnumInfoController{})
+	beego.Router("/admin/upwxnumimg", &controllers.AdminUpWxnumImgController{})
 	beego.Router("/admin", &controllers.AdminLoginController{})
 	beego.Router("/admin/userlist", &controllers.AdminUserListController{})
 	beego.Router("/admin/adduser", &controllers.AdminAddUserController{})
@@ -57,6 +63,14 @@ func init() {
 	beego.Router("/admin/addguanggao", &controllers.AdminaAddGuanggaoController{})
 	beego.Router("/admin/guanggaos", &controllers.AdminGuanggaosController{})
 	beego.Router("/admin/guanggaocontent", &controllers.AdminGuanggaoContentController{})
-	beego.Router("/admin/upguanggao", &controllers.AdminUpGuanggaoController{})
-
+	beego.Router("/admin/upguanggaoinfo", &controllers.AdminUpGuanggaoInfoController{})
+	beego.Router("/admin/upguanggaoimg", &controllers.AdminUpGuanggaoImgController{})
+	beego.Router("/admin/waimailist", &controllers.AdminWaimaiListController{}) //外卖列表
+	beego.Router("/admin/addwaimai", &controllers.AdminAddWaimaiController{})
+	beego.Router("/admin/caidans", &controllers.AdminCaidansController{})
+	beego.Router("/admin/addcaidan", &controllers.AdminAddCaidanController{})
+	beego.Router("/admin/addweixinnumber", &controllers.AdminAddWeixinNumberController{})
+	beego.Router("/admin/weixinnumberlist", &controllers.AdminWeixinNumberListController{})
+	beego.Router("/admin/upweixinnumberinfo", &controllers.AdminUpWeixinNumberInfoController{})
+	beego.Router("/admin/upweixinnumberimg", &controllers.AdminUpWeixinNumberImgController{})
 }

@@ -4,8 +4,7 @@
             {{.Guanggao.Image}}
           {{else}}
            <div id="image_fnot" >
-         <img src="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" width="auto" height="100px">
-          <!-- <img src="http://127.0.0.1:8080/imagehosting/{{.Guanggao.Image}}" alt="http://172.0.0.1:8080/imagehosting/{{.Guanggao.Image}}" width="auto" height="100px"> -->
+         <img src="{{isImgPath .Guanggao.Image}}" alt="{{isImgPath .Guanggao.Image}}" width="auto" height="100px">
           </div>
         {{end}}
   <div >

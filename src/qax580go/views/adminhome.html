@@ -1,15 +1,16 @@
 {{template "adminheader.html" .}}
 <div class="btn-group" role="group" aria-label="...">
   <a type="button" class="btn btn-default" href="/admin/uplode">发布</a> 
-  <a type="button" class="btn btn-default" href="/admin/addwxlist">添加公众号</a>
   <a type="button" class="btn btn-default" href="/admin/wxlist">推荐公众号</a>
+  <a type="button" class="btn btn-default" href="/admin/weixinnumberlist">推荐微信号</a>
   <a type="button" class="btn btn-default" href="/admin/feedbacklist">意见反馈</a>
   <a type="button" class="btn btn-default" href="/admin/userlist">用户管理</a>
   <a type="button" class="btn btn-default" href="/admin/wxuserlist">微信用户</a>
   <a type="button" class="btn btn-default" href="/admin/juhe">聚合数据</a>
   <a type="button" class="btn btn-default" href="/updatelog">更新记录</a>  
   <a type="button" class="btn btn-default" href="/admin/newskey">新闻关键词</a>  
-  <a type="button" class="btn btn-default" href="/admin/guanggaos">广告管理</a>       
+  <a type="button" class="btn btn-default" href="/admin/guanggaos">广告管理</a> 
+  <a type="button" class="btn btn-default" href="/admin/waimailist">外卖订餐</a>        
 </div>
    <ul class="list-group">
       {{range .Posts}}
@@ -20,8 +21,7 @@
             {{.Image}}
           {{else}}
            <div id="image_fnot" >
-          <img src="http://182.92.167.29:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px">
-         <!--   <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px"> -->
+          <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="60px">
           </div>
         {{end}}
           {{ if eq .OpenId ""}}

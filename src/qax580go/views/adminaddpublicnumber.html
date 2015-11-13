@@ -1,6 +1,33 @@
 {{template "adminheader.html" .}}
+<script type="text/javascript" src="/static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
+<script language="javascript">
+$(document).ready(function(){
+            document.getElementById("title_font").href="/admin/wxlist"
+        });
 
-<form class="form-inline" method="post" action="/admin/addwxlist" enctype="multipart/form-data">
+  function toVaild(){
+    var title = document.getElementById("title").value;
+    var info = document.getElementById("info").value;
+    var number = document.getElementById("number").value;
+    var image = document.getElementById("image").value;
+    if(image == ""){
+      alert("请选择图片");
+      return false;
+    }else if(title == ""){
+      alert("公众号名称不能为空");
+      return false;
+    }else if(info == ""){
+      alert("公众号简介不能为空");
+      return false;
+    }else if(number == ""){
+      alert("公众号不能为空");
+      return false;
+    }else{
+      return true;
+    }
+  }
+</script>
+<form class="form-inline" method="post" action="/admin/addwxlist" enctype="multipart/form-data" onsubmit="return toVaild()">
   <div class="form-group">
     <label for="">公众号名称</label>
     <input type="text" class="form-control" id="title" name="title" placeholder="输入公众号名称">

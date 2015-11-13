@@ -6,34 +6,13 @@ $(document).ready(function(){
         });
 function initData(){
 	// alert({{.Guanggao}})
+	document.getElementById("title_font").href="/admin/guanggaos"
 	document.getElementById("title").value = {{.Guanggao.Title}};
 	document.getElementById("info").value = {{.Guanggao.Info}};
 	document.getElementById("blink").checked = {{.Guanggao.Blink}};
 	document.getElementById("link").value = {{.Guanggao.Link}};
 }
-var img_path = "";
-	function onclikBtn(){
-		if(img_path == ""){
-			alert("请选择图片");
-			return;
-		}
-		var url = "/admin/upguanggao?op=upimg&id="+{{.Guanggao.Id}};
-		alert(url)
-	   document.getElementById("add").action = url;
-	   document.getElementById("add").method = "post";   
-	   document.getElementById("add").enctype = "multipart/form-data"
-	   document.getElementById("add").submit(); 
-	}
-	function setImage(obj){  
-    var value = obj.value;  
-    img_path = value;
- 	} 
  	function addGuangao(){
- 		var img = {{.Guanggao.Image}};
- 		if(img == ""){
-			alert("请选择图片");
-			return;
-		}
 		var title = document.getElementById("title").value;
 		var info = document.getElementById("info").value;
 		if(title == ""){
@@ -55,7 +34,7 @@ var img_path = "";
 				return;
 			}
 		}
-		var url = "/admin/upguanggao?op=add&img="+img+"&title="+title+"&info="+info+"&blink="+blink+"&link="+link+"&id="+{{.Guanggao.Id}};
+		var url = "/admin/upguanggaoinfo?title="+title+"&info="+info+"&blink="+blink+"&link="+link+"&id="+{{.Guanggao.Id}};
 		// alert(url)
 		document.getElementById("add").action = url;
 	   document.getElementById("add").method = "post";   
@@ -101,14 +80,8 @@ var img_path = "";
     <div>
   		{{if eq .Guanggao.Image ""}}
   		{{else}}
-  		<img src="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" width="auto" height="100px">
-  		<!-- <img src="http://127.0.0.1:8080/imagehosting/{{.Guanggao.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Guanggao.Image}}" width="auto" height="100px"> -->
+  		<img src="{{isImgPath .Guanggao.Image}}" alt="{{isImgPath .Guanggao.Image}}" width="auto" height="100px">
   		{{end}}
-	  <div class="form-group">
-          <label>选择图片：尺寸为 450*250</label>
-          <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)">
-                 <button type="button" class="my_button my_gray" onclick="onclikBtn();">修改图片</button>
-       </div>
 	</div>
 </form>
 {{template "footer.html" .}}

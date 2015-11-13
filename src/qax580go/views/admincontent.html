@@ -10,8 +10,7 @@
             {{.Post.Image}}
           {{else}}
            <div id="image_fnot" >
-          <img src="http://182.92.167.29:8080/imagehosting/{{.Post.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Post.Image}}" width="auto" height="60px">
-         <!--  <img src="http://127.0.0.1:8080/imagehosting/{{.Post.Image}}" alt="http://172.0.0.1:8080/imagehosting/{{.Post.Image}}" width="auto" height="100px"> -->
+          <img src="{{isImgPath .Post.Image}}" alt="{{isImgPath .Post.Image}}" width="auto" height="60px">
           </div>
         {{end}}
       <div id="my_label">

@@ -41,14 +41,26 @@ type Feedback struct {
 
 //微信公众号
 type Wxnum struct {
-	Id         int64
-	Title      string    `orm:"size(100)"`
-	Info       string    `orm:"size(1000)"`
-	Num        string    `orm:"size(100)"`
-	CreateTime time.Time `orm:"index"`
-	Evaluate   string    `orm:"size(1000)"`
-	Image      string
-	Time       int64
+	Id       int64
+	Title    string `orm:"size(100)"`
+	Info     string `orm:"size(1000)"`
+	Num      string `orm:"size(100)"`
+	Evaluate string `orm:"size(1000)"` //评价
+	Image    string
+	Time     int64
+	State    int8 //0未上线  1 已上线
+}
+
+//微信号
+type WeixinNumber struct {
+	Id       int64
+	Name     string `orm:"size(100)"`
+	Info     string `orm:"size(1000)"`
+	Num      string `orm:"size(100)"`
+	Evaluate string `orm:"size(1000)"` //评价
+	Image    string
+	Time     int64
+	State    int8 //0未上线  1 已上线
 }
 
 type Admin struct {
@@ -141,6 +153,34 @@ type Guanggao struct {
 	Link  string
 }
 
+//外卖
+type Canting struct {
+	Id          int64
+	Name        string
+	Address     string
+	Image       string
+	Time        int64
+	State       int8
+	Starthour   int8   //开始时间 小时
+	Startminute int8   //开始时间 分钟
+	Endhour     int8   //结束时间 小时
+	Endminute   int8   //结束时间 分钟
+	Phonenumber string //电话号码
+}
+
+//菜单
+type Caidan struct {
+	Id    int64
+	Fid   int64
+	Name  string
+	Info  string
+	Image string
+	Time  int64
+	State int8
+	Price string //价格
+	Mtype string //菜品类型
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -161,11 +201,14 @@ func RegisterDB() {
 	orm.RegisterModel(new(Post))
 	orm.RegisterModel(new(Feedback))
 	orm.RegisterModel(new(Wxnum))
+	orm.RegisterModel(new(WeixinNumber))
 	orm.RegisterModel(new(Admin))
 	orm.RegisterModel(new(Wxuserinfo)) //微信用户
 	orm.RegisterModel(new(NewsKey))
 	orm.RegisterModel(new(QureyUser))
 	orm.RegisterModel(new(Guanggao))
+	orm.RegisterModel(new(Canting)) //餐厅
+	orm.RegisterModel(new(Caidan))  //菜单
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -359,9 +402,8 @@ func GetOneFeedback(id string) (*Feedback, error) {
 
 func AddPublicNumber(title string, info string, num string, evaluate string, image string) error {
 	o := orm.NewOrm()
-	create_time := time.Now()
 	my_time := time.Now().Unix()
-	cate := &Wxnum{Title: title, Info: info, Num: num, Evaluate: evaluate, Image: image, CreateTime: create_time, Time: my_time}
+	cate := &Wxnum{Title: title, Info: info, Num: num, Evaluate: evaluate, Image: image, Time: my_time, State: int8(0)}
 
 	// 查询数据
 	qs := o.QueryTable("wxnum")
@@ -378,6 +420,28 @@ func AddPublicNumber(title string, info string, num string, evaluate string, ima
 
 	return nil
 }
+func DeleteWxnum(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wxnum{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+func UpdateWxnum(id string, state int8) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Wxnum{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
 
 func GetAllWxnums() ([]Wxnum, error) {
 	o := orm.NewOrm()
@@ -385,7 +449,148 @@ func GetAllWxnums() ([]Wxnum, error) {
 	_, err := o.Raw("SELECT * FROM wxnum  ORDER BY id DESC").QueryRows(&wxnums)
 	return wxnums, err
 }
+func GetAllWxnumsState1() ([]Wxnum, error) {
+	o := orm.NewOrm()
+	var objs []Wxnum
+	_, err := o.Raw("SELECT * FROM wxnum  WHERE state = ? ORDER BY id DESC", 1).QueryRows(&objs)
+	return objs, err
+}
 
+func GetOneWxnum(id string) (*Wxnum, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Wxnum{Id: cid}
+	err = o.Read(obj)
+	return obj, err
+}
+
+func UpdateWxnumInfo(id string, title string, info string, number string, evaluate string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wxnum{Id: cid}
+	cate.Title = title
+	cate.Info = info
+	cate.Num = number
+	cate.Evaluate = evaluate
+	_, err = o.Update(cate, "title", "info", "num", "evaluate")
+	return err
+}
+
+func UpdateWxnumImg(id string, img string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wxnum{Id: cid}
+	cate.Image = img
+	_, err = o.Update(cate, "image")
+	return err
+}
+
+/***********************推荐公众号**********************/
+//添加微信公众号
+func AddWeixinNumber(name string, info string, num string, evaluate string, image string) error {
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &WeixinNumber{Name: name, Info: info, Num: num, Evaluate: evaluate, Image: image, Time: my_time, State: int8(0)}
+
+	// 查询数据
+	qs := o.QueryTable("weixin_number")
+	err := qs.Filter("num", num).One(cate)
+	if err == nil {
+		return err
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func DeleteWeixinNumber(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &WeixinNumber{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+func UpdateWeixinNumber(id string, state int8) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &WeixinNumber{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
+
+func GetAllWeixinNumbers() ([]WeixinNumber, error) {
+	o := orm.NewOrm()
+	var wxnums []WeixinNumber
+	_, err := o.Raw("SELECT * FROM weixin_number  ORDER BY id DESC").QueryRows(&wxnums)
+	return wxnums, err
+}
+func GetAllWeixinNumbersState1() ([]WeixinNumber, error) {
+	o := orm.NewOrm()
+	var objs []WeixinNumber
+	_, err := o.Raw("SELECT * FROM weixin_number  WHERE state = ? ORDER BY id DESC", 1).QueryRows(&objs)
+	return objs, err
+}
+
+func GetOneWeixinNumber(id string) (*WeixinNumber, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &WeixinNumber{Id: cid}
+	err = o.Read(obj)
+	return obj, err
+}
+
+func UpdateWeixinNumberInfo(id string, name string, info string, number string, evaluate string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &WeixinNumber{Id: cid}
+	cate.Name = name
+	cate.Info = info
+	cate.Num = number
+	cate.Evaluate = evaluate
+	_, err = o.Update(cate, "name", "info", "num", "evaluate")
+	return err
+}
+
+func UpdateWeixinNumberImg(id string, img string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &WeixinNumber{Id: cid}
+	cate.Image = img
+	_, err = o.Update(cate, "image")
+	return err
+}
+
+/***********************推荐公众号**********************/
 /*
 添加后台用户
 */
@@ -651,5 +856,93 @@ func UpdateGuanggaoInfo(id string, title string, info string, blink bool, link s
 	cate.Blink = blink
 	cate.Link = link
 	_, err = o.Update(cate, "title", "info", "blink", "link")
+	return err
+}
+
+/***********餐厅**********/
+//添加餐厅
+func AddCanting(name string, address string, image string, state int8, phone string, starth string, startm string, endh string, endm string) (int64, error) {
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	starth_i, _ := strconv.ParseInt(starth, 10, 64)
+	startm_i, _ := strconv.ParseInt(startm, 10, 64)
+	endh_i, _ := strconv.ParseInt(endh, 10, 64)
+	endm_i, _ := strconv.ParseInt(endm, 10, 64)
+	obj := &Canting{Name: name, Address: address, Time: my_time, State: state, Image: image, Phonenumber: phone, Starthour: int8(starth_i), Startminute: int8(startm_i), Endhour: int8(endh_i), Endminute: int8(endm_i)}
+	// 插入数据
+	id, err := o.Insert(obj)
+	return id, err
+}
+func GetAllCanting() ([]Canting, error) {
+	o := orm.NewOrm()
+	var objs []Canting
+	_, err := o.Raw("SELECT * FROM canting ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+func GetAllCantingState1() ([]Canting, error) {
+	o := orm.NewOrm()
+	var objs []Canting
+	_, err := o.Raw("SELECT * FROM canting WHERE state = 1 ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+func DeleteCanting(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Canting{Id: cid}
+	_, err = o.Delete(obj)
+	return err
+}
+func UpdateCanting(id string, state int8) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Canting{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
+func GetOneCanting(id string) (*Canting, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Canting{Id: cid}
+	err = o.Read(obj)
+	return obj, err
+}
+
+//菜单
+func AddCaidan(fid string, name string, info string, image string, state int8, mtype string, price string) (int64, error) {
+	fid_i, err := strconv.ParseInt(fid, 10, 64)
+	if err != nil {
+
+	}
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	obj := &Caidan{Fid: fid_i, Name: name, Info: info, Time: my_time, State: state, Image: image, Mtype: mtype, Price: price}
+	// 插入数据
+	id, err := o.Insert(obj)
+	return id, err
+}
+func GetAllCaidan(fid string) ([]Caidan, error) {
+	o := orm.NewOrm()
+	var objs []Caidan
+	_, err := o.Raw("SELECT * FROM caidan WHERE fid = ? ORDER BY id DESC", fid).QueryRows(&objs)
+	return objs, err
+}
+func DeleteCaidan(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Caidan{Id: cid}
+	_, err = o.Delete(obj)
 	return err
 }

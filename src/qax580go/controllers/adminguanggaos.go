@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/astaxie/beego"
 	"qax580go/models"
 )
@@ -11,6 +10,14 @@ type AdminGuanggaosController struct {
 }
 
 func (c *AdminGuanggaosController) Get() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+		c.Data["isUser"] = bool
+		c.Data["User"] = username
+	} else {
+		c.Redirect("/admin", 302)
+		return
+	}
 	op := c.Input().Get("op")
 	switch op {
 	case "del":
@@ -51,15 +58,6 @@ func (c *AdminGuanggaosController) Get() {
 		}
 		// beego.Debug("is admin state1" + id)
 		c.Redirect("/admin/guanggaos", 302)
-		return
-	case "up":
-		id := c.Input().Get("id")
-		if len(id) == 0 {
-			break
-		}
-		url := fmt.Sprintf("/admin/upguanggao?id=%s", id)
-		beego.Debug("up_rul", url)
-		c.Redirect(url, 302)
 		return
 	}
 

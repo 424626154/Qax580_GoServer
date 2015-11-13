@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
 	"github.com/astaxie/beego/orm"
 	"qax580go/models"
 	_ "qax580go/routers"
@@ -46,6 +47,34 @@ func timeFormat(in int64) (out string) {
 	return result
 }
 
+func isImgPath(in string) (out string) {
+	url := ""
+	isdebug := "flase"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Error(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+		if isdebug == "true" {
+			url = iniconf.String("qax580::imgurltest")
+		} else {
+			url = iniconf.String("qax580::imgurl")
+		}
+
+	}
+	return fmt.Sprintf("%s%s", url, in)
+}
+func versionInfo() (out string) {
+	version := "1.0.0_beta"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Error(err)
+	} else {
+		version = iniconf.String("qax580::versioninfo")
+	}
+	return version
+}
+
 func init() {
 	// 注册数据库
 	models.RegisterDB()
@@ -60,6 +89,8 @@ func main() {
 	beego.SetStaticPath("/game", "game")
 
 	beego.AddFuncMap("timeformat", timeFormat)
-
+	beego.AddFuncMap("isImgPath", isImgPath)
+	beego.AddFuncMap("versionInfo", versionInfo)
+	beego.SetStaticPath("/web", "web")
 	beego.Run()
 }

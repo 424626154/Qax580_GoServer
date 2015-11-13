@@ -1,5 +1,5 @@
 {{template "header.html" .}}
-<div class="row">
+<div class="row qax_bg">
 <ul class="list-group">
       {{range .Wxnums}}
       <div class="col-sm-6 col-md-4">
@@ -7,8 +7,7 @@
         {{if eq .Image ""}}
             {{.Image}}
           {{else}}
-             <img src="http://182.92.167.29:8080/imagehosting/{{.Image}}">
-           <!--  <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}"> -->
+             <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}">
         {{end}}
         <div class="caption">
           <font class="title_fnot">{{.Title}}</font>

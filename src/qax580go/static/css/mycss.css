@@ -22,6 +22,10 @@
     padding-top: 10px;
     padding-bottom: 8px;
 }
+.info_fnot1{
+    font-size: 20px;
+    color: #000;
+}
 #my_label{
 	margin:8px 0px
 }
@@ -155,4 +159,130 @@
     background-size:cover; 
 }
 
+.list_col{
+    background-color: #fff;
+}
+.list_time_waimai{
+    width: 100%;
+    height: auto;
+}
+.list_time_waimai_info{
+    padding: 10px;
+    left: 120px;
+}
 
+.list_but{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.list_time_caidan{
+    width: 120px;
+    height: 120px;
+    background-size: 120px 120px;
+}
+
+.canting_contact{
+    width: 60px;
+    height: 60px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 0;
+    line-height: 0;
+    z-index: 100;
+}
+
+.dialog{
+    position: fixed;
+    _position:absolute;
+    z-index:1;
+    top: 50%;
+    left: 50%;
+    margin: 0px 0 0 -140px;
+    width: 240px;
+    height:120px;
+    border:1px solid #CCC;
+    text-align:center;
+    font-size: 14px;
+    background-color:#F4F4F4;
+    overflow:hidden;
+}   
+
+.caidn_img_div {
+  height: 120px;
+  width: 120px;
+  padding: 10px;
+}
+
+.caidn_info_div {
+  position: relative;
+  top: -130px;
+  left: 140px;
+}
+
+
+#gotop{
+    text-decoration : none;
+    background-color: #d2d9de;
+    width: 40px;
+    height: 40px;
+    position:fixed;
+    right:10px;
+    bottom:20px;
+    cursor:pointer;
+    text-align:center;
+}
+#qrcode{
+    background-color: #d2d9de;
+    width: 40px;
+    height: 40px;
+    position:fixed;
+    right:10px;
+    bottom:65px;
+    cursor:pointer;
+    text-decoration : none;
+    text-align:center;
+}
+#qrcode_hover{
+    background-color: #a1aaab;
+    width: 40px;
+    height: 40px;
+    position:fixed;
+    right:10px;
+    bottom:65px;
+    cursor:pointer;
+    text-decoration : none;
+    text-align:center;
+}
+#qrcode_info{
+    background-color: #fff;
+    width: 140px;
+    height: auto;
+    position:fixed;
+    right:55px;
+    bottom:65px;
+    text-align:center;
+    padding:10px;
+    border: 2px solid #000000;
+    -moz-border-radius: 15px; 
+    -webkit-border-radius: 15px; 
+    border-radius:15px;  
+}
+#release{
+    background-color: #d2d9de;
+    width: 40px;
+    height: 40px;
+    position:fixed;
+    right:10px;
+    bottom:110px;
+    cursor:pointer;
+    text-decoration : none;
+    text-align:center;
+}
+
+.home_font{
+    color: #fff;
+    font-size: 14px;
+}

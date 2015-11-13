@@ -9,6 +9,14 @@ type AdminJuheController struct {
 }
 
 func (c *AdminJuheController) Get() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+		c.Data["isUser"] = bool
+		c.Data["User"] = username
+	} else {
+		c.Redirect("/admin", 302)
+		return
+	}
 	c.TplNames = "adminjuhe.html"
 }
 

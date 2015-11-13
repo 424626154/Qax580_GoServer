@@ -11,8 +11,7 @@
             {{.Image}}
           {{else}}
            <div id="image_fnot" >
-           <img src="http://182.92.167.29:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px">
-           <!-- <img src="http://127.0.0.1:8080/imagehosting/{{.Image}}" alt="http://182.92.167.29:8080/imagehosting/{{.Image}}" width="auto" height="60px"> -->
+           <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="60px">
           </div>
         {{end}}
         {{if eq .Blink true}}
@@ -24,7 +23,8 @@
        {{else}}
        <a href="/admin/guanggaos?op=state1&id={{.Id}}" >已发布</a>
        {{end}}
-       <a href="/admin/guanggaos?op=up&id={{.Id}}" >修改</a>
+       <a href="/admin/upguanggaoinfo?id={{.Id}}" >修改内容</a>
+       <a href="/admin/upguanggaoimg?id={{.Id}}" >修改图片</a>
        <a href="/admin/guanggaos?op=del&id={{.Id}}" >删除</a>
       </li>
       {{end}}

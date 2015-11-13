@@ -16,17 +16,25 @@ type AdminaAddGuanggaoController struct {
 }
 
 func (c *AdminaAddGuanggaoController) Get() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+		c.Data["isUser"] = bool
+		c.Data["User"] = username
+	} else {
+		c.Redirect("/admin", 302)
+		return
+	}
 	c.Data["Image"] = ""
 	c.TplNames = "adminaddguanggao.html"
 
 }
 func (c *AdminaAddGuanggaoController) Post() {
 	image_name := ""
-	c.Data["Image"] = image_name
-	op := c.Input().Get("op")
-	switch op {
-	case "upimg": //上传图片
-
+	title := c.Input().Get("title")
+	info := c.Input().Get("info")
+	blink := c.Input().Get("blink")
+	link := c.Input().Get("link")
+	if len(title) != 0 && len(info) != 0 {
 		// 获取附件
 		_, fh, err := c.GetFile("image")
 		beego.Debug("上传图片:", fh)
@@ -50,29 +58,18 @@ func (c *AdminaAddGuanggaoController) Post() {
 				image_name = ""
 			}
 		}
-		c.Data["Image"] = image_name
-		c.TplNames = "adminaddguanggao.html"
-		return
-	case "add":
-		title := c.Input().Get("title")
-		info := c.Input().Get("info")
-		img := c.Input().Get("img")
-		blink := c.Input().Get("blink")
-		link := c.Input().Get("link")
-		if len(title) != 0 && len(info) != 0 && len(img) != 0 {
-			b_link := false
-			s_link := ""
-			if blink == "true" {
-				b_link = true
-				s_link = link
-			}
-			_, err := models.AddGuanggao(title, info, img, b_link, s_link)
-			if err != nil {
-				beego.Error(err)
-			}
-			c.Redirect("/admin/guanggaos", 302)
-			return
+		b_link := false
+		s_link := ""
+		if blink == "true" {
+			b_link = true
+			s_link = link
 		}
+		_, err = models.AddGuanggao(title, info, image_name, b_link, s_link)
+		if err != nil {
+			beego.Error(err)
+		}
+		c.Redirect("/admin/guanggaos", 302)
+		return
 	}
 	c.TplNames = "adminaddguanggao.html"
 

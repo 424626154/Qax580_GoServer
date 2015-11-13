@@ -13,6 +13,7 @@ type HomeController struct {
 
 func (c *HomeController) Get() {
 	getCookie(c)
+	setUrl(c)
 	CurrentPage := int32(1)
 	count, err := models.GetPostCount()
 	NumberofPages := int32(10)
@@ -23,7 +24,7 @@ func (c *HomeController) Get() {
 	CotalPages := temp
 	pagetype := c.Input().Get("type")
 	page := c.Input().Get("page")
-	beego.Debug("pagetype:", pagetype)
+	// beego.Debug("pagetype:", pagetype)
 
 	guanggaos, err := models.GetAllGuanggaosState1()
 	if err != nil {
@@ -64,18 +65,22 @@ func (c *HomeController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	beego.Debug(posts)
+	// beego.Debug(posts)
 	c.TplNames = "home.html"
 	c.Data["Posts"] = posts
 	isdebug := "true"
+	iscanting := "false"
 	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
 	if err != nil {
-		beego.Debug(err)
+		beego.Error(err)
 	} else {
 		isdebug = iniconf.String("qax580::isdebug")
+		iscanting = iniconf.String("qax580::iscanting")
 	}
-	beego.Debug(isdebug)
+	// beego.Debug(isdebug)
+	beego.Debug("IsCanting", iscanting)
 	c.Data["IsDebug"] = isdebug
+	c.Data["IsCanting"] = iscanting
 	op := c.Input().Get("op")
 	switch op {
 	case "del":
@@ -88,7 +93,7 @@ func (c *HomeController) Get() {
 		if err != nil {
 			beego.Error(err)
 		}
-		beego.Debug("is del " + id)
+		// beego.Debug("is del " + id)
 		c.Redirect("/", 302)
 		return
 	}
@@ -97,18 +102,22 @@ func (c *HomeController) Get() {
 func getCookie(c *HomeController) {
 	isUser := false
 	openid := c.Ctx.GetCookie(COOKIE_WX_OPENID)
-	beego.Debug("------------openid--------")
-	beego.Debug(openid)
+	// beego.Debug("------------openid--------")
+	// beego.Debug(openid)
 	if len(openid) != 0 {
 		wxuser, err := models.GetOneWxUserInfo(openid)
 		if err != nil {
 			beego.Error(err)
 		} else {
 			isUser = true
-			beego.Debug("--------------wxuser----------")
-			beego.Debug(wxuser)
+			// beego.Debug("--------------wxuser----------")
+			// beego.Debug(wxuser)
 			c.Data["WxUser"] = wxuser
 		}
 	}
 	c.Data["isUser"] = isUser
+}
+
+func setUrl(c *HomeController) {
+	c.Data["ImgUrlPath"] = getImageUrl()
 }
