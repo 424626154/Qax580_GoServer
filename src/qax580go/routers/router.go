@@ -41,6 +41,8 @@ func init() {
 	beego.Router("/weixinnumberlist", &controllers.WeixinNumberListController{})
 	beego.Router("/about", &controllers.AboutController{})
 	beego.Router("/wxgame", &controllers.WeixinGameController{}) //微信游戏
+
+	beego.Router("/uplodeimg", &controllers.UplodeImgController{})
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})
