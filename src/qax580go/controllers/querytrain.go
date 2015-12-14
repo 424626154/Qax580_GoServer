@@ -1,6 +1,8 @@
-//车次查询
 package controllers
 
+/*
+车次查询
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

@@ -1,6 +1,8 @@
-//起点终点查询
 package controllers
 
+/*
+起点终点查询
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

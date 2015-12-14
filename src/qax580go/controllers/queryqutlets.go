@@ -1,5 +1,8 @@
-package controllers //代售点
+package controllers
 
+/*
+代售点
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

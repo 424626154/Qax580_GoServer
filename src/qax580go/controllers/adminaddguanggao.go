@@ -1,5 +1,8 @@
 package controllers
 
+/*
+添加广告
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

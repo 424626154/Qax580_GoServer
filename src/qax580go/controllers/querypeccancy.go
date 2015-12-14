@@ -1,6 +1,8 @@
-//违章查询
 package controllers
 
+/*
+违章查询
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

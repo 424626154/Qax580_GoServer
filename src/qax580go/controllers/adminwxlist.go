@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台推荐公众号列表
+*/
 import (
 	"fmt"
 	"github.com/astaxie/beego"

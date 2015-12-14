@@ -1,6 +1,8 @@
-//实时查询
 package controllers
 
+/*
+实时查询
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

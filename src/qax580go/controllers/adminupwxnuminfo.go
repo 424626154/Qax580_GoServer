@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台修改推荐公众号内容
+*/
 import (
 	"github.com/astaxie/beego"
 	"qax580go/models"

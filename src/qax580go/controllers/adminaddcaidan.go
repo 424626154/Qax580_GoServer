@@ -1,5 +1,7 @@
 package controllers //添加外面入口
-
+/*
+添加菜单
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

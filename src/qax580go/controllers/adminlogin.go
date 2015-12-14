@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台登陆
+*/
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"

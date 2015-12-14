@@ -1,5 +1,8 @@
 package controllers
 
+/*
+主页
+*/
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/config"

@@ -1,11 +1,10 @@
 package controllers
-
+/*
+后台主页
+*/
 import (
 	"github.com/astaxie/beego"
-	// "github.com/astaxie/beego/context"
 	"qax580go/models"
-	// "strings"
-)
 
 type AdminHomeController struct {
 	beego.Controller

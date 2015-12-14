@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台添加菜单
+*/
 import (
 	"fmt"
 	"github.com/astaxie/beego"

@@ -1,5 +1,8 @@
 package controllers
 
+/*
+微信公众号服务器
+*/
 import (
 	"crypto/sha1"
 	"encoding/hex"

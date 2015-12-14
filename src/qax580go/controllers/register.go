@@ -1,5 +1,8 @@
 package controllers
 
+/*
+注册
+*/
 import (
 	"github.com/astaxie/beego"
 )

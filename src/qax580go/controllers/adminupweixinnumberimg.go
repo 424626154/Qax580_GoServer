@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台修改推荐微信号图片
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

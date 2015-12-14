@@ -1,5 +1,8 @@
 package controllers
 
+/*
+添加公众号
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

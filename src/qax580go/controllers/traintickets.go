@@ -1,5 +1,8 @@
 package controllers
 
+/*
+火车票查询
+*/
 import (
 	"github.com/astaxie/beego"
 )

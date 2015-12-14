@@ -1,5 +1,8 @@
 package controllers
 
+/*
+广告详情
+*/
 import (
 	"github.com/astaxie/beego"
 	"qax580go/models"

@@ -1,6 +1,8 @@
-//天气预报
 package controllers
 
+/*
+天气预报
+*/
 import (
 	"crypto/sha1"
 	"encoding/hex"

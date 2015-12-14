@@ -267,6 +267,14 @@ func GetAllPosts() ([]Post, error) {
 	return posts, err
 }
 
+//获得我发布的帖子
+func GetAllPostsOpenid(openid string) ([]Post, error) {
+	o := orm.NewOrm()
+	var posts []Post
+	_, err := o.Raw("SELECT * FROM post  WHERE open_id = ? ORDER BY id DESC", openid).QueryRows(&posts)
+	return posts, err
+}
+
 func GetOnePost(id string) (*Post, error) {
 	cid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -329,6 +337,18 @@ func DeletePost(id string) error {
 	}
 	o := orm.NewOrm()
 	cate := &Post{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+//根据openid删除
+func DeletePostOpenid(id string, openid string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Post{Id: cid, OpenId: openid}
 	_, err = o.Delete(cate)
 	return err
 }

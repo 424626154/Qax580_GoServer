@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台微信用户列表
+*/
 import (
 	"github.com/astaxie/beego"
 	"qax580go/models"

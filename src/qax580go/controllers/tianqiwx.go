@@ -1,6 +1,8 @@
-//周边wifi
 package controllers
 
+/*
+周边wifi
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

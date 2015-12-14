@@ -1,5 +1,8 @@
-package controllers //添加外面入口
+package controllers
 
+/*
+添加外面入口
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

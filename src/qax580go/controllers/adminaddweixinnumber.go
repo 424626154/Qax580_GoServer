@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台添加微信号
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

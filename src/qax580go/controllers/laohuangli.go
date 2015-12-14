@@ -1,6 +1,8 @@
-//老黄历
 package controllers
 
+/*
+老黄历
+*/
 import (
 	"encoding/json"
 	"fmt"

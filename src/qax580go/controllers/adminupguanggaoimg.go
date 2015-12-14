@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台修改广告图片
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

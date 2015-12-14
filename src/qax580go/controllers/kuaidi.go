@@ -1,6 +1,8 @@
-//快递查询
 package controllers
 
+/*
+快递查询
+*/
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"

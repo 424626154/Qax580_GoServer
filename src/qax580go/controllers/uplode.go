@@ -1,5 +1,8 @@
 package controllers
 
+/*
+发布消息
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"

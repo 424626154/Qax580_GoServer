@@ -1,6 +1,8 @@
-//历史上的今天
 package controllers
 
+/*
+历史上的今天
+*/
 import (
 	"encoding/json"
 	"fmt"

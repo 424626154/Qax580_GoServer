@@ -7,73 +7,72 @@ import (
 )
 
 func init() {
-	beego.Router("/", &controllers.HomeController{})
-	beego.Router("/uplode", &controllers.UplodeController{})
-	beego.Router("/content", &controllers.ContentController{})
-	beego.Router("/login", &controllers.LoginController{})
-	beego.Router("/register", &controllers.RegisterController{})
-	beego.Router("/wxlist", &controllers.WcListController{})
-	beego.Router("/wx", &controllers.WXController{})
-	beego.Router("/feedback", &controllers.FeedbackController{})
-	beego.Router("/wxautho", &controllers.WxAuthoController{})
+	beego.Router("/", &controllers.HomeController{})             //主页
+	beego.Router("/uplode", &controllers.UplodeController{})     //发布消息
+	beego.Router("/content", &controllers.ContentController{})   //消息详情
+	beego.Router("/login", &controllers.LoginController{})       //登录
+	beego.Router("/register", &controllers.RegisterController{}) //注册
+	beego.Router("/wxlist", &controllers.WcListController{})     //微推荐公众号列表
+	beego.Router("/wx", &controllers.WXController{})             //微信公众号服务器
+	beego.Router("/feedback", &controllers.FeedbackController{}) //意见反馈
+	beego.Router("/wxautho", &controllers.WxAuthoController{})   //微信用户信息
 	beego.Router("/wxhome", &controllers.WxHomeController{})
 	beego.Router("/wxuplode", &controllers.WxUplodeController{})
 	beego.Router("/wxfeedback", &controllers.WxFeedbackController{})
-	beego.Router("/weather", &controllers.WeatherController{})
-	beego.Router("/traintickets", &controllers.TrainTicketsController{})
-	beego.Router("/querystation", &controllers.QueryStationController{})
-	beego.Router("/querytrain", &controllers.QueryTrainController{})
-	beego.Router("/queryrealtime", &controllers.QueryRealTimeController{})
-	beego.Router("/queryqutlets", &controllers.QueryQutletsController{})
-	beego.Router("/querypeccancy", &controllers.QueryPeccancyController{})
-	beego.Router("/history", &controllers.HistoryController{})
-	beego.Router("/historycon", &controllers.HistoryConController{})
-	beego.Router("/laohuangli", &controllers.LaohuangliController{})
-	beego.Router("/zhoubianwifiwx", &controllers.ZhouBianWifiWXController{})
-	beego.Router("/kuaidi", &controllers.KuaidiController{})
-	beego.Router("/tianqiwx", &controllers.TianqiWXController{})
-	beego.Router("/recommend", &controllers.RecommendController{})
-	beego.Router("/contactus", &controllers.ContactusController{}) //联系我们
-	beego.Router("updatelog", &controllers.UpdateLogController{})  //更新日志
-	beego.Router("/guanggaocontent", &controllers.GuanggaoContentController{})
-	beego.Router("/waimailist", &controllers.WaimaiListController{}) //外卖订餐
-	beego.Router("/caidans", &controllers.CaidansController{})       //菜单
-	beego.Router("/weixinnumberlist", &controllers.WeixinNumberListController{})
-	beego.Router("/about", &controllers.AboutController{})
-	beego.Router("/wxgame", &controllers.WeixinGameController{}) //微信游戏
-
-	beego.Router("/uplodeimg", &controllers.UplodeImgController{})
+	beego.Router("/weather", &controllers.WeatherController{})                   //天气预报
+	beego.Router("/traintickets", &controllers.TrainTicketsController{})         //火车票
+	beego.Router("/querystation", &controllers.QueryStationController{})         //火车票起点终点查询
+	beego.Router("/querytrain", &controllers.QueryTrainController{})             //火车票车次查询
+	beego.Router("/queryrealtime", &controllers.QueryRealTimeController{})       //火车票实时查询
+	beego.Router("/queryqutlets", &controllers.QueryQutletsController{})         //火车票代售点查询
+	beego.Router("/querypeccancy", &controllers.QueryPeccancyController{})       //违章查询
+	beego.Router("/history", &controllers.HistoryController{})                   //历史今天
+	beego.Router("/historycon", &controllers.HistoryConController{})             //历史今天
+	beego.Router("/laohuangli", &controllers.LaohuangliController{})             //老黄历
+	beego.Router("/zhoubianwifiwx", &controllers.ZhouBianWifiWXController{})     //周边Wi-Fi
+	beego.Router("/kuaidi", &controllers.KuaidiController{})                     //快递查询
+	beego.Router("/tianqiwx", &controllers.TianqiWXController{})                 //天气查询
+	beego.Router("/recommend", &controllers.RecommendController{})               //推荐
+	beego.Router("/contactus", &controllers.ContactusController{})               //联系我们
+	beego.Router("updatelog", &controllers.UpdateLogController{})                //更新日志
+	beego.Router("/guanggaocontent", &controllers.GuanggaoContentController{})   //广告详情
+	beego.Router("/waimailist", &controllers.WaimaiListController{})             //外卖订餐
+	beego.Router("/caidans", &controllers.CaidansController{})                   //菜单
+	beego.Router("/weixinnumberlist", &controllers.WeixinNumberListController{}) //推荐微信号
+	beego.Router("/about", &controllers.AboutController{})                       //关于
+	beego.Router("/wxgame", &controllers.WeixinGameController{})                 //微信游戏
+	beego.Router("/mymessage", &controllers.MyMessageController{})               //我的发布
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})
 
-	beego.Router("/admin/home", &controllers.AdminHomeController{})
-	beego.Router("/admin/modify", &controllers.AdminModifyController{})
-	beego.Router("/admin/uplode", &controllers.AdminUplodeController{})
-	beego.Router("/admin/wxlist", &controllers.AdminWcListController{})
-	beego.Router("/admin/feedbacklist", &controllers.AdminFeedbackListController{})
-	beego.Router("/admin/feedbackcontent", &controllers.AdminFeedbackContentController{})
-	beego.Router("/admin/addwxlist", &controllers.AdminAddPublicNumberController{})
-	beego.Router("/admin/upwxnuminfo", &controllers.AdminUpWxnumInfoController{})
-	beego.Router("/admin/upwxnumimg", &controllers.AdminUpWxnumImgController{})
-	beego.Router("/admin", &controllers.AdminLoginController{})
-	beego.Router("/admin/userlist", &controllers.AdminUserListController{})
-	beego.Router("/admin/adduser", &controllers.AdminAddUserController{})
-	beego.Router("/admin/content", &controllers.AdminContentController{})
-	beego.Router("/admin/wxuserlist", &controllers.WxUserListController{})
-	beego.Router("/admin/juhe", &controllers.AdminJuheController{})
-	beego.Router("/admin/newskey", &controllers.AdminNewsKeyController{}) //新闻关键词
-	beego.Router("/admin/addguanggao", &controllers.AdminaAddGuanggaoController{})
-	beego.Router("/admin/guanggaos", &controllers.AdminGuanggaosController{})
-	beego.Router("/admin/guanggaocontent", &controllers.AdminGuanggaoContentController{})
-	beego.Router("/admin/upguanggaoinfo", &controllers.AdminUpGuanggaoInfoController{})
-	beego.Router("/admin/upguanggaoimg", &controllers.AdminUpGuanggaoImgController{})
-	beego.Router("/admin/waimailist", &controllers.AdminWaimaiListController{}) //外卖列表
-	beego.Router("/admin/addwaimai", &controllers.AdminAddWaimaiController{})
-	beego.Router("/admin/caidans", &controllers.AdminCaidansController{})
-	beego.Router("/admin/addcaidan", &controllers.AdminAddCaidanController{})
-	beego.Router("/admin/addweixinnumber", &controllers.AdminAddWeixinNumberController{})
-	beego.Router("/admin/weixinnumberlist", &controllers.AdminWeixinNumberListController{})
-	beego.Router("/admin/upweixinnumberinfo", &controllers.AdminUpWeixinNumberInfoController{})
-	beego.Router("/admin/upweixinnumberimg", &controllers.AdminUpWeixinNumberImgController{})
+	beego.Router("/admin/home", &controllers.AdminHomeController{})                             //后台主页
+	beego.Router("/admin/modify", &controllers.AdminModifyController{})                         //修改信息
+	beego.Router("/admin/uplode", &controllers.AdminUplodeController{})                         //后台上传
+	beego.Router("/admin/wxlist", &controllers.AdminWcListController{})                         //公众号列表
+	beego.Router("/admin/feedbacklist", &controllers.AdminFeedbackListController{})             //意见反馈列表
+	beego.Router("/admin/feedbackcontent", &controllers.AdminFeedbackContentController{})       //意见反馈内容
+	beego.Router("/admin/addwxlist", &controllers.AdminAddPublicNumberController{})             //添加微信公众号
+	beego.Router("/admin/upwxnuminfo", &controllers.AdminUpWxnumInfoController{})               //修改微信公众号内容
+	beego.Router("/admin/upwxnumimg", &controllers.AdminUpWxnumImgController{})                 //修改微信公众号图片
+	beego.Router("/admin", &controllers.AdminLoginController{})                                 //后台登陆
+	beego.Router("/admin/userlist", &controllers.AdminUserListController{})                     //后台可登录用户列表
+	beego.Router("/admin/adduser", &controllers.AdminAddUserController{})                       //添加后台用户
+	beego.Router("/admin/content", &controllers.AdminContentController{})                       //后台消息内容
+	beego.Router("/admin/wxuserlist", &controllers.WxUserListController{})                      //后台统计公众号登录用户列表
+	beego.Router("/admin/juhe", &controllers.AdminJuheController{})                             //聚合数据主页
+	beego.Router("/admin/newskey", &controllers.AdminNewsKeyController{})                       //新闻关键词
+	beego.Router("/admin/addguanggao", &controllers.AdminaAddGuanggaoController{})              //后台添加广告
+	beego.Router("/admin/guanggaos", &controllers.AdminGuanggaosController{})                   //后台广告列表
+	beego.Router("/admin/guanggaocontent", &controllers.AdminGuanggaoContentController{})       //后台广告内容
+	beego.Router("/admin/upguanggaoinfo", &controllers.AdminUpGuanggaoInfoController{})         //后台修改广告内容
+	beego.Router("/admin/upguanggaoimg", &controllers.AdminUpGuanggaoImgController{})           //后台修改广告图片
+	beego.Router("/admin/waimailist", &controllers.AdminWaimaiListController{})                 //外卖列表
+	beego.Router("/admin/addwaimai", &controllers.AdminAddWaimaiController{})                   //后台添加外卖
+	beego.Router("/admin/caidans", &controllers.AdminCaidansController{})                       //后台菜单列表
+	beego.Router("/admin/addcaidan", &controllers.AdminAddCaidanController{})                   //后台添加菜单
+	beego.Router("/admin/addweixinnumber", &controllers.AdminAddWeixinNumberController{})       //后台添加推荐微信号
+	beego.Router("/admin/weixinnumberlist", &controllers.AdminWeixinNumberListController{})     //后台推荐微信号列表
+	beego.Router("/admin/upweixinnumberinfo", &controllers.AdminUpWeixinNumberInfoController{}) //后台修改微信号内容
+	beego.Router("/admin/upweixinnumberimg", &controllers.AdminUpWeixinNumberImgController{})   //后台修改微信号图片
 }

@@ -1,5 +1,9 @@
 package controllers
 
+/*
+菜单
+*/
+
 import (
 	"github.com/astaxie/beego"
 	"qax580go/models"

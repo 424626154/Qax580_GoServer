@@ -1,5 +1,8 @@
 package controllers
 
+/*
+后台发布信息
+*/
 import (
 	"crypto/md5"
 	"encoding/hex"
