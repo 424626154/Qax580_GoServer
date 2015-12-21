@@ -87,7 +87,7 @@
         document.getElementById("city").options.length=0;
         document.getElementById("city").options.add(new Option(select_city,select_city));
         for(var i = 0 ; i < citys.length ; i ++ ){
-          if(citys[i] != {{ .Post.City}}){
+          if(citys[i] != select_city){
               document.getElementById("city").options.add(new Option(citys[i],citys[i]));
           }             
         } 
@@ -154,7 +154,7 @@ function onclikProvince(key){
               <span class="label label-primary">官方</span>
               {{end}}
               {{if eq .City ""}}
-  {{else}}
+              {{else}}
               <span class="label label-info">{{.City}}</span>
               {{end}}
             </div>

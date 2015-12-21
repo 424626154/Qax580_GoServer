@@ -15,8 +15,12 @@
     {{if eq .Post.Label 1}}
     <span class="label label-primary">个人</span>
     {{end}} 
-        {{if eq .Post.Label 2}}
+    {{if eq .Post.Label 2}}
     <span class="label label-primary">官方</span>
+    {{end}}
+    {{if eq .Post.City ""}}
+    {{else}}
+    <span class="label label-info">{{.Post.City}}</span>
     {{end}}
   </div>
   <div class="time_font">{{.Post.CreateTime}}</div>
