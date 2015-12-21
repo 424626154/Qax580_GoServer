@@ -30,25 +30,22 @@ $(document).ready(function(){
 <form class="form-inline" method="post" action="/admin/addwxlist" enctype="multipart/form-data" onsubmit="return toVaild()">
   <div class="form-group">
     <label for="">公众号名称</label>
-    <input type="text" class="form-control" id="title" name="title" placeholder="输入公众号名称">
-  </div>
+    <input type="text" class="form-control" id="title" name="title" placeholder="输入公众号名称"></div>
   <div class="form-group">
     <label for="">公众号简介</label>
     <textarea class="form-control" rows="5" placeholder="输入公众号简介" id="info" name="info"></textarea>
   </div>
   <div class="form-group">
     <label for="">公众号</label>
-    <input type="text" class="form-control" id="number" name="number" placeholder="输入公众号">
-  </div>
+    <input type="text" class="form-control" id="number" name="number" placeholder="输入公众号"></div>
   <div class="form-group">
     <label for="">公众号评价</label>
     <textarea class="form-control" rows="5" placeholder="输入公众号评价" id="evaluate" name="evaluate"></textarea>
   </div>
   <div class="form-group">
-          <label>选择图片：(上传图片会让你的消息阅读量增加)</label>
-          <input type="file" class="form-control" name="image" id="image" accept="image/*" >
-        </div>
+    <label>选择图片：(上传图片会让你的消息阅读量增加)</label>
+    <input type="file" class="form-control" name="image" id="image" accept="image/*" ></div>
   <div>
-  <button type="submit" class="btn btn-default">发布</button>
-</form>
-{{template "footer.html" .}}
+    <button type="submit" class="btn btn-default">发布</button>
+  </form>
+  {{template "footer.html" .}}

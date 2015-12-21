@@ -7,7 +7,8 @@
            $('#myCarousel').carousel({
               interval: 4000
             })
-           initGuanggao()
+           initGuanggao();
+           analyticalData();
         });
   function initGuanggao(){
       var gaunggaos = {{.Guanggaos}}
@@ -68,66 +69,105 @@
     $(window).scroll(function(e){
         myscroll();  
     });
+      function analyticalData(){
+    var citys = new Array()
+    citys[0] = "全部"
+    citys[1] = "庆安县"
+    citys[2] = "绥化市"
+    citys[3] = "北林市"
+    citys[4] = "安达市"
+    citys[5] = "肇东市"
+    citys[6] = "海伦市"
+    citys[7] = "望奎市"
+    citys[8] = "兰西县"
+    citys[9] = "青冈县"
+    citys[10] = "明水县"
+    citys[11] = "绥棱县"
+    var select_city = {{.City}};
+        document.getElementById("city").options.length=0;
+        document.getElementById("city").options.add(new Option(select_city,select_city));
+        for(var i = 0 ; i < citys.length ; i ++ ){
+          if(citys[i] != {{ .Post.City}}){
+              document.getElementById("city").options.add(new Option(citys[i],citys[i]));
+          }             
+        } 
+  }
+  /*
+选择城市
+*/
+function onclikProvince(key){
+    // alert(key)
+    var url = "/?op=city&city="+key;
+    var temp = document.createElement("form");        
+    temp.action = url;        
+    temp.method = "post";        
+    temp.enctype = "multipart/form-data";             
+    temp.submit();
+}
 </script>
 <div id="myCarousel" class="carousel slide">
-   <!-- 轮播（Carousel）指标 -->
-   <ol class="carousel-indicators" id="guangao_ol">
-   </ol>  
-   <!-- 轮播（Carousel）项目 -->
-   <div class="carousel-inner" id="guangao_div">
-   </div>
-   <!-- 轮播（Carousel）导航 -->
-   <a class="carousel-control left" href="#myCarousel"
+  <!-- 轮播（Carousel）指标 -->
+  <ol class="carousel-indicators" id="guangao_ol"></ol>
+  <!-- 轮播（Carousel）项目 -->
+  <div class="carousel-inner" id="guangao_div"></div>
+  <!-- 轮播（Carousel）导航 -->
+  <a class="carousel-control left" href="#myCarousel"
       data-slide="prev">&lsaquo;</a>
-   <a class="carousel-control right" href="#myCarousel"
+  <a class="carousel-control right" href="#myCarousel"
       data-slide="next">&rsaquo;</a>
 </div>
 <!--广告栏-->
 <div class="qax_bg">
-<div>
-  <a class="my_button my_gray"  style="text-decoration:none;color:#2ebb86"href="/wxlist">推荐公众号</a>  
-  <a class="my_button my_gray"  style="text-decoration:none;color:#2ebb86"href="/weixinnumberlist">推荐微信号</a>  
-  {{if eq .IsCanting "true"}}
-  <a class="my_button my_gray"  style="text-decoration:none;color:#2ebb86"href="/waimailist">外卖订餐</a>
-  {{end}}
-</div>
-<div class="list_page_bg">
-   <ul class="qax_list_bg">
+  <div>
+    <a class="my_button my_gray"  style="text-decoration:none;color:#2ebb86"href="/wxlist">推荐公众号</a>
+    <a class="my_button my_gray"  style="text-decoration:none;color:#2ebb86"href="/weixinnumberlist">推荐微信号</a>
+    {{if eq .IsCanting "true"}}
+    <a class="my_button my_gray"  style="text-decoration:none;color:#2ebb86"href="/waimailist">外卖订餐</a>
+    {{end}}
+  </div>
+  <div class="list_page_bg">
+    <div class="time_font">
+      <select style="width:120px;font-size:20px" id="city" name="city"onchange="onclikProvince(this[selectedIndex].value);"></select>
+    </div>
+    <ul class="qax_list_bg">
       {{range .Posts}}
       <a href="/content?op=con&id={{.Id}}" style="text-decoration:none;">
-        <div  id="list_item"><!--list_item-->
+        <div  id="list_item">
+          <!--list_item-->
           <div class="list_item_1">
-                <div>
-                  <font  class="title_fnot" >{{.Title}}</font>
-                </div>
-                <div class="cont_info">
-                  <font class="info_fnot" >{{.Info}}</font>
-                </div>
-                {{if eq .Image ""}}
+            <div> <font  class="title_fnot" >{{.Title}}</font>
+            </div>
+            <div class="cont_info"> <font class="info_fnot" >{{.Info}}</font>
+            </div>
+            {{if eq .Image ""}}
                     {{.Image}}
                 {{else}}
-                   <div id="image_fnot" >
-                              <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="60px">
-                  </div>
-                {{end}}
-                <div id="my_label">
-                <span class="label label-success">已审核</span>
-                {{if eq .Label 1}}
-                <span class="label label-primary">个人</span>
-                {{end}} 
+            <div id="image_fnot" >
+              <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
+            {{end}}
+            <div id="my_label">
+              <span class="label label-success">已审核</span>
+              {{if eq .Label 1}}
+              <span class="label label-primary">个人</span>
+              {{end}} 
                 {{if eq .Label 2}}
-                 <span class="label label-primary">官方</span>
-                {{end}}
-                </div>
-                <div class="time_font">{{timeformat .Time}}</div>
+              <span class="label label-primary">官方</span>
+              {{end}}
+              {{if eq .City ""}}
+  {{else}}
+              <span class="label label-info">{{.City}}</span>
+              {{end}}
             </div>
-        </div><!--list_item-->
-      </a>
-      {{end}}
-    </ul>
-<div style="text-align:center">
-  <div id="example"></div> 
-  <script type='text/javascript'>  
+          </div>
+          <div class="time_font">{{timeformat .Time}}</div>
+        </div>
+      </div>
+      <!--list_item--> </a>
+    {{end}}
+  </ul>
+  <div style="text-align:center">
+    <div id="example"></div>
+    <script type='text/javascript'>  
           var options = {  
               currentPage: {{.CurrentPage}},//当前页
               totalPages: {{.CotalPages}},//总页数
@@ -153,15 +193,16 @@
           }  
           $('#example').bootstrapPaginator(options);  
   </script>
-</div>
+  </div>
 </div>
 
 <!--   <a id="release" href="/uplode" class="home_font">发布信息</a>
-  <a id="qrcode" class="home_font">公众帐号</a>
-  <div id="qrcode_info">
-    <font>扫描二维码<br>关注庆安县580</font>
-    <img src="./static/img/qrcode.png">
-  </div> -->
-  <a id="gotop" class="home_font">返回顶部</a>
+<a id="qrcode" class="home_font">公众帐号</a>
+<div id="qrcode_info">
+<font>扫描二维码
+  <br>关注庆安县580</font>
+<img src="./static/img/qrcode.png"></div>
+-->
+<a id="gotop" class="home_font">返回顶部</a>
 </div>
 {{template "footer.html" .}}

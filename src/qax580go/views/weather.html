@@ -3,7 +3,8 @@
 <!-- <div>{{.AppId}}</div>
 <div>{{.TimesTamp}}</div>
 <div>{{.NonceStr}}</div>
-<div>{{.Ticket}}</div> -->
+<div>{{.Ticket}}</div>
+-->
 <script type="text/javascript">
 	wx.config({
 	    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -36,8 +37,7 @@
 </script>
 
 <div>
-	正在获取天气信息，请耐心等待...
-	<a href="/weather" >重新获取</a>
+正在获取天气信息，请耐心等待...
+<a href="/weather" >重新获取</a>
 </div>
-
 {{template "trainfooter.html" .}}

@@ -10,7 +10,7 @@ $(document).ready(function(){
     img_path = value;
   } 
   function onclikBtn(){
-  	var image = document.getElementById("image").value;
+    var image = document.getElementById("image").value;
     var name = document.getElementById("name").value;
     var info = document.getElementById("info").value;
     var mtype = document.getElementById("mtype").value;
@@ -41,33 +41,29 @@ $(document).ready(function(){
 </script>
 <div class="uplode_bg">
   <form id = "add" class="form-inline" method="post" action="/admin/addwaimai" enctype="multipart/form-data" >
-    <div class="form-group">
-      <font class="up_fnt" for="" style="color:#000">菜名</font>
-      <input type="text" class="form-control" id="name" name="name" placeholder="输入菜品名称">
-    </div>
-    <div class="form-group">
-      <font class="up_fnt">详情</font> 
+    <div class="form-group"> <font class="up_fnt" for="" style="color:#000">菜名</font>
+      <input type="text" class="form-control" id="name" name="name" placeholder="输入菜品名称"></div>
+    <div class="form-group"> <font class="up_fnt">详情</font>
       <textarea class="form-control" rows="5" placeholder="输入菜品详情" id="info" name="info"></textarea>
     </div>
     <div class="form-group">
-      <font class="up_fnt">价格</font> 
+      <font class="up_fnt">价格</font>
       <input class="form-control" placeholder="输入菜品价格" id="price" name="price"></input>
-    </div>
-    <div class="form-group">
-      <font class="up_fnt">分类</font> 
-      <input class="form-control"  placeholder="输入菜品分类" id="mtype" name="mtype"></input>
-    </div>
-    <div class="form-group">
-            <font class="up_fnt">选择图片：(上传菜品图片)</font>
-            <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)">
-          </div>
-    <div>
-    	<font class="info_fnot">精美的菜品更有诱惑力</font>
-    </div>
-    <div class="body_right">
-      <button type="button" class="my_button my_gray" onclick="onclikBtn();">发布</button>
-    </div>
-  </form>
+  </div>
+  <div class="form-group">
+    <font class="up_fnt">分类</font>
+    <input class="form-control"  placeholder="输入菜品分类" id="mtype" name="mtype"></input>
+</div>
+<div class="form-group">
+  <font class="up_fnt">选择图片：(上传菜品图片)</font>
+  <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)"></div>
+<div>
+  <font class="info_fnot">精美的菜品更有诱惑力</font>
+</div>
+<div class="body_right">
+  <button type="button" class="my_button my_gray" onclick="onclikBtn();">发布</button>
+</div>
+</form>
 
 </div>
 {{template "footer.html" .}}

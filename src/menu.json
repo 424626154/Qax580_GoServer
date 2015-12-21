@@ -4,15 +4,15 @@
                 "name": "信息平台", 
                 "sub_button": [
                     {
-                       "type": "view", 
+                        "type": "view", 
                         "name": "庆安县580", 
                         "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
-                    },
+                    }, 
                     {
                         "type": "view", 
                         "name": "发布信息", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
@@ -20,22 +20,27 @@
                         "name": "推荐信息", 
                         "key": "recommend", 
                         "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "我的信息", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fmymessage&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "sub_button": [ ]
                     }
                 ]
             }, 
             {
                 "name": "生活助手", 
                 "sub_button": [
-                
                     {
                         "type": "click", 
                         "name": "今日580", 
                         "key": "today", 
                         "sub_button": [ ]
-                    },
+                    }, 
                     {
                         "type": "view", 
-                        "name": "天气预报", 
+                        "name": "今日天气", 
                         "url": "http://www.baoguangguang.cn/weather", 
                         "sub_button": [ ]
                     }, 
@@ -50,7 +55,7 @@
                         "name": "车辆违章查询", 
                         "url": "http://www.baoguangguang.cn/querypeccancy", 
                         "sub_button": [ ]
-                    },
+                    }, 
                     {
                         "type": "view", 
                         "name": "快递查询", 
@@ -61,7 +66,7 @@
             }, 
             {
                 "name": "更多", 
-                "sub_button": [               
+                "sub_button": [
                     {
                         "type": "view", 
                         "name": "580部落", 

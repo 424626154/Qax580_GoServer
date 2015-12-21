@@ -101,11 +101,15 @@ func main() {
 	// }
 
 	// fmt.Println(text)
-	imageTextResponseItems := []ImageTextResponseItem{}
-	imageTextResponseItems = append(imageTextResponseItems, ImageTextResponseItem{})
-	imageTextResponseItems = append(imageTextResponseItems, ImageTextResponseItem{})
-	imageTextResponseItems = append(imageTextResponseItems, ImageTextResponseItem{})
-	fmt.Println(responseImageText(imageTextResponseItems))
+	// imageTextResponseItems := []ImageTextResponseItem{}
+	// imageTextResponseItems = append(imageTextResponseItems, ImageTextResponseItem{})
+	// imageTextResponseItems = append(imageTextResponseItems, ImageTextResponseItem{})
+	// imageTextResponseItems = append(imageTextResponseItems, ImageTextResponseItem{})
+	// fmt.Println(responseImageText(imageTextResponseItems))
+	// fmt.Println(len("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fmymessageresponse_type=codescope=snsapi_userinfostate=STATE#wechat_redirect"))
+	// fmt.Println(len("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxuploderesponse_type=codescope=snsapi_userinfostate=STATE#wechat_redirect"))
+	// fmt.Println(len("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhomeresponse_type=codescope=snsapi_userinfostate=STATE#wechat_redirect"))
+	fmt.Println(len("1940年11月27日，他出生在美国三蕃市，英文名叫布鲁斯?李。因为父亲是演员，他从小就有了跑龙套的机会，于是产生想当一名演员的梦想。可由于身体虚弱，父亲便让他拜师习武来强身。1961年，他考入华盛顿州立大学主修哲学，后来，他像所有正常人一样结婚生子。但在他内心深处，一刻也不曾放弃当一名演员的梦想。　　一天，他与一位朋友谈到梦想时，随手在一张便笺上写下了自己的人生目标：“我，布鲁斯?李，将会成为全美国最高薪酬的超级巨星。作为回报，我将奉献出最激动人心、最具震撼力的演出。从1970年开始，我将会赢得世界性声"))
 }
 
 func responseImageText(imageTextResponseItems []ImageTextResponseItem) string {

@@ -24,6 +24,7 @@ type Post struct {
 	Sex        int32
 	HeadImgurl string `orm:"size(500)"`
 	Time       int64
+	City       string //城市
 }
 
 //意见反馈
@@ -143,14 +144,18 @@ type QureyUser struct {
 }
 
 type Guanggao struct {
-	Id    int64
-	Image string
-	Title string
-	Info  string
-	State int32 //0未上线 1 上线
-	Time  int64
-	Blink bool
-	Link  string
+	Id         int64
+	Image      string
+	Title      string
+	Content    string `orm:"size(4096)"`
+	State      int32  //0未上线 1 上线
+	Time       int64
+	Blink      bool
+	Link       string
+	BImage     bool   //广告页图片是否显示主页
+	ImageItem0 string //内容页图片0
+	ImageItem1 string //内容页图片1
+	ImageItem2 string //内容页图片2
 }
 
 //外卖
@@ -214,7 +219,7 @@ func RegisterDB() {
 }
 
 //修改帖子内容
-func UpdatePostInfo(id string, title string, info string) error {
+func UpdatePostInfo(id string, title string, info string, city string) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
@@ -223,7 +228,8 @@ func UpdatePostInfo(id string, title string, info string) error {
 	cate := &Post{Id: cid}
 	cate.Title = title
 	cate.Info = info
-	_, err = o.Update(cate, "title", "info")
+	cate.City = city
+	_, err = o.Update(cate, "title", "info", "city")
 	return err
 }
 
@@ -267,6 +273,26 @@ func GetAllPosts() ([]Post, error) {
 	return posts, err
 }
 
+/*
+未审核帖子
+*/
+func GetAllState0Posts() ([]Post, error) {
+	o := orm.NewOrm()
+	var posts []Post
+	_, err := o.Raw("SELECT * FROM post WHERE examine = ? ORDER BY id DESC ", 0).QueryRows(&posts)
+	return posts, err
+}
+
+/*
+未审核帖子数量
+*/
+func GetAllStateNum() (int, error) {
+	o := orm.NewOrm()
+	var posts []Post
+	_, err := o.Raw("SELECT * FROM post WHERE examine = ? ORDER BY id DESC ", 0).QueryRows(&posts)
+	return len(posts), err
+}
+
 //获得我发布的帖子
 func GetAllPostsOpenid(openid string) ([]Post, error) {
 	o := orm.NewOrm()
@@ -305,22 +331,22 @@ func AddPost(title string, info string, image string) error {
 
 	return nil
 }
-func AddPostLabel(title string, info string, label int16, image string) (int64, error) {
+func AddPostLabel(title string, info string, label int16, image string, city string) (int64, error) {
 	o := orm.NewOrm()
 
 	create_time := time.Now()
 	my_time := time.Now().Unix()
-	cate := &Post{Title: title, Info: info, CreateTime: create_time, Time: my_time, Label: label, Image: image}
+	cate := &Post{Title: title, Info: info, CreateTime: create_time, Time: my_time, Label: label, Image: image, City: city}
 	// 插入数据
 	id, err := o.Insert(cate)
 	return id, err
 }
-func AddPostLabelWx(title string, info string, label int16, image string, openid string, name string, sex int32, head string) error {
+func AddPostLabelWx(title string, info string, label int16, image string, openid string, name string, sex int32, head string, city string) error {
 	o := orm.NewOrm()
 	create_time := time.Now()
 	my_time := time.Now().Unix()
 	beego.Debug("time :", my_time)
-	cate := &Post{Title: title, Info: info, CreateTime: create_time, Time: my_time, Label: label, Image: image, OpenId: openid, NickeName: name, Sex: sex, HeadImgurl: head}
+	cate := &Post{Title: title, Info: info, CreateTime: create_time, Time: my_time, Label: label, Image: image, OpenId: openid, NickeName: name, Sex: sex, HeadImgurl: head, City: city}
 	// 插入数据
 	_, err := o.Insert(cate)
 	if err != nil {
@@ -365,12 +391,22 @@ func QueryPagePost(page int32, nums int32) ([]Post, error) {
 	_, err := o.Raw("SELECT * FROM post WHERE examine = 1 ORDER BY id DESC LIMIT ?,? ", page*nums, nums).QueryRows(&posts)
 	return posts, err
 }
+func QueryCityPagePost(page int32, nums int32, city string) ([]Post, error) {
+	o := orm.NewOrm()
+	var posts []Post
+	_, err := o.Raw("SELECT * FROM post WHERE examine = 1 AND city = ? ORDER BY id DESC LIMIT ?,? ", city, page*nums, nums).QueryRows(&posts)
+	return posts, err
+}
 func QueryFuzzyLimitPost(fuzzy string, nums int64) ([]Post, error) {
 	o := orm.NewOrm()
 	var posts []Post
 	_, err := o.Raw("SELECT * FROM post WHERE info LIKE ? ORDER BY id DESC LIMIT ? ", "%"+fuzzy+"%", nums).QueryRows(&posts)
 	return posts, err
 }
+
+/*
+返回帖子数量
+*/
 func GetPostCount() (int32, error) {
 	o := orm.NewOrm()
 	// sql := "select count(*) from post where examine = 1"
@@ -380,6 +416,21 @@ func GetPostCount() (int32, error) {
 
 	// }
 	count, err := o.QueryTable("post").Filter("examine", 1).Count()
+	return int32(count), err
+}
+
+/*
+根据城市返回帖子数量
+*/
+func GetCityPostCount(city string) (int32, error) {
+	o := orm.NewOrm()
+	// sql := "select count(*) from post where examine = 1"
+	// count := 0
+	// err := o.Raw(sql).QueryRow(count)
+	// if err != nil {
+
+	// }
+	count, err := o.QueryTable("post").Filter("examine", 1).Filter("city", city).Count()
 	return int32(count), err
 }
 
@@ -801,10 +852,10 @@ func GetQueryIndex(userid string) (int32, error) {
 
 	return cate.Index, nil
 }
-func AddGuanggao(title string, info string, image string, blink bool, link string) (int64, error) {
+func AddGuanggao(title string, info string, image string, blink bool, link string, bimg bool, item0 string, item1 string, item2 string) (int64, error) {
 	o := orm.NewOrm()
 	my_time := time.Now().Unix()
-	cate := &Guanggao{Title: title, Info: info, Time: my_time, State: 0, Image: image, Blink: blink, Link: link}
+	cate := &Guanggao{Title: title, Content: info, Time: my_time, State: 0, Image: image, Blink: blink, Link: link, BImage: bimg, ImageItem0: item0, ImageItem1: item1, ImageItem2: item2}
 	// 插入数据
 	id, err := o.Insert(cate)
 	return id, err
@@ -853,7 +904,7 @@ func GetOneGuanggao(id string) (*Guanggao, error) {
 	err = o.Read(guanggao)
 	return guanggao, err
 }
-func UpdateGuanggaoImg(id string, img string) error {
+func UpdateGuanggaoImg(id string, img string, bimg bool, item0 string, item1 string, item2 string) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
@@ -861,7 +912,11 @@ func UpdateGuanggaoImg(id string, img string) error {
 	o := orm.NewOrm()
 	cate := &Guanggao{Id: cid}
 	cate.Image = img
-	_, err = o.Update(cate, "image")
+	cate.BImage = bimg
+	cate.ImageItem0 = item0
+	cate.ImageItem1 = item1
+	cate.ImageItem2 = item2
+	_, err = o.Update(cate, "image", "b_image", "image_item0", "image_item1", "image_item2")
 	return err
 }
 func UpdateGuanggaoInfo(id string, title string, info string, blink bool, link string) error {
@@ -872,10 +927,10 @@ func UpdateGuanggaoInfo(id string, title string, info string, blink bool, link s
 	o := orm.NewOrm()
 	cate := &Guanggao{Id: cid}
 	cate.Title = title
-	cate.Info = info
+	cate.Content = info
 	cate.Blink = blink
 	cate.Link = link
-	_, err = o.Update(cate, "title", "info", "blink", "link")
+	_, err = o.Update(cate, "title", "content", "blink", "link")
 	return err
 }
 

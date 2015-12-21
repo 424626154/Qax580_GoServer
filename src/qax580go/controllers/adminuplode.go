@@ -42,7 +42,8 @@ func (c *AdminUplodeController) Post() {
 	image_name := ""
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")
-	beego.Debug("info:", info)
+	city := c.Input().Get("city")
+	// beego.Debug("info:", info)
 	if len(title) != 0 && len(info) != 0 {
 		// 获取附件
 		_, fh, err := c.GetFile("image")
@@ -75,7 +76,7 @@ func (c *AdminUplodeController) Post() {
 
 	if len(title) != 0 && len(info) != 0 {
 		beego.Debug(image_name)
-		id, err := models.AddPostLabel(title, info, 2, image_name)
+		id, err := models.AddPostLabel(title, info, 2, image_name, city)
 		if err != nil {
 			beego.Error(err)
 		}

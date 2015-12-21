@@ -21,18 +21,17 @@ var img_path = "";
     var value = obj.value;  
     img_path = value;
   } 
- </script> 
+ </script>
 
 <form id="upimg"class="form-inline" method="post" action="/admin/upweixinnumberimg" enctype="multipart/form-data">
-    <div>
-      {{if eq .WeixinNumber.Image ""}}
+  <div>
+    {{if eq .WeixinNumber.Image ""}}
       {{else}}
-      <img src="{{isImgPath .WeixinNumber.Image}}" alt="{{isImgPath .WeixinNumber.Image}}" width="auto" height="100px">
-      {{end}}
+    <img src="{{isImgPath .WeixinNumber.Image}}" alt="{{isImgPath .WeixinNumber.Image}}" width="auto" height="100px">
+    {{end}}
     <div class="form-group">
-          <label>选择图片：(上传微信号图片)</label>
-          <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)">
-    </div>
+      <label>选择图片：(上传微信号图片)</label>
+      <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)"></div>
   </div>
   <button type="button" class="my_button my_gray" onclick="onclikBtn();">修改图片</button>
 </form>

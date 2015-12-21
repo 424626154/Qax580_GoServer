@@ -52,9 +52,10 @@ func (c *AdminModifyController) Get() {
 		id := c.Input().Get("id")
 		title := c.Input().Get("title")
 		info := c.Input().Get("info")
+		city := c.Input().Get("city")
 		beego.Debug("is con " + title)
 		if len(id) != 0 && len(title) != 0 && len(info) != 0 {
-			err := models.UpdatePostInfo(id, title, info)
+			err := models.UpdatePostInfo(id, title, info, city)
 			if err != nil {
 				beego.Error(err)
 			}

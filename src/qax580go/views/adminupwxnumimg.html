@@ -21,18 +21,17 @@ var img_path = "";
     var value = obj.value;  
     img_path = value;
   } 
- </script> 
+ </script>
 
 <form id="upimg"class="form-inline" method="post" action="/admin/upwxnumimg" enctype="multipart/form-data">
-    <div>
-      {{if eq .Wxnum.Image ""}}
+  <div>
+    {{if eq .Wxnum.Image ""}}
       {{else}}
-      <img src="{{isImgPath .Wxnum.Image}}" alt="{{isImgPath .Wxnum.Image}}" width="auto" height="100px">
-      {{end}}
+    <img src="{{isImgPath .Wxnum.Image}}" alt="{{isImgPath .Wxnum.Image}}" width="auto" height="100px">
+    {{end}}
     <div class="form-group">
-          <label>选择图片：尺寸为 450*250</label>
-          <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)">
-    </div>
+      <label>选择图片：尺寸为 450*250</label>
+      <input type="file" class="form-control" name="image" id="image" accept="image/*" onchange="setImage(this)"></div>
   </div>
   <button type="button" class="my_button my_gray" onclick="onclikBtn();">修改图片</button>
 </form>

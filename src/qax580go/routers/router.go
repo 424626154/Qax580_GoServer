@@ -7,18 +7,18 @@ import (
 )
 
 func init() {
-	beego.Router("/", &controllers.HomeController{})             //主页
-	beego.Router("/uplode", &controllers.UplodeController{})     //发布消息
-	beego.Router("/content", &controllers.ContentController{})   //消息详情
-	beego.Router("/login", &controllers.LoginController{})       //登录
-	beego.Router("/register", &controllers.RegisterController{}) //注册
-	beego.Router("/wxlist", &controllers.WcListController{})     //微推荐公众号列表
-	beego.Router("/wx", &controllers.WXController{})             //微信公众号服务器
-	beego.Router("/feedback", &controllers.FeedbackController{}) //意见反馈
-	beego.Router("/wxautho", &controllers.WxAuthoController{})   //微信用户信息
-	beego.Router("/wxhome", &controllers.WxHomeController{})
-	beego.Router("/wxuplode", &controllers.WxUplodeController{})
-	beego.Router("/wxfeedback", &controllers.WxFeedbackController{})
+	beego.Router("/", &controllers.HomeController{})                             //主页
+	beego.Router("/uplode", &controllers.UplodeController{})                     //发布消息
+	beego.Router("/content", &controllers.ContentController{})                   //消息详情
+	beego.Router("/login", &controllers.LoginController{})                       //登录
+	beego.Router("/register", &controllers.RegisterController{})                 //注册
+	beego.Router("/wxlist", &controllers.WcListController{})                     //微推荐公众号列表
+	beego.Router("/wx", &controllers.WXController{})                             //微信公众号服务器
+	beego.Router("/feedback", &controllers.FeedbackController{})                 //意见反馈
+	beego.Router("/wxautho", &controllers.WxAuthoController{})                   //微信用户信息
+	beego.Router("/wxhome", &controllers.WxHomeController{})                     //微信回调主页
+	beego.Router("/wxuplode", &controllers.WxUplodeController{})                 //微信回调上传
+	beego.Router("/wxfeedback", &controllers.WxFeedbackController{})             //微信回调意见反馈
 	beego.Router("/weather", &controllers.WeatherController{})                   //天气预报
 	beego.Router("/traintickets", &controllers.TrainTicketsController{})         //火车票
 	beego.Router("/querystation", &controllers.QueryStationController{})         //火车票起点终点查询
@@ -42,6 +42,7 @@ func init() {
 	beego.Router("/about", &controllers.AboutController{})                       //关于
 	beego.Router("/wxgame", &controllers.WeixinGameController{})                 //微信游戏
 	beego.Router("/mymessage", &controllers.MyMessageController{})               //我的发布
+	beego.Router("/wxmymessage", &controllers.WxMyMessageController{})           //微信回调我的发布
 	// 附件处理
 	os.Mkdir("imagehosting", os.ModePerm)
 	beego.Router("/imagehosting/:all", &controllers.ImageHostingController{})

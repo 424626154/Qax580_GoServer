@@ -25,7 +25,7 @@ function initTime(){
 }
 
   function toVaild(){
-  	var image = document.getElementById("image").value;
+    var image = document.getElementById("image").value;
     var name = document.getElementById("name").value;
     var address = document.getElementById("address").value;
     var phone = document.getElementById("phone").value;
@@ -48,34 +48,34 @@ function initTime(){
 </script>
 <div class="uplode_bg">
   <form class="form-inline" method="post" action="/admin/addwaimai" enctype="multipart/form-data" onsubmit="return toVaild()">
-    <div class="form-group">
-      <font class="up_fnt" for="" style="color:#000">餐厅名称</font>
-      <input type="text" class="form-control" id="name" name="name" placeholder="输入餐厅名称">
-    </div>
-    <div class="form-group">
-      <font class="up_fnt">地址</font> 
+    <div class="form-group"> <font class="up_fnt" for="" style="color:#000">餐厅名称</font>
+      <input type="text" class="form-control" id="name" name="name" placeholder="输入餐厅名称"></div>
+    <div class="form-group"> <font class="up_fnt">地址</font>
       <textarea class="form-control" rows="2" placeholder="输入餐厅地址" id="address" name="address"></textarea>
     </div>
     <div class="form-group">
-      <font class="up_fnt">订餐电话</font> 
+      <font class="up_fnt">订餐电话</font>
       <textarea class="form-control" rows="1" placeholder="输入餐厅订餐电话" id="phone" name="phone"></textarea>
     </div>
     <div class="form-group">
-          <font class="up_fnt" for="" style="color:#000">上班时间:</font>
-        <select style="width:40px;font-size:20px" id="starth" name="starth"></select>点
-        <select style="width:40px;font-size:20px" id="startm" name="startm"></select>分
-      </div>
-       <div class="form-group">
-          <font class="up_fnt" for="" style="color:#000">下班时间:</font>
-        <select style="width:40px;font-size:20px" id="endh" name="endh"></select>点
-        <select style="width:40px;font-size:20px" id="endm" name="endm"></select>分
-      </div>
+      <font class="up_fnt" for="" style="color:#000">上班时间:</font>
+      <select style="width:40px;font-size:20px" id="starth" name="starth"></select>
+      点
+      <select style="width:40px;font-size:20px" id="startm" name="startm"></select>
+      分
+    </div>
     <div class="form-group">
-            <font class="up_fnt">选择图片：(上传餐厅的宣传图片)</font>
-            <input type="file" class="form-control" name="image" id="image" accept="image/*" >
-          </div>
+      <font class="up_fnt" for="" style="color:#000">下班时间:</font>
+      <select style="width:40px;font-size:20px" id="endh" name="endh"></select>
+      点
+      <select style="width:40px;font-size:20px" id="endm" name="endm"></select>
+      分
+    </div>
+    <div class="form-group">
+      <font class="up_fnt">选择图片：(上传餐厅的宣传图片)</font>
+      <input type="file" class="form-control" name="image" id="image" accept="image/*" ></div>
     <div>
-    	<font class="info_fnot">发布餐厅审核后方可上线</font>
+      <font class="info_fnot">发布餐厅审核后方可上线</font>
     </div>
     <div class="body_right">
       <button type="submit" class="my_button my_gray">发布</button>

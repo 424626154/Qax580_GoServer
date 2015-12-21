@@ -27,6 +27,8 @@ func (c *UplodeController) Post() {
 	image_name := ""
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")
+	city := c.Input().Get("city")
+	beego.Debug("city", city)
 	if len(title) != 0 && len(info) != 0 {
 		// 获取附件
 		_, fh, err := c.GetFile("image")
@@ -65,7 +67,7 @@ func (c *UplodeController) Post() {
 		beego.Debug("----------AddPostLabelWx--------")
 		beego.Debug(openid)
 		beego.Debug(wxuser)
-		err = models.AddPostLabelWx(title, info, 1, image_name, openid, wxuser.NickeName, wxuser.Sex, wxuser.HeadImgurl)
+		err = models.AddPostLabelWx(title, info, 1, image_name, openid, wxuser.NickeName, wxuser.Sex, wxuser.HeadImgurl, city)
 		if err != nil {
 			beego.Error(err)
 		}

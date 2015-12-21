@@ -1,10 +1,12 @@
 package controllers
+
 /*
 后台主页
 */
 import (
 	"github.com/astaxie/beego"
 	"qax580go/models"
+)
 
 type AdminHomeController struct {
 	beego.Controller
@@ -22,10 +24,15 @@ func (c *AdminHomeController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
+	num, err := models.GetAllStateNum()
+	if err != nil {
+		beego.Error(err)
+	}
 	c.TplNames = "adminhome.html"
 	c.Data["Posts"] = posts
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
+	c.Data["Num"] = num
 	op := c.Input().Get("op")
 	switch op {
 	case "del":

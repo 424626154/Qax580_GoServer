@@ -327,7 +327,7 @@ func responseImageTextXML(toUserName string, content string, posts []models.Post
 			imageTextResponseItem := ImageTextResponseItem{}
 			imageTextResponseItem.Title = value2CDATA(posts[i].Title)
 			imageTextResponseItem.Description = value2CDATA(posts[i].Info)
-			imageTextResponseItem.PicUrl = value2CDATA("http://182.92.167.29:8080/static/img/type0.jpg")
+			imageTextResponseItem.PicUrl = value2CDATA(getWxImageUrl(posts[i].Image))
 			imageTextResponseItem.Url = value2CDATA(strings.Replace(content_url, "s%", fmt.Sprintf("%d", posts[i].Id), -1))
 			imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
 		}
@@ -409,4 +409,11 @@ func responseCustomerService(fromUserName string, toUserName string) string {
 	body.MsgType = value2CDATA("transfer_customer_service")
 	about_xml, _ := xml.MarshalIndent(body, " ", "  ")
 	return string(about_xml)
+}
+func getWxImageUrl(url string) string {
+	new_url := "http://182.92.167.29:8080/static/img/type0.jpg"
+	if len(url) != 0 {
+		new_url = fmt.Sprintf("%s%s", "http://182.92.167.29:8080/imagehosting/", url)
+	}
+	return new_url
 }

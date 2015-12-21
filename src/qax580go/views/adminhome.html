@@ -1,54 +1,67 @@
 {{template "adminheader.html" .}}
 <div class="btn-group" role="group" aria-label="...">
-  <a type="button" class="btn btn-default" href="/admin/uplode">发布</a> 
+  <a type="button" class="btn btn-default" href="/admin/uplode">发布</a>
   <a type="button" class="btn btn-default" href="/admin/wxlist">推荐公众号</a>
   <a type="button" class="btn btn-default" href="/admin/weixinnumberlist">推荐微信号</a>
   <a type="button" class="btn btn-default" href="/admin/feedbacklist">意见反馈</a>
   <a type="button" class="btn btn-default" href="/admin/userlist">用户管理</a>
   <a type="button" class="btn btn-default" href="/admin/wxuserlist">微信用户</a>
   <a type="button" class="btn btn-default" href="/admin/juhe">聚合数据</a>
-  <a type="button" class="btn btn-default" href="/updatelog">更新记录</a>  
-  <a type="button" class="btn btn-default" href="/admin/newskey">新闻关键词</a>  
-  <a type="button" class="btn btn-default" href="/admin/guanggaos">广告管理</a> 
-  <a type="button" class="btn btn-default" href="/admin/waimailist">外卖订餐</a>        
+  <a type="button" class="btn btn-default" href="/updatelog">更新记录</a>
+  <a type="button" class="btn btn-default" href="/admin/newskey">新闻关键词</a>
+  <a type="button" class="btn btn-default" href="/admin/guanggaos">广告管理</a>
+  <a type="button" class="btn btn-default" href="/admin/waimailist">外卖订餐</a>
 </div>
-   <ul class="list-group">
-      {{range .Posts}}
-      <li class="list-group-item">
-      <div><a href="/admin/content?op=con&id={{.Id}}"><h1>{{.Title}}</h1></a></div>
-      <div>{{.Info}}</div>
-        {{if eq .Image ""}}
+<div class="time_font">
+  <a>
+    <h5>未审核({{.Num}})</h5>
+  </a>
+</div>
+<ul class="list-group">
+  {{range .Posts}}
+  <li class="list-group-item">
+    <div>
+      <a href="/admin/content?op=con&id={{.Id}}">
+        <h1>{{.Title}}</h1>
+      </a>
+    </div>
+    <div>{{.Info}}</div>
+    {{if eq .Image ""}}
             {{.Image}}
           {{else}}
-           <div id="image_fnot" >
-          <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="60px">
-          </div>
-        {{end}}
+    <div id="image_fnot" >
+      <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
+    {{end}}
           {{ if eq .OpenId ""}}
 
         {{else}}
-        <div class="time_font">
-          <span >
-            <font style="color: #000;font-size:12px;">{{ .NickeName}}</font>
-            <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
-        </span>
-        </div>
-        {{ end}}
-       <div class="time_font">{{timeformat .Time}}</div>
-      {{if eq .Label 1}}
-      <div><span class="label label-primary">个人</span></div>
-      {{end}} 
+    <div class="time_font">
+      <span > <font style="color: #000;font-size:12px;">{{ .NickeName}}</font>
+        <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
+    </span>
+  </div>
+  {{ end}}
+  <div class="time_font">{{timeformat .Time}}</div>
+  <div>
+    {{if eq .Label 1}}
+    <span class="label label-primary">个人</span>
+    {{end}} 
       {{if eq .Label 2}}
-       <div><span class="label label-primary">官方</span></div>
-      {{end}}
-      <a href="/admin/home?op=del&id={{.Id}}" >删除</a>
-      <a href="/admin/modify?op=m&id={{.Id}}" >修改</a>
-      {{if eq .Examine 0}}
-       <a href="/admin/home?op=examine&id={{.Id}}" >审核</a>
-       {{else}}
-       <a href="/admin/home?op=examine1&id={{.Id}}" >已审核</a>
-       {{end}}
-      </li>
-      {{end}}
-    </ul>
+    <span class="label label-primary">官方</span>
+    {{end}}
+  {{if eq .City ""}}
+  {{else}}
+    <span class="label label-info">{{.City}}</span>
+    {{end}}
+  </div>
+  <a href="/admin/home?op=del&id={{.Id}}" >删除</a>
+  <a href="/admin/modify?op=m&id={{.Id}}" >修改</a>
+  {{if eq .Examine 0}}
+  <a href="/admin/home?op=examine&id={{.Id}}" >审核</a>
+  {{else}}
+  <a href="/admin/home?op=examine1&id={{.Id}}" >已审核</a>
+  {{end}}
+</li>
+{{end}}
+</ul>
 {{template "footer.html" .}}
