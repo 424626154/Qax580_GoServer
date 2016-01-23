@@ -26,3 +26,10 @@ const CITY_MS = "明水县"
 const PY_MS = "mingshuixian"
 const CITY_SL = "绥棱县"
 const PY_SL = "suilingxian"
+
+const MONEY_SUBSCRIBE = 1
+const MONEY_EXAMINE = 2
+const MONEY_BELIKE = 3
+const MONEY_SUBSCRIBE_SUM = 4
+const MONEY_EXAMINE_SUM = 2
+const MONEY_BELIKE_SUM = 1

@@ -42,7 +42,7 @@ func getHomeAccessToken(code string, c *WxHomeController) {
 	} else {
 		isdebug = iniconf.String("qax580::isdebug")
 	}
-	wx_url := "[REALM]?appid=[APPID]&secret=[SECRET]&code=[CODE]&&grant_type=authorization_code"
+	wx_url := "[REALM]?appid=[APPID]&secret=[SECRET]&code=[CODE]&grant_type=authorization_code"
 	// if beego.AppConfig.Bool("qax580::isdebug") {
 	realm_name := ""
 	if isdebug == "true" {

@@ -9,6 +9,9 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
+	"io/ioutil"
+	"net/http"
 	"qax580go/models"
 	"sort"
 	"strings"
@@ -21,7 +24,7 @@ const (
 	error_info     = "我们正在努力成为一个有情怀的免费信息网站"
 	null_info0     = "未搜索到相关信息"
 	null_info1     = "未搜索到有关&的信息"
-	subscribe_info = "欢迎关注庆安兄弟微盟，我们正在努力成为一个有情怀的免费信息发布平台，为庆安人服务"
+	subscribe_info = "欢迎关注庆安县580，我们正在努力成为一个有情怀的免费信息发布平台，为庆安人服务"
 	about_info     = "【客服服务】\n关注我们\n公众号:qax580\n微信:qax580kf\n腾讯微博:庆安兄弟微盟\nQQ : 2063883729\n邮箱：qaxiongdiweimeng@163.com"
 	content_url    = "http://www.baoguangguang.cn/content?op=con&id=s%"
 	jieshao_info   = "【帮助】\n你好，庆安县580是免费的信息发布平台，在这里您可以发布信息也可以搜索相关信息，相关功能在功能菜单中"
@@ -250,6 +253,7 @@ func responseTypeMsg(body []byte, msgType string) string {
 					if err != nil {
 						beego.Error(err)
 					}
+					beego.Debug("recommend count :", len(posts))
 					if len(posts) != 0 {
 						response_xml = responseImageTextXML(requestBody.FromUserName, "", posts)
 					} else {
@@ -266,6 +270,7 @@ func responseTypeMsg(body []byte, msgType string) string {
 				//关注
 			} else if requestBody.Event == "subscribe" {
 				response_xml = responseTextMsg(requestBody.FromUserName, subscribe_info)
+				eventSubscribe(requestBody)
 			} else {
 				//其他类型
 				response_xml = responseTextMsg(requestBody.FromUserName, error_info)
@@ -416,4 +421,56 @@ func getWxImageUrl(url string) string {
 		new_url = fmt.Sprintf("%s%s", "http://182.92.167.29:8080/imagehosting/", url)
 	}
 	return new_url
+}
+
+/*
+关注事件
+*/
+func eventSubscribe(requestBody *EventResponseBody) string {
+	if strings.Contains(requestBody.EventKey, "qrscene_") { //扫码
+
+	} else {
+
+	}
+	//wxqax/sunscribe
+	//http请求参数 subscribe_type from_openid to_user create_time
+	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
+	isdebug := "true"
+	isurl := ""
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+		isurl = iniconf.String("qax580::url")
+	}
+	wx_url := "[REALM]/wxqax/sunscribe?subscribe_type=[SUNSCRIBE]&from_openid=[FROMOPENID]&to_user=[TOUSER]&create_time=[CREATETIME]"
+	// if beego.AppConfig.Bool("qax580::isdebug") {
+	realm_name := ""
+	if isdebug == "true" {
+		realm_name = "http://localhost:9090"
+	} else {
+		realm_name = isurl
+	}
+	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
+	wx_url = strings.Replace(wx_url, "[SUNSCRIBE]", requestBody.Event, -1)
+	wx_url = strings.Replace(wx_url, "[FROMOPENID]", requestBody.FromUserName, -1)
+	wx_url = strings.Replace(wx_url, "[TOUSER]", requestBody.ToUserName, -1)
+	create_time := fmt.Sprintf("%d", requestBody.CreateTime)
+	wx_url = strings.Replace(wx_url, "[CREATETIME]", create_time, -1)
+	beego.Debug("subscribe url", wx_url)
+	resp, err := http.Get(wx_url)
+	if err != nil {
+		beego.Debug(err)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		beego.Debug(string(body))
+	}
+	response_json = string(body)
+	return response_json
 }

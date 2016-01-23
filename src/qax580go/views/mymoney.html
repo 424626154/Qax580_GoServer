@@ -1,0 +1,33 @@
+{{template "header.html" .}}
+<script type="text/javascript">
+      function onclik(){
+      var url = "/moneyinfo?openid="+{{.WxUser.OpenId}};
+              // alert(url)
+              var temp = document.createElement("form");
+     temp.action = url;
+    temp.method = "post";   
+     temp.enctype = "multipart/form-data"
+     temp.submit(); 
+    }
+    function onclik1(){
+      var url = "/moneyhelp?openid="+{{.WxUser.OpenId}};
+              // alert(url)
+              var temp = document.createElement("form");
+     temp.action = url;
+    temp.method = "post";   
+     temp.enctype = "multipart/form-data"
+     temp.submit(); 
+    }
+</script>
+<div class="uplode_bg">
+  <div>
+    <button class="my_button my_gray"  style="text-decoration:none;color:#2ebb86" onclick="onclik()">详情</button>
+    <button class="my_button my_gray"  style="text-decoration:none;color:#2ebb86" onclick="onclik1()">帮助</button>
+  </div>
+  {{ if .isUser}}
+  <h4>帮帮币 {{.WxUser.Money}}</h4>
+  {{else}}
+  获得用户信息失败！
+  {{end}}
+</div>
+{{template "footer.html" .}}

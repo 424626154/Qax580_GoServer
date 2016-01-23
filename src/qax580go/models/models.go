@@ -81,19 +81,44 @@ type AccessTokenJson struct {
 	ErrMsg       string `json:"errmsg"`
 }
 
+type QRCodeJson struct {
+	Ticket         string `json:"ticket"`
+	ExpiresSeconds int64  `json:"expire_seconds"`
+	Url            string `json:"url"`
+	ErrCode        int64  `json:"errcode"`
+	ErrMsg         string `json:"errmsg"`
+}
+
 type Wxuserinfo struct {
-	Id         int64
-	OpenId     string `json:"openid"`
-	NickeName  string `json:"nickname"`
-	Sex        int32  `json:"sex"`
-	Province   string `json:"province"`
-	City       string `json:"city"`
-	Country    string `json:"country"`
-	HeadImgurl string `json:"headimgurl"`
-	// Privilege  []string `json:"privilege"`
-	Unionid string `json:"unionid"`
-	ErrCode int64  `json:"errcode"`
-	ErrMsg  string `json:"errmsg"`
+	Id            int64
+	Subscribe     int32  `json:"subscribe"`      //用户是否订阅该公众号标识，值为0时，代表此用户没有关注该公众号，拉取不到其余信息。
+	OpenId        string `json:"openid"`         //用户的标识，对当前公众号唯一
+	NickeName     string `json:"nickname"`       //用户的昵称
+	Sex           int32  `json:"sex"`            //用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
+	City          string `json:"city"`           //用户所在城市
+	Country       string `json:"country"`        //用户所在国家
+	Province      string `json:"province"`       //	用户所在省份
+	Language      string `json:"language"`       //用户的语言，简体中文为zh_CN
+	HeadImgurl    string `json:"headimgurl"`     //用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
+	SubscribeTime int64  `json:"subscribe_time"` //用户关注时间，为时间戳。如果用户曾多次关注，则取最后关注时间
+	Unionid       string `json:"unionid"`        //只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。详见：获取用户个人信息（UnionID机制）
+	Remark        string `json:"remark"`         //公众号运营者对粉丝的备注，公众号运营者可在微信公众平台用户管理界面对粉丝添加备注
+	Groupid       int32  `json:"groupid"`        //用户所在的分组ID
+	ErrCode       int32  `json:"errcode"`        //0 成功 1 失败 参数错误
+	ErrMsg        string `json:"errmsg"`         //失败详情
+	Experience    int64  //经验
+	Money         int64  //金钱
+}
+
+/*
+用户金钱纪录
+*/
+type UserMoneyRecord struct {
+	Id        int64
+	OpenId    string
+	Money     int64
+	Time      int64
+	MoneyType int64 //事件类型 1注册 2 帖子被赞
 }
 type JsApiTicketJson struct {
 	Id        int64
@@ -186,6 +211,15 @@ type Caidan struct {
 	Mtype string //菜品类型
 }
 
+//帖子帮助
+type Posthelp struct {
+	Id     int64
+	PostId int64
+	OpenId string
+	State  int32 //0 无帮助 1 有帮助
+	Time   int64
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -212,8 +246,10 @@ func RegisterDB() {
 	orm.RegisterModel(new(NewsKey))
 	orm.RegisterModel(new(QureyUser))
 	orm.RegisterModel(new(Guanggao))
-	orm.RegisterModel(new(Canting)) //餐厅
-	orm.RegisterModel(new(Caidan))  //菜单
+	orm.RegisterModel(new(Canting))         //餐厅
+	orm.RegisterModel(new(Caidan))          //菜单
+	orm.RegisterModel(new(Posthelp))        //帖子帮助
+	orm.RegisterModel(new(UserMoneyRecord)) //用户事件类型
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -739,10 +775,88 @@ func AddWxUserInfo(wxUserInfo Wxuserinfo) error {
 	return nil
 }
 
+/*
+添加用户金钱
+*/
+func AddWxUserMoney(openid string, money int64) error {
+	beego.Debug("AddWxUserMoney openid:", openid)
+	o := orm.NewOrm()
+	cate := &Wxuserinfo{}
+	// 查询数据
+	qs := o.QueryTable("wxuserinfo")
+	err := qs.Filter("open_id", openid).One(cate)
+	if err != nil {
+		return err
+	}
+	beego.Debug("AddWxUserMoney Id:", cate.Id)
+	// cate = &Wxuserinfo{Id: cate.Id}
+	cate.Money = cate.Money + money
+	_, err = o.Update(cate, "money")
+	return err
+}
+
+/*
+修改用户关注状态
+*/
+func UpWxUserSubscribe(openid string, subscribe_s string) error {
+	subscribe, err := strconv.ParseInt(subscribe_s, 10, 64)
+	if err != nil {
+		return err
+	}
+	beego.Debug("UpWxUserMoney openid:", openid, "subscribe_s:", subscribe_s)
+	o := orm.NewOrm()
+	cate := &Wxuserinfo{}
+	// 查询数据
+	qs := o.QueryTable("wxuserinfo")
+	err = qs.Filter("open_id", openid).One(cate)
+	if err != nil {
+		return err
+	}
+	beego.Debug("UpWxUserMoney Id:", cate.Id)
+	// cate = &Wxuserinfo{Id: cate.Id}
+	cate.Subscribe = int32(subscribe)
+	_, err = o.Update(cate, "subscribe")
+	return err
+}
+
+/*
+修改用户金钱
+*/
+func UpWxUserMoney(openid string, money_s string) error {
+	money, err := strconv.ParseInt(money_s, 10, 64)
+	if err != nil {
+		return err
+	}
+	beego.Debug("UpWxUserMoney openid:", openid, "money_s:", money_s)
+	o := orm.NewOrm()
+	cate := &Wxuserinfo{}
+	// 查询数据
+	qs := o.QueryTable("wxuserinfo")
+	err = qs.Filter("open_id", openid).One(cate)
+	if err != nil {
+		return err
+	}
+	beego.Debug("UpWxUserMoney Id:", cate.Id)
+	// cate = &Wxuserinfo{Id: cate.Id}
+	cate.Money = money
+	_, err = o.Update(cate, "money")
+	return err
+}
+
 func GetOneWxUserInfo(open_id string) (*Wxuserinfo, error) {
 	o := orm.NewOrm()
 	var wxusers []Wxuserinfo
 	_, err := o.Raw("SELECT * FROM wxuserinfo WHERE open_id = ? ", open_id).QueryRows(&wxusers)
+	wxuser := &Wxuserinfo{}
+	if len(wxusers) > 0 {
+		wxuser = &wxusers[0]
+	}
+	return wxuser, err
+}
+func GetOneWxUserInfoId(id string) (*Wxuserinfo, error) {
+	o := orm.NewOrm()
+	var wxusers []Wxuserinfo
+	_, err := o.Raw("SELECT * FROM wxuserinfo WHERE id = ? ", id).QueryRows(&wxusers)
 	wxuser := &Wxuserinfo{}
 	if len(wxusers) > 0 {
 		wxuser = &wxusers[0]
@@ -755,6 +869,13 @@ func GetAllWxUsers() ([]Wxuserinfo, error) {
 	var wxusers []Wxuserinfo
 	_, err := o.Raw("SELECT * FROM wxuserinfo  ORDER BY id DESC").QueryRows(&wxusers)
 	return wxusers, err
+}
+
+func DeleteWxUser(id int64) error {
+	o := orm.NewOrm()
+	obj := &Wxuserinfo{Id: id}
+	_, err := o.Delete(obj)
+	return err
 }
 
 func AddNewsKey(info string) error {
@@ -1019,5 +1140,67 @@ func DeleteCaidan(id string) error {
 	o := orm.NewOrm()
 	obj := &Caidan{Id: cid}
 	_, err = o.Delete(obj)
+	return err
+}
+
+//添加帮助
+func AddPosthelp(postid int64, openid string, state int32) (int64, error) {
+	// postid_i, err := strconv.ParseInt(postid, 10, 64)
+	// if err != nil {
+
+	// }
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	obj := &Posthelp{PostId: postid, OpenId: openid, State: state, Time: my_time}
+	// 插入数据
+	id, err := o.Insert(obj)
+	return id, err
+}
+
+/*
+帖子的帮助数
+*/
+func GatPostHelpNum(postid string) (int, error) {
+	o := orm.NewOrm()
+	var objs []Posthelp
+	_, err := o.Raw("SELECT * FROM posthelp WHERE post_id = ? ORDER BY id DESC", postid).QueryRows(&objs)
+	return len(objs), err
+
+}
+
+func GatPaseHelpState(postid string, openid string) (int32, error) {
+	o := orm.NewOrm()
+	var objs []Posthelp
+	_, err := o.Raw("SELECT * FROM posthelp WHERE post_id = ? AND open_id = ? ORDER BY id DESC", postid, openid).QueryRows(&objs)
+	if len(objs) != 0 {
+		return objs[0].State, err
+	} else {
+		return 0, err
+	}
+}
+
+/*
+增加金钱事件
+*/
+func AddUserMoneyRecord(openid string, money int64, money_type int64) (int64, error) {
+	beego.Debug("AddUserMoneyRecord openid:", openid, "money:", money, "money_type:", money_type)
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	obj := &UserMoneyRecord{OpenId: openid, MoneyType: money_type, Money: money, Time: my_time}
+	// 插入数据
+	id, err := o.Insert(obj)
+	return id, err
+}
+func GetAllUserMoneyRecord(openid string) ([]UserMoneyRecord, error) {
+	beego.Debug("GetAllUserMoneyRecord openid:", openid)
+	o := orm.NewOrm()
+	var objs []UserMoneyRecord
+	_, err := o.Raw("SELECT * FROM user_money_record WHERE open_id = ? ORDER BY id DESC", openid).QueryRows(&objs)
+	return objs, err
+}
+func DeleteUserMoneyRecord(openid string) error {
+	beego.Debug("DeleteUserMoneyRecord openid:", openid)
+	o := orm.NewOrm()
+	_, err := o.QueryTable("user_money_record").Filter("open_id", openid).Delete()
 	return err
 }

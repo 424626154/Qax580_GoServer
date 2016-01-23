@@ -30,3 +30,30 @@ func (c *WxUserListController) Get() {
 	beego.Debug(admins)
 	c.Data["WxUsers"] = admins
 }
+func (c *WxUserListController) Post() {
+	op := c.Input().Get("op")
+	if op == "del" {
+		openid := c.Input().Get("openid")
+		if len(openid) != 0 {
+			user, err := models.GetOneWxUserInfo(openid)
+			if err == nil {
+				err = models.DeleteWxUser(user.Id)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					err = models.DeleteUserMoneyRecord(user.OpenId)
+					if err != nil {
+						beego.Error(err)
+					}
+				}
+			} else {
+				beego.Error(err)
+			}
+
+		}
+		url := "/admin/wxuserlist"
+		c.Redirect(url, 302)
+		return
+	}
+	c.TplNames = "adminwxuserlist.html"
+}

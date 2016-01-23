@@ -33,6 +33,7 @@ func (c *AdminHomeController) Get() {
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
 	c.Data["Num"] = num
+	c.Data["All"] = len(posts)
 	op := c.Input().Get("op")
 	switch op {
 	case "del":
@@ -57,6 +58,24 @@ func (c *AdminHomeController) Get() {
 		err := models.UpdatePost(id)
 		if err != nil {
 			beego.Error(err)
+		}
+		//添加审核金钱
+		post, err := models.GetOnePost(id)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			if post.Label == 1 {
+				err = models.AddWxUserMoney(post.OpenId, MONEY_SUBSCRIBE_SUM)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					_, err = models.AddUserMoneyRecord(post.OpenId, MONEY_EXAMINE_SUM, MONEY_EXAMINE)
+					if err != nil {
+						beego.Error(err)
+					}
+				}
+
+			}
 		}
 		beego.Debug("is admin examine " + id)
 		c.Redirect("/admin/home", 302)

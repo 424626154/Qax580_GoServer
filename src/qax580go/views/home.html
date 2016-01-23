@@ -12,6 +12,9 @@
         });
   function initGuanggao(){
       var gaunggaos = {{.Guanggaos}}
+      if(gaunggaos == null){
+        return;
+      }
       // alert(gaunggaos.length)
       var guangao_ol =document.getElementById("guangao_ol");     
       var guangao_div =document.getElementById("guangao_div")

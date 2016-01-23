@@ -25,6 +25,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
+        <!-- <span class="icon-bar"></span> -->
+        <span class="icon-bar"></span>
       </button>
       <!-- 导航条LOGO -->
       <a class="navbar-brand" href="#">庆安县580</a>
@@ -35,9 +37,12 @@
         <li>
           <div style="padding-left:20px"> <font style="color: #000">{{.WxUser.NickeName}}</font>
             <img src="{{.WxUser.HeadImgurl}}" width="40px" height="40px"></img>
-        </div>
+          </div>
       </li>
       {{ end}}
+      <li>
+        <a href="/mymoney">帮帮币 {{.WxUser.Money}}</a>
+      </li>
       <li>
         <a href="/uplode">发布消息</a>
       </li>
@@ -47,6 +52,9 @@
       <li>
         <a href="/feedback">意见反馈</a>
       </li>
+ <!--      <li>
+        <a href="/myextension">我的推广</a>
+      </li> -->
       <li>
         <a href="/about">关于我们</a>
       </li>
