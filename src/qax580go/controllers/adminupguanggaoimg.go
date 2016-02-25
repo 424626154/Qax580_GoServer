@@ -25,7 +25,7 @@ func (c *AdminUpGuanggaoImgController) Get() {
 		return
 	}
 	// beego.Debug(id)
-	guangao, err := models.GetOneGuanggao(id)
+	guangao, err := models.GetOneCommodity(id)
 	if err != nil {
 		beego.Error(err)
 	}

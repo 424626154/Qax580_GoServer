@@ -34,7 +34,11 @@
     <span class="label label-info">{{.Post.City}}</span>
     {{end}}
   </div>
-
+  {{if eq .Post.Bfrom true}}
+  <div class="from_div">
+    <a class="from_a" href="{{.Post.Fromurl}}">来自{{.Post.Fromshow}}</a>
+  </div>
+  {{end}}
   <form id="onclikhelp"class="form-inline" method="post" action="/admin/upwxnumimg" enctype="multipart/form-data">
       <div>
 

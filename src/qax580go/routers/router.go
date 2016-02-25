@@ -48,8 +48,11 @@ func init() {
 	beego.Router("/mmyextensionresponse", &controllers.MyExtensionResponseController{}) //我的推广返回测试
 	beego.Router("/moneyinfo", &controllers.MoneyInfoController{})                      //我的金钱详情
 	beego.Router("/moneyhelp", &controllers.MoneyHelpController{})                      //我的金钱帮助
-
-	beego.Router("/subsribe", &controllers.SubsribeController{}) //关注与取消关注
+	beego.Router("/mall", &controllers.MallController{})                                //商城
+	beego.Router("/exchange", &controllers.ExchangeController{})                        //兑换
+	beego.Router("/subsribe", &controllers.SubsribeController{})                        //关注与取消关注
+	beego.Router("/shanghus", &controllers.ShangHusController{})                        //商户列表
+	beego.Router("/shanghulist", &controllers.ShangHuListController{})                  //商户子列表
 
 	beego.AutoRouter(&controllers.WxqaxController{}) //微信http自动匹配
 
@@ -90,4 +93,17 @@ func init() {
 	beego.Router("/admin/moneyinfo", &controllers.AdminMoneyInfoController{})                   //后台用户金钱记录
 	beego.Router("admin/importuser", &controllers.AdminImportUserController{})                  //后台导入微信用户
 	beego.Router("admin/upwxuserinfo", &controllers.AdminUpWxuserInfoController{})              //后台导入微信用户
+	beego.Router("admin/mall", &controllers.AdminMallController{})                              //后台商城
+	beego.Router("admin/addcommodity", &controllers.AdminaAddCommodityController{})             //添加商品
+	beego.Router("admin/upcommodityinfo", &controllers.AdminUpCommodityInfoController{})        //修改商品信息
+	beego.Router("admin/upcommodityimg", &controllers.AdminUpCommodityImgController{})          //修改商品图片
+	beego.Router("admin/exchange", &controllers.AdminExchangeController{})                      //用户兑换
+	beego.Router("admin/shanghus", &controllers.AdminShanghusController{})                      //后台商户
+	beego.Router("admin/addshanghu", &controllers.AdminAddShanghuController{})                  //添加商户
+	beego.Router("admin/upshanghuinfo", &controllers.AdminUpShangHuInfoController{})            //修改商户信息
+	beego.Router("admin/upshanghuimg", &controllers.AdminUpShangHuImgController{})              //修改商户图片
+	beego.Router("admin/keywords", &controllers.AdminKeywordsController{})                      //关键字列表
+	beego.Router("admin/addkeywords", &controllers.AdminaAddKeywordsController{})               //添加关键字
+	beego.Router("admin/keyobj", &controllers.AdminKeyobjController{})                          //关键字内容
+	beego.Router("admin/addkeyobj", &controllers.AdminaAddKeyobjController{})                   //添加关键字内容
 }

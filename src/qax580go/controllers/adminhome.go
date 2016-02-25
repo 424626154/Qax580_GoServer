@@ -65,7 +65,7 @@ func (c *AdminHomeController) Get() {
 			beego.Error(err)
 		} else {
 			if post.Label == 1 {
-				err = models.AddWxUserMoney(post.OpenId, MONEY_SUBSCRIBE_SUM)
+				err = models.AddWxUserMoney(post.OpenId, MONEY_EXAMINE_SUM)
 				if err != nil {
 					beego.Error(err)
 				} else {

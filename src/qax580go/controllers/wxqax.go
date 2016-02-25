@@ -28,19 +28,20 @@ func (c *WxqaxController) Sunscribe() {
 	subscribe_type := c.Input().Get("subscribe_type")
 	from_openid := c.Input().Get("from_openid")
 	if len(subscribe_type) != 0 && len(from_openid) != 0 {
-		response_json = getWxAccessToken(c)
+		response_json = getWxAccessToken(c, from_openid)
 
 		var user models.Wxuserinfo
 		if err := json.Unmarshal([]byte(response_json), &user); err == nil {
 			beego.Debug("----------------get Wxuserinfo json--------------------")
 			beego.Debug(user)
 			if user.ErrCode == 0 {
-				err = models.AddWxUserInfo(user)
+				state, err := models.SunscribeWxUserInfo(user)
 				if err != nil {
 					beego.Error(err)
 					response_json = `{"errcode":1,"errmsg":"AddWxUserInfo error"}`
 				} else {
-					if subscribe_type == "subscribe" {
+					beego.Debug("SunscribeWxUserInfo state", state)
+					if subscribe_type == "subscribe" && state == 0 {
 						err = models.AddWxUserMoney(user.OpenId, 4)
 						if err != nil {
 							beego.Error(err)
@@ -86,14 +87,14 @@ func (c *WxqaxController) Getuserinfo() {
 	response_json := `{"errcode":1,"errmsg":"Getuserinfo error"}`
 	openid := c.Input().Get("openid")
 	if len(openid) != 0 {
-		response_json = getWxAccessToken(c)
+		response_json = getWxAccessToken(c, openid)
 	} else {
 		response_json = `{"errcode":1,"errmsg":"parameter error"}`
 	}
 	c.Ctx.WriteString(response_json)
 }
 
-func getWxAccessToken(c *WxqaxController) string {
+func getWxAccessToken(c *WxqaxController, openid string) string {
 	// https: //api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
 	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
 	isdebug := "true"
@@ -137,7 +138,7 @@ func getWxAccessToken(c *WxqaxController) string {
 		beego.Debug("----------------get Token json--------------------")
 		beego.Debug(atj)
 		if atj.ErrCode == 0 {
-			response_json = getWxUserInfo(atj.AccessToken, atj.OpenID, c)
+			response_json = getWxUserInfo(atj.AccessToken, openid, c)
 		}
 	} else {
 		beego.Debug("----------------get Token json error--------------------")
@@ -161,7 +162,7 @@ func getWxUserInfo(access_toke, openid string, c *WxqaxController) string {
 	if isdebug == "true" {
 		realm_name = "http://localhost:9091"
 	} else {
-		realm_name = "https://api.weixin.qq.com/sns/userinfo"
+		realm_name = "https://api.weixin.qq.com/cgi-bin/user/info"
 	}
 	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
 	wx_url = strings.Replace(wx_url, "[ACCESS_TOKEN]", access_toke, -1)

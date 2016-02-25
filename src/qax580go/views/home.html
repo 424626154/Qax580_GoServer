@@ -76,7 +76,7 @@
     var citys = new Array()
     citys[0] = "全部"
     citys[1] = "庆安县"
-    citys[2] = "绥化市"
+    citys[2] = "铁力市"
     citys[3] = "北林市"
     citys[4] = "安达市"
     citys[5] = "肇东市"
@@ -86,6 +86,7 @@
     citys[9] = "青冈县"
     citys[10] = "明水县"
     citys[11] = "绥棱县"
+    citys[11] = "绥化市"
     var select_city = {{.City}};
         document.getElementById("city").options.length=0;
         document.getElementById("city").options.add(new Option(select_city,select_city));
@@ -161,6 +162,9 @@ function onclikProvince(key){
               <span class="label label-info">{{.City}}</span>
               {{end}}
             </div>
+            {{if eq .Bfrom true}}
+            <div><a class="from_a" href="{{.Fromurl}}">来自{{.Fromshow}}</a></div>
+            {{end}}
           </div>
           <div class="time_font">{{timeformat .Time}}</div>
         </div>
@@ -203,7 +207,7 @@ function onclikProvince(key){
 <a id="qrcode" class="home_font">公众帐号</a>
 <div id="qrcode_info">
 <font>扫描二维码
-  <br>关注庆安县580</font>
+  <br>关注咱这580</font>
 <img src="./static/img/qrcode.png"></div>
 -->
 <a id="gotop" class="home_font">返回顶部</a>

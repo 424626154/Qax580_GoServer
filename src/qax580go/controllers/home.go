@@ -125,13 +125,10 @@ func (c *HomeController) Post() {
 	case "city":
 		city := c.Input().Get("city")
 		maxAge := 1<<31 - 1
-		// // beego.Debug(COOKIE_CITY, city)
-		// citys := [12]City{City{"庆安县", "qinganxian"}, City{"绥化市", "suihuashi"}, City{"北林市", "beilinshi"}, City{"安达市", "andashi"},
-		// 	City{"肇东市", "zhaodongshi"}, City{"海伦市", "hailunshu"}, City{"望奎市", "wangkuishi"}, City{"兰西县", "lanxixian"},
-		// 	City{"青冈县", "qinggangxian"}, City{"明水县", "mingshuixian"}, City{"绥棱县", "suilingxian"}, City{CITY_ALL, PY_ALL}}
-		citys := [12]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
+		citys := [13]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
 			City{CITY_SD, PY_SD}, City{CITY_HL, PY_HL}, City{CITY_WK, PY_WK}, City{CITY_LX, PY_LX},
-			City{CITY_QG, PY_QG}, City{CITY_MS, PY_MS}, City{CITY_SL, PY_SL}, City{CITY_ALL, PY_ALL}}
+			City{CITY_QG, PY_QG}, City{CITY_MS, PY_MS}, City{CITY_SL, PY_SL}, City{CITY_ALL, PY_ALL},
+			City{CITY_TL, PY_TL}}
 		city_name := ""
 		for i := 0; i < len(citys); i++ {
 			if citys[i].City == city {
@@ -178,12 +175,10 @@ type City struct {
 }
 
 func getSelectCity(c *HomeController) string {
-	// citys := [12]City{City{"庆安县", "qinganxian"}, City{"绥化市", "suihuashi"}, City{"北林市", "beilinshi"}, City{"安达市", "andashi"},
-	// 	City{"肇东市", "zhaodongshi"}, City{"海伦市", "hailunshu"}, City{"望奎市", "wangkuishi"}, City{"兰西县", "lanxixian"},
-	// 	City{"青冈县", "qinggangxian"}, City{"明水县", "mingshuixian"}, City{"绥棱县", "suilingxian"}, City{CITY_ALL, PY_ALL}}
-	citys := [12]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
+	citys := [13]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
 		City{CITY_SD, PY_SD}, City{CITY_HL, PY_HL}, City{CITY_WK, PY_WK}, City{CITY_LX, PY_LX},
-		City{CITY_QG, PY_QG}, City{CITY_MS, PY_MS}, City{CITY_SL, PY_SL}, City{CITY_ALL, PY_ALL}}
+		City{CITY_QG, PY_QG}, City{CITY_MS, PY_MS}, City{CITY_SL, PY_SL}, City{CITY_ALL, PY_ALL},
+		City{CITY_TL, PY_TL}}
 	city_default := CITY_ALL
 	city := ""
 	city_name := c.Ctx.GetCookie(COOKIE_CITY)

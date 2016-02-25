@@ -91,8 +91,24 @@ func moneyRecord(in int64) (out string) {
 		record = "发布信息已审核通过"
 	} else if in == 3 {
 		record = "发布信息被别人认可"
+	} else if in == 4 {
+		record = "商城兑换"
 	}
 	return fmt.Sprintf("%s", record)
+}
+func moneyRecordInfo(in int64, in1 int64) (out string) {
+	beego.Debug("moneyRecord in", in)
+	record := "未知"
+	if in == 1 {
+		record = "获得帮帮币"
+	} else if in == 2 {
+		record = "获得帮帮币"
+	} else if in == 3 {
+		record = "获得帮帮币"
+	} else if in == 4 {
+		record = "消耗帮帮币"
+	}
+	return fmt.Sprintf("%s%d", record, in1)
 }
 func isImgPath(in string) (out string) {
 	url := ""
@@ -140,6 +156,7 @@ func main() {
 	beego.AddFuncMap("isImgPath", isImgPath)
 	beego.AddFuncMap("versionInfo", versionInfo)
 	beego.AddFuncMap("moneyrecord", moneyRecord)
+	beego.AddFuncMap("moneyrecordinfo", moneyRecordInfo)
 	beego.SetStaticPath("/web", "web")
 	beego.Run()
 }

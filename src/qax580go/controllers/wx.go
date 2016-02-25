@@ -24,10 +24,10 @@ const (
 	error_info     = "我们正在努力成为一个有情怀的免费信息网站"
 	null_info0     = "未搜索到相关信息"
 	null_info1     = "未搜索到有关&的信息"
-	subscribe_info = "欢迎关注庆安县580，我们正在努力成为一个有情怀的免费信息发布平台，为庆安人服务"
+	subscribe_info = "欢迎关注咱这580，我们正在努力成为一个有情怀的免费信息发布平台，为大家服务"
 	about_info     = "【客服服务】\n关注我们\n公众号:qax580\n微信:qax580kf\n腾讯微博:庆安兄弟微盟\nQQ : 2063883729\n邮箱：qaxiongdiweimeng@163.com"
 	content_url    = "http://www.baoguangguang.cn/content?op=con&id=s%"
-	jieshao_info   = "【帮助】\n你好，庆安县580是免费的信息发布平台，在这里您可以发布信息也可以搜索相关信息，相关功能在功能菜单中"
+	jieshao_info   = "【帮助】\n你好，咱这580是免费的信息发布平台，在这里您可以发布信息也可以搜索相关信息，相关功能在功能菜单中"
 	function_info  = "【帮助】\n发布信息－》更多－》发布信息，意见反馈－》更多－》意见反馈"
 )
 
@@ -198,19 +198,41 @@ func responseTypeMsg(body []byte, msgType string) string {
 			} else if strings.Index(requestBody.Content, "发布") >= 0 {
 				response_xml = responseTextMsg(requestBody.FromUserName, function_info)
 			} else {
-				beego.Debug(requestBody.Content)
-				posts, err := models.QueryFuzzyLimitPost(requestBody.Content, 5)
+				//是否存在关键字
+				count, err := models.GetKeywordsCount(requestBody.Content)
 				if err != nil {
 					beego.Error(err)
 				}
-				// beego.Debug(requestBody.FromUserName)
-				// beego.Debug(requestBody.ToUserName)
-				if len(posts) > 0 {
-					response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Content, posts)
+				if count > 0 {
+					obj, err := models.GetOneKeywords(requestBody.Content)
+					if err != nil {
+						beego.Error(err)
+					} else {
+						objs, err := models.QueryFuzzyLimitKeyobj(obj.Id, 5)
+						if err != nil {
+							beego.Error(err)
+						}
+						if len(objs) > 0 {
+							response_xml = responseKeyXML(requestBody.FromUserName, requestBody.Content, objs)
+						} else {
+							response_xml = responseCustomerService(requestBody.FromUserName, requestBody.ToUserName)
+						}
+					}
 				} else {
-					response_xml = responseCustomerService(requestBody.FromUserName, requestBody.ToUserName)
+					//信息查询
+					beego.Debug(requestBody.Content)
+					posts, err := models.QueryFuzzyLimitPost(requestBody.Content, 5)
+					if err != nil {
+						beego.Error(err)
+					}
+					// beego.Debug(requestBody.FromUserName)
+					// beego.Debug(requestBody.ToUserName)
+					if len(posts) > 0 {
+						response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Content, posts)
+					} else {
+						response_xml = responseCustomerService(requestBody.FromUserName, requestBody.ToUserName)
+					}
 				}
-
 			}
 		}
 		//音频
@@ -334,6 +356,39 @@ func responseImageTextXML(toUserName string, content string, posts []models.Post
 			imageTextResponseItem.Description = value2CDATA(posts[i].Info)
 			imageTextResponseItem.PicUrl = value2CDATA(getWxImageUrl(posts[i].Image))
 			imageTextResponseItem.Url = value2CDATA(strings.Replace(content_url, "s%", fmt.Sprintf("%d", posts[i].Id), -1))
+			imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
+		}
+		textResponseBody := &ImageTextResponseBody{}
+		textResponseBody.MsgType = value2CDATA("news")
+		textResponseBody.ArticleCount = len(imageTextResponseItems)
+		textResponseBody.Articles = imageTextResponseItems
+		textResponseBody.FromUserName = value2CDATA(qax580_name)
+		textResponseBody.ToUserName = value2CDATA(toUserName)
+		res, err := xml.MarshalIndent(textResponseBody, " ", "  ")
+
+		if err != nil {
+			beego.Debug(err.Error())
+		} else {
+			articles = string(res)
+		}
+	} else {
+		articles = analysisNull(toUserName, content)
+	}
+
+	return articles
+}
+
+//关键字
+func responseKeyXML(toUserName string, content string, objs []models.Keyobj) string {
+	articles := ""
+	if objs != nil && len(objs) > 0 {
+		imageTextResponseItems := []ImageTextResponseItem{}
+		for i := 0; i < len(objs); i++ {
+			imageTextResponseItem := ImageTextResponseItem{}
+			imageTextResponseItem.Title = value2CDATA(objs[i].Title)
+			imageTextResponseItem.Description = value2CDATA(objs[i].Info)
+			imageTextResponseItem.PicUrl = value2CDATA(getWxImageUrl(objs[i].Image))
+			imageTextResponseItem.Url = value2CDATA(objs[i].Url)
 			imageTextResponseItems = append(imageTextResponseItems, imageTextResponseItem)
 		}
 		textResponseBody := &ImageTextResponseBody{}

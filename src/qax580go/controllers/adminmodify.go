@@ -53,9 +53,19 @@ func (c *AdminModifyController) Get() {
 		title := c.Input().Get("title")
 		info := c.Input().Get("info")
 		city := c.Input().Get("city")
+		bfrom := c.Input().Get("bfrom")
 		beego.Debug("is con " + title)
 		if len(id) != 0 && len(title) != 0 && len(info) != 0 {
-			err := models.UpdatePostInfo(id, title, info, city)
+			b_from := false
+			fromshow := ""
+			fromurl := ""
+			if bfrom == "on" {
+				b_from = true
+				fromshow = c.Input().Get("fromshow")
+				fromurl = c.Input().Get("fromurl")
+			}
+			beego.Debug("bfrom :", bfrom)
+			err := models.UpdatePostInfo(id, title, info, city, b_from, fromshow, fromurl)
 			if err != nil {
 				beego.Error(err)
 			}

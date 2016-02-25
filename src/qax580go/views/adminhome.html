@@ -11,6 +11,10 @@
   <a type="button" class="btn btn-default" href="/admin/newskey">新闻关键词</a>
   <a type="button" class="btn btn-default" href="/admin/guanggaos">广告管理</a>
   <a type="button" class="btn btn-default" href="/admin/waimailist">外卖订餐</a>
+  <a type="button" class="btn btn-default" href="/admin/mall">商城</a>
+  <a type="button" class="btn btn-default" href="/admin/exchange">兑换列表</a>
+  <a type="button" class="btn btn-default" href="/admin/shanghus">商户管理</a>
+  <a type="button" class="btn btn-default" href="/admin/keywords">关键字管理</a>
 </div>
 <div class="time_font">
   <a>
@@ -57,6 +61,13 @@
     <span class="label label-info">{{.City}}</span>
     {{end}}
   </div>
+  {{if eq .Bfrom true}}
+  <div class="from_div">
+    <a class="from_a" href="{{.Fromurl}}">来自{{.Fromshow}}</a>
+  </div>
+  <div > <font>{{.Fromurl}}</font>
+  </div>
+  {{end}}
   <a href="/admin/home?op=del&id={{.Id}}" >删除</a>
   <a href="/admin/modify?op=m&id={{.Id}}" >修改</a>
   {{if eq .Examine 0}}

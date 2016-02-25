@@ -25,6 +25,9 @@ type Post struct {
 	HeadImgurl string `orm:"size(500)"`
 	Time       int64
 	City       string //城市
+	Bfrom      bool   //来源
+	Fromshow   string //来源显示
+	Fromurl    string //来源链接
 }
 
 //意见反馈
@@ -118,7 +121,7 @@ type UserMoneyRecord struct {
 	OpenId    string
 	Money     int64
 	Time      int64
-	MoneyType int64 //事件类型 1注册 2 帖子被赞
+	MoneyType int64 //事件类型 1注册 2 帖子被赞 3兑换商品
 }
 type JsApiTicketJson struct {
 	Id        int64
@@ -220,6 +223,78 @@ type Posthelp struct {
 	Time   int64
 }
 
+//商品
+type Commodity struct {
+	Id         int64
+	Name       string    //名称
+	Info       string    //简介
+	Image      string    //图片地址
+	Money      int64     //价格
+	State      int16     //0 未上架 1 上架
+	CreateTime time.Time `orm:"index"` //创建时间
+	Time       int64     //显示时间
+}
+
+//订单
+type Uorder struct {
+	Id           int64
+	OpenId       string
+	CommodityId  int64     //商品ID
+	State        int16     //0 未兑换 1 已兑换
+	CreateTime   time.Time `orm:"index"` //创建时间
+	Time         int64     //显示时间
+	ExchangeTime time.Time `orm:"index"` //兑换时间
+	Time1        int64     //显示兑换时间
+}
+
+//显示订单
+type ShowOrder struct {
+	Id           int64
+	OpenId       string
+	CommodityId  int64     //商品ID
+	State        int16     //0 未兑换 1 已兑换
+	CreateTime   time.Time `orm:"index"` //创建时间
+	Time         int64     //显示时间
+	ExchangeTime time.Time `orm:"index"` //兑换时间
+	Time1        int64     //显示兑换时间
+	Commodity    *Commodity
+}
+
+//商户
+type ShangHu struct {
+	Id         int64
+	Name       string    //名称
+	Info       string    //简介
+	Image      string    //图片地址
+	Type       int16     //类型
+	Recommend  int16     //0 未推荐 1 推荐
+	State      int16     //0 未上线 1 上线
+	CreateTime time.Time `orm:"index"` //创建时间
+	Time       int64     //显示时间
+}
+
+//搜索关键字
+type Keywords struct {
+	Id         int64
+	Key        string    //关键字
+	State      int16     //0 未上线 1 上线
+	CreateTime time.Time `orm:"index"` //创建时间
+	Time       int64     //显示时间
+}
+
+//关键字对象
+type Keyobj struct {
+	Id         int64
+	KeyId      int64
+	Image      string
+	Title      string
+	Info       string
+	Url        string
+	State      int16     //0 未上线 1 上线
+	CreateTime time.Time `orm:"index"` //创建时间
+	Time       int64     //显示时间
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -250,12 +325,18 @@ func RegisterDB() {
 	orm.RegisterModel(new(Caidan))          //菜单
 	orm.RegisterModel(new(Posthelp))        //帖子帮助
 	orm.RegisterModel(new(UserMoneyRecord)) //用户事件类型
+	orm.RegisterModel(new(Commodity))       //商品
+	orm.RegisterModel(new(Uorder))          //订单
+	orm.RegisterModel(new(ShangHu))         //商户
+	orm.RegisterModel(new(Keywords))        //关键字
+	orm.RegisterModel(new(Keyobj))          //关键字对象
+
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
 
 //修改帖子内容
-func UpdatePostInfo(id string, title string, info string, city string) error {
+func UpdatePostInfo(id string, title string, info string, city string, bfrom bool, fromshow string, fromurl string) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return err
@@ -265,7 +346,10 @@ func UpdatePostInfo(id string, title string, info string, city string) error {
 	cate.Title = title
 	cate.Info = info
 	cate.City = city
-	_, err = o.Update(cate, "title", "info", "city")
+	cate.Bfrom = bfrom
+	cate.Fromshow = fromshow
+	cate.Fromurl = fromurl
+	_, err = o.Update(cate, "title", "info", "city", "bfrom", "fromshow", "fromurl")
 	return err
 }
 
@@ -367,12 +451,12 @@ func AddPost(title string, info string, image string) error {
 
 	return nil
 }
-func AddPostLabel(title string, info string, label int16, image string, city string) (int64, error) {
+func AddPostLabel(title string, info string, label int16, image string, city string, bfrom bool, fromshow string, fromurl string) (int64, error) {
 	o := orm.NewOrm()
 
 	create_time := time.Now()
 	my_time := time.Now().Unix()
-	cate := &Post{Title: title, Info: info, CreateTime: create_time, Time: my_time, Label: label, Image: image, City: city}
+	cate := &Post{Title: title, Info: info, CreateTime: create_time, Time: my_time, Label: label, Image: image, City: city, Bfrom: bfrom, Fromshow: fromshow, Fromurl: fromurl}
 	// 插入数据
 	id, err := o.Insert(cate)
 	return id, err
@@ -775,6 +859,31 @@ func AddWxUserInfo(wxUserInfo Wxuserinfo) error {
 	return nil
 }
 
+func SunscribeWxUserInfo(wxUserInfo Wxuserinfo) (int, error) {
+	beego.Debug("-----------AddWxUserInfo----------")
+	beego.Debug(wxUserInfo)
+	o := orm.NewOrm()
+	cate := &Wxuserinfo{OpenId: wxUserInfo.OpenId, NickeName: wxUserInfo.NickeName, Sex: wxUserInfo.Sex,
+		Province: wxUserInfo.Province, City: wxUserInfo.City, Country: wxUserInfo.Country,
+		HeadImgurl: wxUserInfo.HeadImgurl, Unionid: wxUserInfo.Unionid,
+		ErrCode: wxUserInfo.ErrCode, ErrMsg: wxUserInfo.ErrMsg}
+
+	// 查询数据
+	qs := o.QueryTable("wxuserinfo")
+	err := qs.Filter("open_id", wxUserInfo.OpenId).One(cate)
+	if err == nil {
+		return 1, err
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+
+	return 0, nil
+}
+
 /*
 添加用户金钱
 */
@@ -791,6 +900,29 @@ func AddWxUserMoney(openid string, money int64) error {
 	beego.Debug("AddWxUserMoney Id:", cate.Id)
 	// cate = &Wxuserinfo{Id: cate.Id}
 	cate.Money = cate.Money + money
+	_, err = o.Update(cate, "money")
+	return err
+}
+
+/*
+消耗金钱
+*/
+func ConsumeWxUserMoney(openid string, money int64) error {
+	beego.Debug("ConsumeWxUserMoney openid:", openid)
+	o := orm.NewOrm()
+	cate := &Wxuserinfo{}
+	// 查询数据
+	qs := o.QueryTable("wxuserinfo")
+	err := qs.Filter("open_id", openid).One(cate)
+	if err != nil {
+		return err
+	}
+	beego.Debug("ConsumeWxUserMoney Id:", cate.Id)
+	// cate = &Wxuserinfo{Id: cate.Id}
+	cate.Money = cate.Money - money
+	if cate.Money < 0 {
+		cate.Money = 0
+	}
 	_, err = o.Update(cate, "money")
 	return err
 }
@@ -1204,3 +1336,470 @@ func DeleteUserMoneyRecord(openid string) error {
 	_, err := o.QueryTable("user_money_record").Filter("open_id", openid).Delete()
 	return err
 }
+
+/*******商品**********/
+/*
+添加商品
+*/
+func AddCommodity(name string, info string, image string, money string) error {
+	imoney, err := strconv.ParseInt(money, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	create_time := time.Now()
+	my_time := time.Now().Unix()
+	cate := &Commodity{Name: name, Info: info, CreateTime: create_time, Time: my_time, Image: image, Money: imoney}
+	// 查询数据
+	qs := o.QueryTable("commodity")
+	err = qs.Filter("name", name).One(cate)
+	if err == nil {
+		return err
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+/*
+获得一个商品
+*/
+func GetOneCommodity(id string) (*Commodity, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Commodity{Id: cid}
+	err = o.Read(obj)
+	return obj, err
+}
+func GetOneCommodity1(id int64) (*Commodity, error) {
+	o := orm.NewOrm()
+	obj := &Commodity{Id: id}
+	err := o.Read(obj)
+	return obj, err
+}
+
+/*
+后台商品
+*/
+func GetAllCommoditysAdmin() ([]Commodity, error) {
+	o := orm.NewOrm()
+	var commoditys []Commodity
+	_, err := o.Raw("SELECT * FROM commodity  ORDER BY id DESC").QueryRows(&commoditys)
+	beego.Debug("GetAllCommoditysAdmin", commoditys)
+	return commoditys, err
+}
+
+/*
+用户查看商品
+*/
+func GetAllCommoditys() ([]Commodity, error) {
+	o := orm.NewOrm()
+	var commoditys []Commodity
+	_, err := o.Raw("SELECT * FROM commodity WHERE state = ? ORDER BY id DESC ", 1).QueryRows(&commoditys)
+	return commoditys, err
+}
+
+/*
+删除商品
+*/
+func DeleteCommodity(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Commodity{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+//修改商品内容
+func UpdateCommodityInfo(id string, name string, info string, money string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	imoney, err := strconv.ParseInt(money, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Commodity{Id: cid}
+	cate.Name = name
+	cate.Info = info
+	cate.Money = imoney
+	_, err = o.Update(cate, "name", "info", "money")
+	return err
+}
+
+//修改商品图片
+func UpdateCommodityimg(id string, img string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Commodity{Id: cid}
+	cate.Image = img
+	_, err = o.Update(cate, "image")
+	return err
+}
+
+//修改商品状态
+func UpdateCommodityState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Commodity{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	return err
+}
+
+/*******商品**********/
+
+/*******订单**********/
+/*
+添加订单
+*/
+func AddUorder(openid string, commid string) error {
+	cid, err := strconv.ParseInt(commid, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	create_time := time.Now()
+	my_time := time.Now().Unix()
+	cate := &Uorder{OpenId: openid, CommodityId: cid, CreateTime: create_time, Time: my_time, ExchangeTime: create_time, Time1: my_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/*
+获得一个订单
+*/
+func GetOneUorder(id string) (*Uorder, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Uorder{Id: cid}
+	err = o.Read(obj)
+	return obj, err
+}
+
+/*
+用户查看订单
+*/
+func GetAllUorders() ([]Uorder, error) {
+	o := orm.NewOrm()
+	var objs []Uorder
+	_, err := o.Raw("SELECT * FROM uorder  ORDER BY id DESC").QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+
+func GetAllUserUorders(openid string) ([]Uorder, error) {
+	o := orm.NewOrm()
+	var objs []Uorder
+	_, err := o.Raw("SELECT * FROM uorder WHERE open_id = ? ORDER BY id DESC", openid).QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+func UpdateUorderState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Uorder{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	return err
+}
+
+/*******订单**********/
+/*******商户**********/
+/*
+添加商户
+*/
+func AddShangHu(name string, info string, image string, shanghu_type int16) error {
+	o := orm.NewOrm()
+	create_time := time.Now()
+	my_time := time.Now().Unix()
+	cate := &ShangHu{Name: name, Info: info, Image: image, CreateTime: create_time, Time: my_time, Type: shanghu_type}
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetOneShanghu(id string) (*ShangHu, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &ShangHu{Id: cid}
+	err = o.Read(obj)
+	return obj, err
+}
+
+/*
+用户查看订单
+*/
+func GetAdminAllShangHus() ([]ShangHu, error) {
+	o := orm.NewOrm()
+	var objs []ShangHu
+	_, err := o.Raw("SELECT * FROM shang_hu  ORDER BY id DESC").QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+
+func GetAllShangHus() ([]ShangHu, error) {
+	o := orm.NewOrm()
+	var objs []ShangHu
+	_, err := o.Raw("SELECT * FROM shang_hu WHERE state = ? ORDER BY id DESC", 1).QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+func GetAllTypeShangHus(mytype string) ([]ShangHu, error) {
+	o := orm.NewOrm()
+	var objs []ShangHu
+	_, err := o.Raw("SELECT * FROM shang_hu WHERE state = ? And type = ? ORDER BY id DESC", 1, mytype).QueryRows(&objs)
+	beego.Debug("GetAllTypeShangHus mytype ", mytype, objs)
+	return objs, err
+}
+func UpdateShangHuState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &ShangHu{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	return err
+}
+func UpdateShangHuRecommend(id string, recommend int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &ShangHu{Id: cid}
+	cate.Recommend = recommend
+	_, err = o.Update(cate, "recommend")
+	beego.Debug("UpdateShangHuRecommend :", recommend)
+	return err
+}
+
+func UpdateShangHuInfo(id string, name string, info string, sh_type int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &ShangHu{Id: cid}
+	cate.Name = name
+	cate.Info = info
+	cate.Type = sh_type
+	_, err = o.Update(cate, "name", "info", "type")
+	return err
+}
+func UpdateShangHuImg(id string, img string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &ShangHu{Id: cid}
+	cate.Image = img
+	_, err = o.Update(cate, "image")
+	return err
+}
+
+/*
+删除商户
+*/
+func DeleteShangHu(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &ShangHu{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/*******商户**********/
+/*******关键字**********/
+/*
+添加关键字
+*/
+func AddKeywords(key string) error {
+	o := orm.NewOrm()
+	create_time := time.Now()
+	my_time := time.Now().Unix()
+	cate := &Keywords{Key: key, CreateTime: create_time, Time: my_time}
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/*
+获得关键字列表
+*/
+func GetAllKeywords() ([]Keywords, error) {
+	o := orm.NewOrm()
+	var objs []Keywords
+	_, err := o.Raw("SELECT * FROM keywords  ORDER BY id DESC").QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+
+/*
+修改关键字
+*/
+func UpdateKeywordsState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Keywords{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	return err
+}
+
+/*
+删除商户
+*/
+func DeleteKeywords(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Keywords{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/*
+获得关键字数量
+*/
+
+func GetKeywordsCount(key string) (int32, error) {
+	o := orm.NewOrm()
+	count, err := o.QueryTable("keywords").Filter("key", key).Count()
+	return int32(count), err
+}
+
+func GetOneKeywords(key string) (*Keywords, error) {
+	o := orm.NewOrm()
+	obj := &Keywords{Key: key}
+	err := o.Read(obj)
+	return obj, err
+}
+
+/*******关键字**********/
+
+/********关键字对象*********/
+/*
+添加关键字对象
+*/
+func AddKeyobj(keyid string, title string, info string, url string) error {
+	ckeyid, err := strconv.ParseInt(keyid, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	create_time := time.Now()
+	my_time := time.Now().Unix()
+	cate := &Keyobj{KeyId: ckeyid, Title: title, Info: info, Url: url, CreateTime: create_time, Time: my_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/*
+获得关键字列表
+*/
+func GetAllKeyobj(keyid string) ([]Keyobj, error) {
+	ckeyid, err := strconv.ParseInt(keyid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	var objs []Keyobj
+	_, err = o.Raw("SELECT * FROM keyobj WHERE key_id = ? ORDER BY id DESC", ckeyid).QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+
+/*
+修改关键字
+*/
+func UpdateKeyobjState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Keyobj{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	return err
+}
+
+/*
+删除商户
+*/
+func DeleteKeyobj(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Keyobj{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/*
+关键字查询
+*/
+func QueryFuzzyLimitKeyobj(keyid int64, nums int64) ([]Keyobj, error) {
+	o := orm.NewOrm()
+	var objs []Keyobj
+	_, err := o.Raw("SELECT * FROM keyobj WHERE key_id = ? AND state = 1 ORDER BY id DESC LIMIT ? ", keyid, nums).QueryRows(&objs)
+	return objs, err
+}
+
+/*******关键字对象**********/

@@ -4,17 +4,16 @@
 $(document).ready(function(){
             document.getElementById("title_font").href="/admin/wxuserlist"
         });
-	</script>
-	<div id="cont_bg">
+  </script>
+<div id="cont_bg">
   <ul class="qax_list_bg">
     {{range .ImportUsers}}
-    <div class="cont_info"> <font class="info_fnot">{{.OpenId}}</font></div>
+    <div class="cont_info"> <font class="info_fnot">{{.OpenId}}</font>
+    </div>
     {{if eq .IsImport false}}
     <a href="/admin/importuser?op=import&openid={{.OpenId}}">导入</a>
     {{end}}
       {{end}}
-    }
-    }
-    </ul>
-  </div>
+  </ul>
+</div>
 {{template "footer.html" .}}

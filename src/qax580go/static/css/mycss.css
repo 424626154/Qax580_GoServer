@@ -220,6 +220,7 @@
   position: relative;
   top: -130px;
   left: 140px;
+  padding: 10px 10px;
 }
 
 
@@ -291,4 +292,20 @@
 }
 .my_select_img{
     padding: 10px;
+}
+.shanghu_type_bg{
+    height: 40px;
+    list-style:none;
+    padding: 0 0;
+}
+.shanghu_type{
+    width: 80%;
+    height: 80%;
+}
+.from_div{
+    height:40px;
+    padding: 10px 0;
+}
+.from_a{
+color:#C9C9C9;
 }

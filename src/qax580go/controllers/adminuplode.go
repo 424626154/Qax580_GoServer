@@ -43,6 +43,7 @@ func (c *AdminUplodeController) Post() {
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")
 	city := c.Input().Get("city")
+	bfrom := c.Input().Get("bfrom")
 	// beego.Debug("info:", info)
 	if len(title) != 0 && len(info) != 0 {
 		// 获取附件
@@ -75,8 +76,16 @@ func (c *AdminUplodeController) Post() {
 	}
 
 	if len(title) != 0 && len(info) != 0 {
-		beego.Debug(image_name)
-		id, err := models.AddPostLabel(title, info, 2, image_name, city)
+		b_from := false
+		fromshow := ""
+		fromurl := ""
+		if bfrom == "true" {
+			b_from = true
+			fromshow = c.Input().Get("fromshow")
+			fromurl = c.Input().Get("fromurl")
+		}
+		beego.Debug("b_from :", bfrom)
+		id, err := models.AddPostLabel(title, info, 2, image_name, city, b_from, fromshow, fromurl)
 		if err != nil {
 			beego.Error(err)
 		}
