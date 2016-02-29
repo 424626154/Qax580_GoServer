@@ -14,6 +14,13 @@
     <div>{{.Commodity.Info}}</div>
     <div>价格:{{.Commodity.Money}}帮帮币</div>
     <div>
+        {{if eq .HeadImgurl ""}}
+     {{ .HeadImgurl}}
+     {{else}}
+    <div id="image_fnot" >
+      <img src="{{.HeadImgurl}}" alt="{{.HeadImgurl}}" width="60px" height="60px"></div>
+    {{end}}
+    <div>{{.NickeName}}</div>
     {{if eq .State 0}}
     <a href="/admin/exchange?op=state&id={{.Id}}" >待兑换</a>
     {{else}}

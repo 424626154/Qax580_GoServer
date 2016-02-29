@@ -19,6 +19,7 @@ type AdminaAddKeyobjController struct {
 }
 
 func (c *AdminaAddKeyobjController) Get() {
+	beego.Debug("AdminaAddKeyobjController Get")
 	bool, username := chackAccount(c.Ctx)
 	if bool {
 		c.Data["isUser"] = bool
@@ -28,12 +29,14 @@ func (c *AdminaAddKeyobjController) Get() {
 		return
 	}
 	keyid := c.Input().Get("keyid")
+	beego.Debug("keyid :", keyid)
 	c.Data["KeyId"] = keyid
 	c.Data["Image"] = ""
 	c.TplNames = "adminaddkeyobj.html"
 
 }
 func (c *AdminaAddKeyobjController) Post() {
+	beego.Debug("AdminaAddKeyobjController Post")
 	image_name := ""
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")
@@ -64,7 +67,7 @@ func (c *AdminaAddKeyobjController) Post() {
 			}
 		}
 		beego.Debug("keyid", keyid)
-		err = models.AddKeyobj(keyid, title, info, murl)
+		err = models.AddKeyobj(keyid, title, info, image_name, murl)
 		if err != nil {
 			beego.Error(err)
 		}

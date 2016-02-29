@@ -27,8 +27,10 @@ func (c *WxqaxController) Sunscribe() {
 	response_json := `{"errcode":1,"errmsg":"Sunscribe error"}`
 	subscribe_type := c.Input().Get("subscribe_type")
 	from_openid := c.Input().Get("from_openid")
+	appid := c.Input().Get("appid")
+	secret := c.Input().Get("secret")
 	if len(subscribe_type) != 0 && len(from_openid) != 0 {
-		response_json = getWxAccessToken(c, from_openid)
+		response_json = getWxAccessToken(c, from_openid, appid, secret)
 
 		var user models.Wxuserinfo
 		if err := json.Unmarshal([]byte(response_json), &user); err == nil {
@@ -87,14 +89,14 @@ func (c *WxqaxController) Getuserinfo() {
 	response_json := `{"errcode":1,"errmsg":"Getuserinfo error"}`
 	openid := c.Input().Get("openid")
 	if len(openid) != 0 {
-		response_json = getWxAccessToken(c, openid)
+		response_json = getWxAccessToken(c, openid, qa_appid, qa_secret)
 	} else {
 		response_json = `{"errcode":1,"errmsg":"parameter error"}`
 	}
 	c.Ctx.WriteString(response_json)
 }
 
-func getWxAccessToken(c *WxqaxController, openid string) string {
+func getWxAccessToken(c *WxqaxController, openid string, appid string, secret string) string {
 	// https: //api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
 	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
 	isdebug := "true"
@@ -112,8 +114,6 @@ func getWxAccessToken(c *WxqaxController, openid string) string {
 	} else {
 		realm_name = "https://api.weixin.qq.com/cgi-bin/token"
 	}
-	appid := "wx570bbcc8cf9fdd80"
-	secret := "c4b26e95739bc7defcc42e556cc7ae42"
 	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
 	wx_url = strings.Replace(wx_url, "[APPID]", appid, -1)
 	wx_url = strings.Replace(wx_url, "[SECRET]", secret, -1)

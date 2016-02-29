@@ -258,6 +258,8 @@ type ShowOrder struct {
 	ExchangeTime time.Time `orm:"index"` //兑换时间
 	Time1        int64     //显示兑换时间
 	Commodity    *Commodity
+	NickeName    string
+	HeadImgurl   string
 }
 
 //商户
@@ -276,7 +278,7 @@ type ShangHu struct {
 //搜索关键字
 type Keywords struct {
 	Id         int64
-	Key        string    //关键字
+	KeyName    string    //关键字
 	State      int16     //0 未上线 1 上线
 	CreateTime time.Time `orm:"index"` //创建时间
 	Time       int64     //显示时间
@@ -1659,7 +1661,7 @@ func AddKeywords(key string) error {
 	o := orm.NewOrm()
 	create_time := time.Now()
 	my_time := time.Now().Unix()
-	cate := &Keywords{Key: key, CreateTime: create_time, Time: my_time}
+	cate := &Keywords{KeyName: key, CreateTime: create_time, Time: my_time}
 	// 插入数据
 	_, err := o.Insert(cate)
 	if err != nil {
@@ -1714,15 +1716,24 @@ func DeleteKeywords(id string) error {
 
 func GetKeywordsCount(key string) (int32, error) {
 	o := orm.NewOrm()
-	count, err := o.QueryTable("keywords").Filter("key", key).Count()
-	return int32(count), err
+	var objs []Keywords
+	num, err := o.Raw("SELECT * FROM keywords WHERE key_name = ?", key).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return int32(0), err
+	}
+	return int32(num), err
 }
 
 func GetOneKeywords(key string) (*Keywords, error) {
 	o := orm.NewOrm()
-	obj := &Keywords{Key: key}
-	err := o.Read(obj)
-	return obj, err
+	keywords := &Keywords{}
+	err := o.QueryTable("keywords").Filter("key_name", key).One(keywords)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return keywords, err
 }
 
 /*******关键字**********/
@@ -1731,7 +1742,7 @@ func GetOneKeywords(key string) (*Keywords, error) {
 /*
 添加关键字对象
 */
-func AddKeyobj(keyid string, title string, info string, url string) error {
+func AddKeyobj(keyid string, title string, info string, img string, url string) error {
 	ckeyid, err := strconv.ParseInt(keyid, 10, 64)
 	if err != nil {
 		return err
@@ -1739,7 +1750,7 @@ func AddKeyobj(keyid string, title string, info string, url string) error {
 	o := orm.NewOrm()
 	create_time := time.Now()
 	my_time := time.Now().Unix()
-	cate := &Keyobj{KeyId: ckeyid, Title: title, Info: info, Url: url, CreateTime: create_time, Time: my_time}
+	cate := &Keyobj{KeyId: ckeyid, Title: title, Info: info, Image: img, Url: url, CreateTime: create_time, Time: my_time}
 	// 插入数据
 	_, err = o.Insert(cate)
 	if err != nil {

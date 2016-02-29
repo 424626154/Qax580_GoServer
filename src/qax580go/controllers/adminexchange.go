@@ -84,10 +84,18 @@ func (c *AdminExchangeController) Get() {
 			obj := models.ShowOrder{Id: uorders[i].Id, OpenId: uorders[i].OpenId, CommodityId: uorders[i].CommodityId,
 				State: uorders[i].State, CreateTime: uorders[i].CreateTime, Time: uorders[i].Time,
 				ExchangeTime: uorders[i].ExchangeTime, Time1: uorders[i].Time1, Commodity: com}
+			user, err := models.GetOneWxUserInfo(uorders[i].OpenId)
+			if err != nil {
+				beego.Debug(err)
+			} else {
+				obj.NickeName = user.NickeName
+				obj.HeadImgurl = user.HeadImgurl
+			}
 			showOrders = append(showOrders, obj)
 		}
 
 	}
+	// beego.Debug("ShowOrders :", showOrders)
 	c.Data["ShowOrders"] = showOrders
 	c.TplNames = "adminexchange.html"
 }

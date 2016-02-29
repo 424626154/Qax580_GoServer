@@ -187,23 +187,26 @@ func responseTypeMsg(body []byte, msgType string) string {
 		err := xml.Unmarshal(body, requestBody)
 		if err != nil {
 			beego.Debug(err.Error())
-			response_xml = responseTextMsg(requestBody.FromUserName, error_info)
+			response_xml = responseTextMsg(requestBody.FromUserName, error_info, qax580_name)
 		} else {
 			requestBody := &TextRequestBody{}
 			err := xml.Unmarshal(body, requestBody)
 			if err != nil {
-				response_xml = responseTextMsg(requestBody.FromUserName, error_info)
+				response_xml = responseTextMsg(requestBody.FromUserName, error_info, qax580_name)
 			} else if requestBody.Content == "你好" || requestBody.Content == "您好" {
-				response_xml = responseTextMsg(requestBody.FromUserName, jieshao_info)
+				response_xml = responseTextMsg(requestBody.FromUserName, jieshao_info, qax580_name)
 			} else if strings.Index(requestBody.Content, "发布") >= 0 {
-				response_xml = responseTextMsg(requestBody.FromUserName, function_info)
+				response_xml = responseTextMsg(requestBody.FromUserName, function_info, qax580_name)
 			} else {
 				//是否存在关键字
+				key_count := int32(0)
 				count, err := models.GetKeywordsCount(requestBody.Content)
 				if err != nil {
 					beego.Error(err)
+				} else {
+					key_count = count
 				}
-				if count > 0 {
+				if key_count > 0 {
 					obj, err := models.GetOneKeywords(requestBody.Content)
 					if err != nil {
 						beego.Error(err)
@@ -213,7 +216,7 @@ func responseTypeMsg(body []byte, msgType string) string {
 							beego.Error(err)
 						}
 						if len(objs) > 0 {
-							response_xml = responseKeyXML(requestBody.FromUserName, requestBody.Content, objs)
+							response_xml = responseKeyXML(requestBody.FromUserName, requestBody.Content, objs, qax580_name)
 						} else {
 							response_xml = responseCustomerService(requestBody.FromUserName, requestBody.ToUserName)
 						}
@@ -228,7 +231,7 @@ func responseTypeMsg(body []byte, msgType string) string {
 					// beego.Debug(requestBody.FromUserName)
 					// beego.Debug(requestBody.ToUserName)
 					if len(posts) > 0 {
-						response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Content, posts)
+						response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Content, posts, qax580_name)
 					} else {
 						response_xml = responseCustomerService(requestBody.FromUserName, requestBody.ToUserName)
 					}
@@ -240,14 +243,14 @@ func responseTypeMsg(body []byte, msgType string) string {
 		requestBody := &VoiceRequestBody{}
 		err := xml.Unmarshal(body, requestBody)
 		if err != nil {
-			response_xml = responseTextMsg(requestBody.FromUserName, error_info)
+			response_xml = responseTextMsg(requestBody.FromUserName, error_info, qax580_name)
 		} else {
 			beego.Debug(requestBody.Recognition)
 			posts, err := models.QueryFuzzyLimitPost(requestBody.Recognition, 5)
 			if err != nil {
 				beego.Error(err)
 			}
-			response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Recognition, posts)
+			response_xml = responseImageTextXML(requestBody.FromUserName, requestBody.Recognition, posts, qax580_name)
 
 		}
 		//点击
@@ -256,8 +259,9 @@ func responseTypeMsg(body []byte, msgType string) string {
 		err := xml.Unmarshal(body, requestBody)
 		if err != nil {
 			beego.Debug(err.Error())
-			response_xml = responseTextMsg(requestBody.FromUserName, error_info)
+			response_xml = responseTextMsg(requestBody.FromUserName, error_info, qax580_name)
 		} else {
+			beego.Debug("qax 580 Event:", requestBody.Event, "EventKey", requestBody.EventKey)
 			//自定义点击事件
 			if requestBody.Event == "CLICK" {
 				//推荐
@@ -277,25 +281,27 @@ func responseTypeMsg(body []byte, msgType string) string {
 					}
 					beego.Debug("recommend count :", len(posts))
 					if len(posts) != 0 {
-						response_xml = responseImageTextXML(requestBody.FromUserName, "", posts)
+						response_xml = responseImageTextXML(requestBody.FromUserName, "", posts, qax580_name)
 					} else {
-						response_xml = responseTextMsg(requestBody.FromUserName, "今日已无更多推荐信息")
+						response_xml = responseTextMsg(requestBody.FromUserName, "今日已无更多推荐信息", qax580_name)
 					}
 					//关于
 				} else if requestBody.EventKey == "about" {
-					response_xml = responseAbout(requestBody.FromUserName)
+					response_xml = responseAbout(requestBody.FromUserName, qax580_name, about_info)
 				} else if requestBody.EventKey == "today" { //今日580
-					response_xml = responseToday(requestBody.FromUserName)
+					response_xml = responseToday(requestBody.FromUserName, qax580_name)
 				} else {
 
 				}
 				//关注
 			} else if requestBody.Event == "subscribe" {
-				response_xml = responseTextMsg(requestBody.FromUserName, subscribe_info)
-				eventSubscribe(requestBody)
+
+				response_xml = responseTextMsg(requestBody.FromUserName, subscribe_info, qax580_name)
+				beego.Debug("subscribe qax580")
+				eventSubscribe(requestBody, qa_appid, qa_secret)
 			} else {
 				//其他类型
-				response_xml = responseTextMsg(requestBody.FromUserName, error_info)
+				response_xml = responseTextMsg(requestBody.FromUserName, error_info, qax580_name)
 			}
 
 		}
@@ -307,8 +313,8 @@ func responseTypeMsg(body []byte, msgType string) string {
 	return response_xml
 }
 
-func analysisNull(toUserName string, content string) string {
-	null_info := null_info0
+func analysisNull(toUserName string, content string, default_null_info string) string {
+	null_info := default_null_info
 	if len(content) > 0 {
 		null_info = strings.Replace(null_info1, "&", content, -1)
 	}
@@ -324,9 +330,9 @@ func analysisNull(toUserName string, content string) string {
 
 //返回文本信息
 //textMsg 文本信息
-func responseTextMsg(toUserName string, textMsg string) string {
+func responseTextMsg(toUserName string, textMsg string, from_name string) string {
 	textResponseBody := &TextResponseBody{}
-	textResponseBody.FromUserName = value2CDATA(qax580_name)
+	textResponseBody.FromUserName = value2CDATA(from_name)
 	textResponseBody.ToUserName = value2CDATA(toUserName)
 	textResponseBody.MsgType = value2CDATA("text")
 	textResponseBody.Content = value2CDATA(textMsg)
@@ -335,9 +341,9 @@ func responseTextMsg(toUserName string, textMsg string) string {
 	return string(about_xml)
 }
 
-func responseAbout(toUserName string) string {
+func responseAbout(toUserName string, from_name string, about_info string) string {
 	textResponseBody := &TextResponseBody{}
-	textResponseBody.FromUserName = value2CDATA(qax580_name)
+	textResponseBody.FromUserName = value2CDATA(from_name)
 	textResponseBody.ToUserName = value2CDATA(toUserName)
 	textResponseBody.MsgType = value2CDATA("text")
 	textResponseBody.Content = value2CDATA(about_info)
@@ -346,7 +352,7 @@ func responseAbout(toUserName string) string {
 	return string(about_xml)
 }
 
-func responseImageTextXML(toUserName string, content string, posts []models.Post) string {
+func responseImageTextXML(toUserName string, content string, posts []models.Post, from_name string) string {
 	articles := ""
 	if posts != nil && len(posts) > 0 {
 		imageTextResponseItems := []ImageTextResponseItem{}
@@ -362,7 +368,7 @@ func responseImageTextXML(toUserName string, content string, posts []models.Post
 		textResponseBody.MsgType = value2CDATA("news")
 		textResponseBody.ArticleCount = len(imageTextResponseItems)
 		textResponseBody.Articles = imageTextResponseItems
-		textResponseBody.FromUserName = value2CDATA(qax580_name)
+		textResponseBody.FromUserName = value2CDATA(from_name)
 		textResponseBody.ToUserName = value2CDATA(toUserName)
 		res, err := xml.MarshalIndent(textResponseBody, " ", "  ")
 
@@ -372,14 +378,14 @@ func responseImageTextXML(toUserName string, content string, posts []models.Post
 			articles = string(res)
 		}
 	} else {
-		articles = analysisNull(toUserName, content)
+		articles = analysisNull(toUserName, content, null_info0)
 	}
 
 	return articles
 }
 
 //关键字
-func responseKeyXML(toUserName string, content string, objs []models.Keyobj) string {
+func responseKeyXML(toUserName string, content string, objs []models.Keyobj, from_name string) string {
 	articles := ""
 	if objs != nil && len(objs) > 0 {
 		imageTextResponseItems := []ImageTextResponseItem{}
@@ -395,7 +401,7 @@ func responseKeyXML(toUserName string, content string, objs []models.Keyobj) str
 		textResponseBody.MsgType = value2CDATA("news")
 		textResponseBody.ArticleCount = len(imageTextResponseItems)
 		textResponseBody.Articles = imageTextResponseItems
-		textResponseBody.FromUserName = value2CDATA(qax580_name)
+		textResponseBody.FromUserName = value2CDATA(from_name)
 		textResponseBody.ToUserName = value2CDATA(toUserName)
 		res, err := xml.MarshalIndent(textResponseBody, " ", "  ")
 
@@ -405,13 +411,13 @@ func responseKeyXML(toUserName string, content string, objs []models.Keyobj) str
 			articles = string(res)
 		}
 	} else {
-		articles = analysisNull(toUserName, content)
+		articles = analysisNull(toUserName, content, null_info0)
 	}
 
 	return articles
 }
 
-func responseToday(toUserName string) string {
+func responseToday(toUserName string, from_name string) string {
 	articles := ""
 	imageTextResponseItems := []ImageTextResponseItem{}
 	//添加历史今天
@@ -447,7 +453,7 @@ func responseToday(toUserName string) string {
 	textResponseBody.MsgType = value2CDATA("news")
 	textResponseBody.ArticleCount = len(imageTextResponseItems)
 	textResponseBody.Articles = imageTextResponseItems
-	textResponseBody.FromUserName = value2CDATA(qax580_name)
+	textResponseBody.FromUserName = value2CDATA(from_name)
 	textResponseBody.ToUserName = value2CDATA(toUserName)
 	res, err := xml.MarshalIndent(textResponseBody, " ", "  ")
 
@@ -481,7 +487,7 @@ func getWxImageUrl(url string) string {
 /*
 关注事件
 */
-func eventSubscribe(requestBody *EventResponseBody) string {
+func eventSubscribe(requestBody *EventResponseBody, appid string, secret string) string {
 	if strings.Contains(requestBody.EventKey, "qrscene_") { //扫码
 
 	} else {
@@ -499,7 +505,7 @@ func eventSubscribe(requestBody *EventResponseBody) string {
 		isdebug = iniconf.String("qax580::isdebug")
 		isurl = iniconf.String("qax580::url")
 	}
-	wx_url := "[REALM]/wxqax/sunscribe?subscribe_type=[SUNSCRIBE]&from_openid=[FROMOPENID]&to_user=[TOUSER]&create_time=[CREATETIME]"
+	wx_url := "[REALM]/wxqax/sunscribe?subscribe_type=[SUNSCRIBE]&from_openid=[FROMOPENID]&to_user=[TOUSER]&create_time=[CREATETIME]&appid=[APPID]&secret=[SECRET]"
 	// if beego.AppConfig.Bool("qax580::isdebug") {
 	realm_name := ""
 	if isdebug == "true" {
@@ -511,6 +517,8 @@ func eventSubscribe(requestBody *EventResponseBody) string {
 	wx_url = strings.Replace(wx_url, "[SUNSCRIBE]", requestBody.Event, -1)
 	wx_url = strings.Replace(wx_url, "[FROMOPENID]", requestBody.FromUserName, -1)
 	wx_url = strings.Replace(wx_url, "[TOUSER]", requestBody.ToUserName, -1)
+	wx_url = strings.Replace(wx_url, "[APPID]", appid, -1)
+	wx_url = strings.Replace(wx_url, "[SECRET]", secret, -1)
 	create_time := fmt.Sprintf("%d", requestBody.CreateTime)
 	wx_url = strings.Replace(wx_url, "[CREATETIME]", create_time, -1)
 	beego.Debug("subscribe url", wx_url)

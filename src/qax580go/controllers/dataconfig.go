@@ -45,3 +45,9 @@ const MONEY_EXCHANGE = 4      //兑换成功
 const MONEY_SUBSCRIBE_SUM = 4 //注册成功
 const MONEY_EXAMINE_SUM = 2   //发布信息通过审核
 const MONEY_BELIKE_SUM = 1    //发布信息被点赞
+
+const tl_appid = "wx544b79bb1ac22fc7"
+const tl_secret = "4477458a2abf3adf5880d2420235df90"
+
+const qa_appid = "wx570bbcc8cf9fdd80"
+const qa_secret = "c4b26e95739bc7defcc42e556cc7ae42"

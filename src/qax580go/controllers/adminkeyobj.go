@@ -14,6 +14,7 @@ type AdminKeyobjController struct {
 }
 
 func (c *AdminKeyobjController) Get() {
+	beego.Debug("AdminKeyobjController Get")
 	bool, username := chackAccount(c.Ctx)
 	if bool {
 		c.Data["isUser"] = bool
@@ -73,10 +74,12 @@ func (c *AdminKeyobjController) Get() {
 		beego.Error(err)
 	}
 	c.TplNames = "adminkeyobj.html"
+	beego.Debug("keyid :", keyid)
 	c.Data["KeyId"] = keyid
 	c.Data["Objs"] = commoditys
 }
 
 func (c *AdminKeyobjController) Post() {
+	beego.Debug("AdminKeyobjController Post")
 	c.TplNames = "adminkeyobj.html"
 }

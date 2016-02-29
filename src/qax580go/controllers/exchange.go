@@ -14,7 +14,29 @@ type ExchangeController struct {
 
 func (c *ExchangeController) Get() {
 	beego.Debug("ExchangeController Get")
-	getExchangeeCookie(c)
+	openid := getExchangeeCookie(c)
+	uorders, err := models.GetAllUserUorders(openid)
+	if err != nil {
+		beego.Error(err)
+	}
+	var showOrders []models.ShowOrder
+	for i := 0; i < len(uorders); i++ {
+		com, err := models.GetOneCommodity1(uorders[i].CommodityId)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			obj := models.ShowOrder{Id: uorders[i].Id, OpenId: uorders[i].OpenId, CommodityId: uorders[i].CommodityId,
+				State: uorders[i].State, CreateTime: uorders[i].CreateTime, Time: uorders[i].Time,
+				ExchangeTime: uorders[i].ExchangeTime, Time1: uorders[i].Time1, Commodity: com}
+			// beego.Debug("com", com)
+			// beego.Debug("obj", obj)
+			// showOrders[i] = obj
+			showOrders = append(showOrders, obj)
+		}
+
+	}
+	c.Data["ShowOrders"] = showOrders
+	beego.Debug(showOrders)
 	c.TplNames = "exchange.html"
 }
 func (c *ExchangeController) Post() {

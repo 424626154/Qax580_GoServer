@@ -1,0 +1,97 @@
+{
+        "button": [
+            {
+                "name": "信息平台", 
+                "sub_button": [
+                    {
+                        "type": "view", 
+                        "name": "咱这580", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "发布信息", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "click", 
+                        "name": "推荐信息", 
+                        "key": "recommend", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "我的信息", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fmymessage%0a&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "sub_button": [ ]
+                    }
+                ]
+            }, 
+            {
+                "name": "生活助手", 
+                "sub_button": [
+                    {
+                        "type": "click", 
+                        "name": "今日580", 
+                        "key": "today", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "今日天气", 
+                        "url": "http://www.baoguangguang.cn/weather", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "火车票查询", 
+                        "url": "http://www.baoguangguang.cn/traintickets", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "车辆违章查询", 
+                        "url": "http://www.baoguangguang.cn/querypeccancy", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "快递查询", 
+                        "url": "http://www.baoguangguang.cn/kuaidi", 
+                        "sub_button": [ ]
+                    }
+                ]
+            }, 
+            {
+                "name": "更多", 
+                "sub_button": [
+                    {
+                        "type": "view", 
+                        "name": "一元快洗", 
+                        "url": "http://mp.weixin.qq.com/s?__biz=MzIwMzE5MzQyMw==&mid=402988111&idx=2&sn=3763ebe663ba3745d39a6800e5dde5e6#rd", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "580部落", 
+                        "url": "http://s.p.qq.com/pub/jump?d=AAAUkV9k", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "意见反馈", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.baoguangguang.cn%2fwxfeedback&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "click", 
+                        "name": "联系我们", 
+                        "key": "about", 
+                        "sub_button": [ ]
+                    }
+                ]
+            }
+        ]
+    }

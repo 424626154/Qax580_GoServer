@@ -5,7 +5,7 @@
                 "sub_button": [
                     {
                         "type": "view", 
-                        "name": "庆安县580", 
+                        "name": "咱这580", 
                         "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
@@ -67,6 +67,12 @@
             {
                 "name": "更多", 
                 "sub_button": [
+                    {
+                        "type": "view", 
+                        "name": "一元快洗", 
+                        "url": "http://mp.weixin.qq.com/s?__biz=MzIwMzE5MzQyMw==&mid=402988111&idx=2&sn=3763ebe663ba3745d39a6800e5dde5e6#rd", 
+                        "sub_button": [ ]
+                    }, 
                     {
                         "type": "view", 
                         "name": "580部落", 

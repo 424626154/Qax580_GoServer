@@ -14,6 +14,7 @@ func init() {
 	beego.Router("/register", &controllers.RegisterController{})                        //注册
 	beego.Router("/wxlist", &controllers.WcListController{})                            //微推荐公众号列表
 	beego.Router("/wx", &controllers.WXController{})                                    //微信公众号服务器
+	beego.Router("/wxtl", &controllers.WXTlController{})                                //微信公众号服务器铁力
 	beego.Router("/feedback", &controllers.FeedbackController{})                        //意见反馈
 	beego.Router("/wxautho", &controllers.WxAuthoController{})                          //微信用户信息
 	beego.Router("/wxhome", &controllers.WxHomeController{})                            //微信回调主页
@@ -106,4 +107,5 @@ func init() {
 	beego.Router("admin/addkeywords", &controllers.AdminaAddKeywordsController{})               //添加关键字
 	beego.Router("admin/keyobj", &controllers.AdminKeyobjController{})                          //关键字内容
 	beego.Router("admin/addkeyobj", &controllers.AdminaAddKeyobjController{})                   //添加关键字内容
+	beego.Router("admin/wxtest", &controllers.AdminWxTestController{})                          //添加关键字内容
 }
