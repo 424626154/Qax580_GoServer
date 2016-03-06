@@ -6,7 +6,7 @@ w{{template "adminheader.html" .}}
 	<div class="row">
 		{{range .Objs}}
 		<div class="col-xs-12 col-md-4 list_col"  onclick="window.location.href= '/admin/caidans?id={{.Id}}'">
-			<img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" class="list_time_waimai" ></img>
+			<img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" class="list_time_waimai" >
 		<div class="list_time_waimai_info">
 			<h4>{{.Name}}</h4>
 			<h5>{{.Address}}</h5>
@@ -23,4 +23,4 @@ w{{template "adminheader.html" .}}
 	{{end}}
 </div>
 </div>
-{{template "footer.html" .}}
+{{template "adminfooter.html" .}}

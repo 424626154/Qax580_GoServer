@@ -15,8 +15,8 @@ type Post struct {
 	Title      string    `orm:"size(100)"`
 	Info       string    `orm:"size(1000)"`
 	CreateTime time.Time `orm:"index"`
-	Examine    int16
-	Label      int16 // 1个人 2 官方
+	Examine    int16     //审核状态0未审核1 审核
+	Label      int16     // 1个人 2 官方
 	Image      string
 	Type       int16  //0 默认 1房产 2 二手 3 出兑 4 招聘
 	OpenId     string `orm:"size(500)"`
@@ -28,6 +28,7 @@ type Post struct {
 	Bfrom      bool   //来源
 	Fromshow   string //来源显示
 	Fromurl    string //来源链接
+	State1     int16  //是否违规 0 违规 1 违规
 }
 
 //意见反馈
@@ -297,6 +298,71 @@ type Keyobj struct {
 	Time       int64     //显示时间
 }
 
+/**
+投票组
+*/
+type Polls struct {
+	Id            int64
+	Title         string //投票组标题
+	Info          string //投票组内容
+	Image         string //投票组图片
+	State         int16  //投票组状态 0未上线 1 上线
+	StartTimeLong int64  //投票组开始时间
+	EndTimeLong   int64  //投票组结束时间
+	Pageview      int64  //访问量
+	More          string //更多链接
+	Appid         string //验证的投票Appid
+	Secret        string //验证的投票Secret
+	Prize         string //活动奖品
+	Ext           string //扩展信息
+}
+
+/**
+投票对象
+*/
+type Poll struct {
+	Id         int64
+	PollsId    int64  //投票列表id
+	Title      string //投票标题
+	Info       string //投票内容
+	ContactWay string //联系方式
+	Image      string //投票图片
+	State      int16  //状态 0未上线 1 上线
+	CreateTime int64  //创建时间
+	OpenId     string //创建投票人
+	VoteNum    int32  //投票数
+	Ranking    int32  //排名
+	Del        int16  //删除 0用户未删除 1 用户删除
+}
+
+/**
+选票
+*/
+type Vote struct {
+	Id         int64
+	PollsId    int64 //投票列表id
+	PollId     int64 //投票id
+	State      int16 //状态 0未上线 1 上线
+	OpneId     string
+	CreateTime int64 //投票时间
+}
+
+/**
+通知
+*/
+type Notice struct {
+	Id         int64
+	FromId     string //发送者
+	ToId       string //接受者
+	ToRead     int16  //接受者是否已读
+	ToDel      int16  //接受者是否删除
+	Msg        string //消息内容
+	State      int16  //状态 0未上线 1 上线
+	CreateTime int64  //投票时间
+	Ext        string //消息扩展 1 帖子ID 2贴在ID
+	NType      int16  //消息类型 1发布信息通过审核通知 2帖子存在违规通知
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -332,7 +398,10 @@ func RegisterDB() {
 	orm.RegisterModel(new(ShangHu))         //商户
 	orm.RegisterModel(new(Keywords))        //关键字
 	orm.RegisterModel(new(Keyobj))          //关键字对象
-
+	orm.RegisterModel(new(Polls))           //投票组
+	orm.RegisterModel(new(Poll))            //投票对象
+	orm.RegisterModel(new(Vote))            //选票
+	orm.RegisterModel(new(Notice))          //通知
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -381,6 +450,18 @@ func UpdatePostExamine(id string, exa int16) error {
 	return err
 }
 
+//修改帖子违规状态
+func UpdatePostState1(id string, exa int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Post{Id: cid}
+	cate.State1 = exa
+	_, err = o.Update(cate, "state1")
+	return err
+}
 func GetAllPostsAdmin() ([]Post, error) {
 	o := orm.NewOrm()
 	var posts []Post
@@ -848,7 +929,13 @@ func AddWxUserInfo(wxUserInfo Wxuserinfo) error {
 	// 查询数据
 	qs := o.QueryTable("wxuserinfo")
 	err := qs.Filter("open_id", wxUserInfo.OpenId).One(cate)
-	if err == nil {
+	if err == nil { //存在则更新
+		// beego.Debug("cate:", cate)
+		cate.NickeName = wxUserInfo.NickeName
+		cate.Sex = wxUserInfo.Sex
+		cate.HeadImgurl = wxUserInfo.HeadImgurl
+		_, err = o.Update(cate, "nicke_name", "sex", "head_imgurl")
+
 		return err
 	}
 
@@ -1814,3 +1901,476 @@ func QueryFuzzyLimitKeyobj(keyid int64, nums int64) ([]Keyobj, error) {
 }
 
 /*******关键字对象**********/
+/********投票组********/
+/**
+添加投票组
+*/
+func AddPolls(title string, info string, img string, more string, endtime int64, appid string, secret string, prize string, ext string) error {
+	// 	StartTime     time.Time `orm:"index"` //投票组开始时间
+	// StartTimeLong int64
+	// EndTime       time.Time `orm:"index"` //投票组结束时间
+	// EndTimeLong   int64
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &Polls{Title: title, Info: info, Image: img, More: more, StartTimeLong: my_time, EndTimeLong: endtime, Appid: appid, Secret: secret, Prize: prize, Ext: ext}
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/**
+修改投票组内容
+*/
+func UpPollsInfo(id string, title string, info string, more string, endtime int64, appid string, secret string, prize string, ext string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Polls{Id: cid}
+	cate.Title = title
+	cate.Info = info
+	cate.More = more
+	cate.EndTimeLong = endtime
+	cate.Appid = appid
+	cate.Secret = secret
+	cate.Prize = prize
+	cate.Ext = ext
+	_, err = o.Update(cate, "title", "info", "more", "end_time_long", "appid", "secret", "prize", "ext")
+	return err
+}
+
+/**
+修改投票组图片
+*/
+func UpPollsImg(id string, img string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Polls{Id: cid}
+	cate.Image = img
+	_, err = o.Update(cate, "image")
+	return err
+}
+
+/**
+修改投票组状态
+*/
+func UpPollsState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Polls{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/**
+获得所有投票组
+*/
+func GetAllPolls() ([]Polls, error) {
+	o := orm.NewOrm()
+	var objs []Polls
+	_, err := o.Raw("SELECT * FROM polls ORDER BY id DESC").QueryRows(&objs)
+	beego.Debug("GetAllUorders", objs)
+	return objs, err
+}
+
+/**
+获得某个投票组
+*/
+func GetOnePolls(id string) (*Polls, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Polls{}
+	err = o.QueryTable("polls").Filter("id", cid).One(obj)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return obj, err
+}
+
+/**
+获得访问量
+*/
+func GetPollsPv(id string) (int64, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	o := orm.NewOrm()
+	obj := &Polls{}
+	err = o.QueryTable("polls").Filter("id", cid).One(obj)
+	if err != nil {
+		beego.Error(err)
+		return 0, err
+	}
+	return obj.Pageview, err
+}
+
+/**
+增加访问量
+*/
+func AddPollsPv(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Polls{}
+	// 查询数据
+	qs := o.QueryTable("polls")
+	err = qs.Filter("id", cid).One(cate)
+	if err != nil {
+		return err
+	}
+	cate.Pageview = cate.Pageview + 1
+	_, err = o.Update(cate, "pageview")
+	return err
+}
+
+/**
+删除投票组
+*/
+func DeletePolls(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Polls{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/********投票组********/
+/********投票********/
+/**
+添加投票
+*/
+func AddPoll(openid string, pollsid string, title string, info string, img string, contactway string) error {
+	cpollsid, err := strconv.ParseInt(pollsid, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &Poll{OpenId: openid, PollsId: cpollsid, Title: title, Info: info, Image: img, ContactWay: contactway, CreateTime: my_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/**
+参与用户
+*/
+func GetPollAllNum(pollsid string) (int32, error) {
+	o := orm.NewOrm()
+	var objs []Poll
+	num, err := o.Raw("SELECT * FROM poll WHERE polls_id = ?", pollsid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return int32(0), err
+	}
+	return int32(num), err
+}
+
+/**
+获得参与用户 one
+*/
+func GetOnePoll(pollsid string, id string) (*Poll, error) {
+	cpollsid, err := strconv.ParseInt(pollsid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Poll{}
+	err = o.QueryTable("poll").Filter("id", cid).Filter("polls_id", cpollsid).One(obj)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return obj, err
+}
+
+/**
+获得用户发布的帖子
+*/
+func GetMyPoll(pollsid string, openid string) ([]Poll, error) {
+	o := orm.NewOrm()
+	var objs []Poll
+	_, err := o.Raw("SELECT * FROM poll WHERE  polls_id = ? AND open_id = ? AND del = 0 ORDER BY id DESC", pollsid, openid).QueryRows(&objs)
+	beego.Debug("GetAllPoll", objs)
+	return objs, err
+}
+
+/**
+活动参与用户
+*/
+func GetAllPoll(pollsid string) ([]Poll, error) {
+	o := orm.NewOrm()
+	var objs []Poll
+	_, err := o.Raw("SELECT * FROM poll WHERE  polls_id = ? ORDER BY id DESC", pollsid).QueryRows(&objs)
+	beego.Debug("GetAllPoll", objs)
+	return objs, err
+}
+
+/**
+根据条件搜索
+*/
+func GetAllPollOr(search string) ([]Poll, error) {
+	o := orm.NewOrm()
+	var objs []Poll
+	_, err := o.Raw("SELECT * FROM poll WHERE  id = ? OR title = ? ORDER BY id DESC", search, search).QueryRows(&objs)
+	beego.Debug("GetAllPollOr", objs)
+	return objs, err
+}
+
+/**
+刷新参与用户状态
+*/
+func UpdatePollState(pollid string, id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	cpollid, err := strconv.ParseInt(pollid, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Poll{Id: cid, PollsId: cpollid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/**
+活动参与用户已审核过
+*/
+func GetAllPollState(pollsid string, state int16) ([]Poll, error) {
+	o := orm.NewOrm()
+	var objs []Poll
+	_, err := o.Raw("SELECT * FROM poll WHERE  polls_id = ? AND state = ? ORDER BY id DESC", pollsid, state).QueryRows(&objs)
+	beego.Debug("GetAllPoll", objs)
+	return objs, err
+}
+
+/**
+刷新参与用户状态
+*/
+func DelPoll(pollid string, id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	cpollid, err := strconv.ParseInt(pollid, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Poll{Id: cid, PollsId: cpollid}
+	cate.Del = 1
+	_, err = o.Update(cate, "del")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/********投票********/
+/*********选票********/
+/**
+投票
+*/
+
+func AddVote(pollsid string, pollid string) error {
+	cpollsid, err := strconv.ParseInt(pollsid, 10, 64)
+	if err != nil {
+		return err
+	}
+	cpollid, err := strconv.ParseInt(pollid, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &Vote{PollsId: cpollsid, PollId: cpollid, CreateTime: my_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/**
+获得投票
+*/
+
+func GetVoteNum(pollsid string, pollid int64) (int32, error) {
+	o := orm.NewOrm()
+	var objs []Vote
+	num, err := o.Raw("SELECT * FROM vote WHERE polls_id = ? AND poll_id = ?", pollsid, pollid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return int32(0), err
+	}
+	return int32(num), err
+}
+func GetVoteNum1(pollsid string, pollid string) (int32, error) {
+	o := orm.NewOrm()
+	var objs []Vote
+	_, err := o.Raw("SELECT * FROM vote WHERE polls_id = ? AND poll_id = ?", pollsid, pollid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return int32(0), err
+	}
+	return int32(len(objs)), err
+}
+
+/**
+获得累计投票
+*/
+func GetVoteAllNum(pollsid string) (int32, error) {
+	o := orm.NewOrm()
+	var objs []Vote
+	num, err := o.Raw("SELECT * FROM vote WHERE polls_id = ?", pollsid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return int32(0), err
+	}
+	return int32(num), err
+}
+
+/***********通知*************/
+func AddNotice(from string, to string, bsend bool, msg string, ext string, ntype int16) error {
+	// 	Id         int64
+	// From       string //发送者
+	// To         string //接受者
+	// ToRead     int16  //接受者是否已读
+	// ToDel      int16  //接受者是否删除
+	// State      int16  //状态 0未上线 1 上线
+	// CreateTime int64  //投票时间
+	// Ext        string //消息扩展 1 帖子ID 2贴在ID
+	// Type       int16  //消息类型 1发布信息通过审核通知 2帖子存在违规通知
+	send := int16(0)
+	if bsend {
+		send = int16(1)
+	}
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &Notice{FromId: from, ToId: to, Msg: msg, Ext: ext, NType: ntype, State: send, CreateTime: my_time}
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/**
+修改通知读取状态
+*/
+func UpUeserNoticeRead(id int64, read int16) error {
+	o := orm.NewOrm()
+	cate := &Notice{Id: id}
+	cate.ToRead = read
+	_, err := o.Update(cate, "to_read")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/**
+获得所有通知
+*/
+func GetAllNotice() ([]Notice, error) {
+	o := orm.NewOrm()
+	var objs []Notice
+	_, err := o.Raw("SELECT * FROM notice  ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+
+/**
+获得用户所有消息
+*/
+func GetUeserAllNotice(openid string) ([]Notice, error) {
+	o := orm.NewOrm()
+	var objs []Notice
+	_, err := o.Raw("SELECT * FROM notice WHERE to_id = ?  AND to_del = 0 ORDER BY id DESC", openid).QueryRows(&objs)
+	return objs, err
+}
+
+/**
+获得用户未读消息数量
+*/
+func GetUserNoticeNum(openid string) (int32, error) {
+	beego.Debug("GetUserNoticeNum openid :", openid)
+	o := orm.NewOrm()
+	var objs []Notice
+	num, err := o.Raw("SELECT * FROM notice WHERE to_id = ? AND to_read = 0 ORDER BY id DESC", openid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return int32(0), err
+	}
+	return int32(num), err
+}
+
+/**
+用户删除通知
+*/
+func DeleteUserNotice(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Notice{Id: cid}
+	cate.ToDel = 1
+	_, err = o.Update(cate, "to_del")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/**
+管理员删除
+*/
+func DeleteAdminUserNotice(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Notice{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}

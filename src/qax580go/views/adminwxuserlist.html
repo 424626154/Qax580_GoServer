@@ -59,7 +59,7 @@
   <li class="list-group-item">
     <div>{{.NickeName}}</div>
     <div>{{.Subscribe}}</div>
-    <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
+    <img src="{{.HeadImgurl}}" width="40px" height="40px">
   <div>帮帮币 {{.Money}}</div>
   <button class="btn btn-default" onclick="onclikUserInfo({{.OpenId}})">修改用户信息</button>
   <button class="btn btn-default" onclick="onclikMoney({{.Id}})">修改金钱</button>
@@ -68,4 +68,4 @@
 </li>
 {{end}}
 </ul>
-{{template "footer.html" .}}
+{{template "adminfooter.html" .}}

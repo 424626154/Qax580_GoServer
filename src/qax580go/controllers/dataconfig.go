@@ -51,3 +51,6 @@ const tl_secret = "4477458a2abf3adf5880d2420235df90"
 
 const qa_appid = "wx570bbcc8cf9fdd80"
 const qa_secret = "c4b26e95739bc7defcc42e556cc7ae42"
+
+const NTYPE_1 = 1 //审核通过
+const NTYPE_2 = 2 //发帖内容违规

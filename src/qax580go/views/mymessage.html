@@ -1,7 +1,6 @@
 {{template "header.html" .}}
 <div class="uplode_bg">
-  <h4>发布内容将在12小时内审核</h4>
-
+  <h4>发布内容将在12小时内审核,只有审核过的消息才可以在主页中查看到</h4>
   <ul class="list-group">
     {{range .Posts}}
     <li class="list-group-item">
@@ -20,7 +19,7 @@
         {{else}}
       <div class="time_font">
         <span > <font style="color: #000;font-size:12px;">{{ .NickeName}}</font>
-          <img src="{{.HeadImgurl}}" width="40px" height="40px"></img>
+          <img src="{{.HeadImgurl}}" width="40px" height="40px">
       </span>
     </div>
     {{ end}}
@@ -35,6 +34,9 @@
     {{end}} 
         {{if eq .Label 2}}
     <span class="label label-primary">官方</span>
+    {{end}}
+     {{if eq .State1 1}}
+    <span class="label label-danger">违规</span>
     {{end}}
     <a href="/mymessage?op=del&id={{.Id}}" >删除</a>
   </li>

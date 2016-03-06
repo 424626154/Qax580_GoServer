@@ -30,13 +30,14 @@
       </button>
       <!-- 导航条LOGO -->
       <a class="navbar-brand" href="#">咱这580</a>
+      <a class="navbar-brand" href="javascript:void(0)" onclick="onNotice()"><span class="glyphicon glyphicon-comment"></span><i class="red_dot" id="notice"></i></a>
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         {{ if .isUser}}
         <li>
           <div style="padding-left:20px"> <font style="color: #000">{{.WxUser.NickeName}}</font>
-            <img src="{{.WxUser.HeadImgurl}}" width="40px" height="40px"></img>
+            <img src="{{.WxUser.HeadImgurl}}" width="40px" height="40px">
           </div>
       </li>
       {{ end}}

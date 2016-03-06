@@ -18,7 +18,7 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("key:", k)
 		fmt.Println("val:", strings.Join(v, ""))
 	}
-	jsonStr := ` {"openid":"o3AhEuB_wdTELvlErL4F1Em4Nck4","nickname":"寰","sex":2,"language":"zh_CN","city":"","province":"","country":"涓","headimgurl":"http:\/\/wx.qlogo.cn\/mmopen\/lQyhZL8HdN24nyDtggslekaRNoUEApk3pNpPUk6Ahw5iadM8CEZU5g7s0wYDY3voMN6jfOGvvtBglicPNYJHFQXqwYGaiaVbN5F\/0","privilege":[]}`
+	jsonStr := ` {"subscribe": 1, "openid":"o3AhEuB_wdTELvlErL4F1Em4Nck4","nickname":"寰","sex":2,"language":"zh_CN","city":"","province":"","country":"涓","headimgurl":"http:\/\/wx.qlogo.cn\/mmopen\/lQyhZL8HdN24nyDtggslekaRNoUEApk3pNpPUk6Ahw5iadM8CEZU5g7s0wYDY3voMN6jfOGvvtBglicPNYJHFQXqwYGaiaVbN5F\/0","privilege":[]}`
 	fmt.Fprintf(w, jsonStr) //这个写入到w的是输出到客户端的
 }
 func main() {

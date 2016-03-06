@@ -16,10 +16,10 @@
 </head>
 <body id="header_body">
   <div style="height:60px;padding:15px">
-    <a id="title_font" href="/" style="color:#fff; font-size:20px ;text-decoration:none">咱这580</a>
+    <a id="title_font" href="/" style="color:#fff; font-size:20px ;text-decoration:none"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> 咱这580</a>
     {{ if .isUser}}
     <span style="float:right "> <font style="color: #ffffff">{{.WxUser.NickeName}}</font>
-      <img src="{{.WxUser.HeadImgurl}}" width="40px" height="40px"></img>
+      <img src="{{.WxUser.HeadImgurl}}" width="40px" height="40px">
   </span>
   {{ end}}
 </div>

@@ -16,7 +16,7 @@ type HomeController struct {
 }
 
 func (c *HomeController) Get() {
-	getCookie(c)
+	openid := getCookie(c)
 	setUrl(c)
 	city := getSelectCity(c)
 	CurrentPage := int32(1)
@@ -101,6 +101,12 @@ func (c *HomeController) Get() {
 	beego.Debug("IsCanting", iscanting)
 	c.Data["IsDebug"] = isdebug
 	c.Data["IsCanting"] = iscanting
+	notice_num, err := models.GetUserNoticeNum(openid)
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Debug("notice_num :", notice_num)
+	c.Data["NoticeNum"] = notice_num
 	op := c.Input().Get("op")
 	switch op {
 	case "del":
@@ -146,7 +152,7 @@ func (c *HomeController) Post() {
 	}
 }
 
-func getCookie(c *HomeController) {
+func getCookie(c *HomeController) string {
 	isUser := false
 	openid := c.Ctx.GetCookie(COOKIE_WX_OPENID)
 	// beego.Debug("------------openid--------")
@@ -163,6 +169,7 @@ func getCookie(c *HomeController) {
 		}
 	}
 	c.Data["isUser"] = isUser
+	return openid
 }
 
 func setUrl(c *HomeController) {

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <link rel="shortcut icon" href="/static/img/logo32.png" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <!-- Stylesheets -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="/static/css/mycss.css">
+  <title>咱这580</title>
+</head>
+  <script type="text/javascript" src="/static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
+  <script type="text/javascript">
+$(document).ready(function(){
+        
+        });
+  
+  function closeErro(){
+    window.location.href="http://www.baoguangguang.cn/"; 
+  }
+  /**
+  参与
+  */
+  function onPartake(){
+      $.ajax({
+                url : '/wxqax/qualification?openid=o3AhEuB_wdTELvlErL4F1Em4Nck4&pollsid=1',
+                data:{},
+                cache : false, 
+                async : false,
+                type : "POST",
+                dataType : 'json',
+                success : function (result){
+                    // alert(result.errcode)
+                    if(result.errcode == 0){
+                        if(isCheck()){
+                        window.location.href="/poll/addpoll?pollsid="+{{.Polls.Id}};  
+                        }
+                    }else{
+                        showDialog()
+                    }
+                },
+               error: function(XMLHttpRequest, textStatus, errorThrown) {
+               // alert(XMLHttpRequest.status);
+               // alert(XMLHttpRequest.readyState);
+               // alert(textStatus);
+               }
+            });
+  }
+  /**
+  了解更多
+  */
+  function onMore(){
+    window.location.href={{.Polls.More}};   
+  }
+  /**
+  投票
+  */
+  function onclikVote(id){
+          $.ajax({
+                url : '/wxqax/qualification?openid=o3AhEuB_wdTELvlErL4F1Em4Nck4&pollsid=1',
+                data:{},
+                cache : false, 
+                async : false,
+                type : "POST",
+                dataType : 'json',
+                success : function (result){
+                    // alert(result.errcode)
+                    if(result.errcode == 0){
+                        if(isCheck()){
+                        var url = "/poll/pollhome?op=vote&pollsid="+{{.PollsId}}+"&id="+id; 
+                        // alert(url)
+                        window.location.href = url
+                        }
+                    }else{
+                        showDialog()
+                    }
+                },
+               error: function(XMLHttpRequest, textStatus, errorThrown) {
+               // alert(XMLHttpRequest.status);
+               // alert(XMLHttpRequest.readyState);
+               // alert(textStatus);
+               }
+            });
+  }
+  function onCon(id){
+    var url = "/poll/pollhomecon?pollsid="+{{.PollsId}}+"&pollid="+id; 
+    // alert(url)
+    window.location.href = url
+  }
+  function onSearch(){
+    var search = document.getElementById("search").value;
+    if(search != ""){
+    var url = "/poll/pollhomesearch?pollsid="+{{.PollsId}}+"&search="+search;
+    // alert(url)
+     window.location.href = url
+    }
+  }
+  /**
+  排名
+  */
+  function onRanking(){
+    if(isCheck()){
+          var url = "/poll/pollhomeranking?pollsid="+{{.PollsId}};
+          // alert(url)
+          window.location.href = url
+    }
+  }
+  /**
+  限制条件判断
+  */
+  function isCheck(){
+    // alert("isCheck")
+    if({{.PollsId}} == ""){
+      return false;
+    }
+    if({{.Polls.State}} == 0){
+      alert("投票活动未上线")
+      return false;
+    }
+    if({{isoverdue .Polls.EndTimeLong}}){
+      alert("活动已经过期")
+      return false;
+    }
+    return true;
+  }
+  /**
+  关注公众号
+  */
+  function onSubscribe(){
+    // alert("onSubscribe")
+     $('#mymodal').hide();
+    window.location.href={{.Polls.More}}; 
+  }
+  /**
+关闭
+  */
+  function onCloseDialog(){
+    $('#mymodal').hide();
+        // alert("onCloseDialog")
+  }
+  function showDialog(){
+    $('#mymodal').show();
+     // alert("showDialog")
+  }
+</script>
+<body id="header_body">
+  <div id="cont_bg">
+    {{if eq .PollsId ""}}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="closeErro()">
+        <span aria-hidden="true">&times;</span>
+      </button> <strong>参数错误</strong>
+      请确保您的投票打开方式正确
+    </div>
+    {{else}}
+    <!--投票详情-->
+    <div class="jumbotron">
+      {{if eq .Polls.Image ""}}
+  {{else}}
+      <img src="{{isImgPath .Polls.Image}}" alt="{{isImgPath .Polls.Image}}" width="auto" height="auto">
+      {{end}}
+      <h1>{{.Polls.Title}}</h1>
+      <p>{{.Polls.Info}}</p>
+    </div>
+    <!--搜索-->
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="搜索名字或者编号" id="search" name="search">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="onSearch()">搜索</button>
+      </span>
+    </div>
+    <!--投票统计-->
+    <br>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-4 col-md-4">
+          <table >
+            <tr>
+              <td>参与选手</td>
+            </tr>
+            <tr>
+              <td>{{.PollNum}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-xs-4 col-md-4">
+          <table >
+            <tr>
+              <td>累计投票</td>
+            </tr>
+            <tr>
+              <td>{{.VoteNum}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-xs-4 col-md-4">
+          <table >
+            <tr>
+              <td>访问量</td>
+            </tr>
+            <tr>
+              <td>{{.PV}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h4>距离活动结束剩余：{{.TimeStr}}</h4>
+    </div>
+    <!--列表-->
+    <ul class="list-group">
+      {{range .Objs}}
+      <li class="list-group-item">
+        {{if eq .Image ""}}
+         {{.Image}}
+        {{else}}
+        <div id="image_fnot" >
+          <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="320px" height="auto"></div>
+        {{end}}
+        <div> <font class="poll_title">{{pollnumber .Id .Title}}</font>
+        </div>
+        <div class="poll_vote"> <font class="poll_vote_font">{{.VoteNum}}票</font>
+          <span class="poll_but">
+            <button type="button" class="btn btn-success" onclick="onclikVote({{.Id}})">投票</button>
+          </span>
+        </div>
+        <a href="javascript:void(0)" onclick="onCon({{.Id}})" style="text-decoration:none;">详情</a>
+      </li>
+      {{end}}
+    </ul>
+    {{if eq .Polls.Prize ""}}
+    {{else}}
+    <div>
+      <div class="footer_div"> <font >活动奖品</font></div>
+      <font>{{.Polls.Prize}}</font>
+    </div>
+    {{end}}
+    <div>
+      <font>{{.Polls.Ext}}</font>
+    </div>
+    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-4 col-md-4 footer_div">
+            <a class="poll_nav_font" href="javascript:void(0)" onclick="onRanking()">排名</a>
+          </div>
+          <div class="col-xs-4 col-md-4 footer_div">
+            <a class="poll_nav_font" href="javascript:void(0)" onclick="onPartake()">我要参与</a>
+          </div>
+          <div class="col-xs-4 col-md-4 footer_div">
+            <a class="poll_nav_font" href="javascript:void(0)" onclick="onMore()">了解更多</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    {{end}}
+    <br></div>
+<!--弹出框-->
+  <div class="modal" id="mymodal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" onclick="onCloseDialog()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title">{{.Polls.Title}}</h4>
+        </div>
+        <div class="modal-body">
+          <p>您还不能参与{{.Polls.Title}}，请先关注公众号</p>
+        </div>
+        <div class="modal-footer">
+          <a href="javascript:void(0)" onclick="onSubscribe()">关注公众号</a>
+        </div>
+      </div>
+      <!-- /.modal-content --> </div>
+    <!-- /.modal-dialog --> </div>
+  <!-- /.modal -->
+  <!--弹出框-->
+  {{template "pollfooter.html" .}}

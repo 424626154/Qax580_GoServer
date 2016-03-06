@@ -54,6 +54,7 @@ func init() {
 	beego.Router("/subsribe", &controllers.SubsribeController{})                        //关注与取消关注
 	beego.Router("/shanghus", &controllers.ShangHusController{})                        //商户列表
 	beego.Router("/shanghulist", &controllers.ShangHuListController{})                  //商户子列表
+	beego.Router("/mynotice", &controllers.MynoticeController{})                        //我的消息
 
 	beego.AutoRouter(&controllers.WxqaxController{}) //微信http自动匹配
 
@@ -108,4 +109,7 @@ func init() {
 	beego.Router("admin/keyobj", &controllers.AdminKeyobjController{})                          //关键字内容
 	beego.Router("admin/addkeyobj", &controllers.AdminaAddKeyobjController{})                   //添加关键字内容
 	beego.Router("admin/wxtest", &controllers.AdminWxTestController{})                          //添加关键字内容
+	beego.Router("admin/updatelog", &controllers.AdminUpdateLogController{})                    //后台更新日志
+	beego.Router("admin/notice", &controllers.AdminNoticeController{})                          //后台通知管理
+	beego.AutoRouter(&controllers.PollController{})
 }

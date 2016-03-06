@@ -66,7 +66,14 @@
     font-size: 12px;
     color: #fff;
 }
-
+.admin_footer_font{
+    font-size: 14px;
+    color: #272727;
+}
+.admin_footer_font1{
+    font-size: 12px;
+    color: #272727;
+}
 .my_button {
     display: inline-block;
     position: relative;
@@ -308,4 +315,55 @@
 }
 .from_a{
 color:#C9C9C9;
+}
+.friendly_link_bg{
+    padding: 14px 10px;
+   background:#fff; 
+   color:#000;
+}
+.friendly_link_title{
+    font-size: 16px;
+    color: #838e91;
+}
+.friendly_link_icon{
+    height: 40px;
+    width: auto;
+}
+
+#poll_home_footer{
+     height: 60px;
+    width: auto;
+}
+.poll_nav_font{
+    font-size: 20px;
+}
+.poll_title{
+    font-size: 16px;
+}
+.poll_but{
+    float:right;
+}
+.poll_vote_font{
+    color: #C9C9C9;
+}
+.poll_vote{
+    width: 100%;
+    height: 40px;
+}
+.poll_rankin{
+    font-size: 12px;
+    font-weight:bold;
+    color: #272727;
+}
+.poll_rankin_vote{
+    float:right;
+}
+.red_dot{
+        display:block;
+      background:#f00;
+      border-radius:50%;
+      width:5px;
+      height:5px;
+      float: right;
+      visibility:hidden;
 }

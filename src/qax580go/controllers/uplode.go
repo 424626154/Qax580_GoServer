@@ -72,7 +72,7 @@ func (c *UplodeController) Post() {
 			beego.Error(err)
 		}
 		beego.Debug("inset ok")
-		c.Redirect("/", 302)
+		c.Redirect("/mymessage", 302)
 	}
 }
 

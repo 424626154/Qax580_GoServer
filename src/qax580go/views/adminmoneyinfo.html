@@ -8,9 +8,9 @@ $(document).ready(function(){
 <div id="cont_bg">
 	 <ul class="qax_list_bg">
       {{range .UserMoneys}}
-      <div class="cont_info"> <font class="info_fnot">{{moneyrecord .MoneyType}} 获得帮帮币:{{.Money}}</font>
+      <div class="cont_info"> <font class="info_fnot">{{moneyrecord .MoneyType}} 获得帮帮币:{{.Money}}</font></div>
        <div class="time_font">{{timeformat1 .Time}}</div>
       {{end}}
   </ul>
 	</div>
-{{template "footer.html" .}}
+{{template "adminfooter.html" .}}

@@ -26,10 +26,10 @@ function initData(){
 <form id="upusermoney"class="form-inline" method="post" action="/admin/upusermoney" enctype="multipart/form-data">
   <h4>{{.User.NickeName}}</h4>
   <div class="form-group">
-    <div class="form-group">
       <label for="">输入修改金钱类型</label>
-      <input type="text" class="form-control" id="moneytype" name="moneytype" placeholder="输入修改金钱类型"></div>
+      <input type="text" class="form-control" id="moneytype" name="moneytype" placeholder="输入修改金钱类型">
+    </div>
     <button type="button" class="my_button my_gray" onclick="onclikBtn();">修改金钱</button>
   </form>
   {{end}}
-{{template "footer.html" .}}
+{{template "adminfooter.html" .}}

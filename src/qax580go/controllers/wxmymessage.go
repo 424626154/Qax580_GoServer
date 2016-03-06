@@ -21,7 +21,7 @@ func (c *WxMyMessageController) Get() {
 
 	code := c.Input().Get("code")
 	state := c.Input().Get("state")
-	beego.Debug("-------")
+	beego.Debug("WxMyMessageController  Get")
 	if len(code) != 0 && len(state) != 0 {
 		beego.Debug(code)
 		beego.Debug(state)

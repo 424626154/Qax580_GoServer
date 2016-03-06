@@ -9,6 +9,7 @@
             })
            initGuanggao();
            analyticalData();
+           initNotice();
         });
   function initGuanggao(){
       var gaunggaos = {{.Guanggaos}}
@@ -40,7 +41,14 @@
         $(guangao_div_tiem).appendTo(guangao_div);
       }
   }
-
+  function initNotice(){
+    var notice =document.getElementById("notice");   
+    if({{.NoticeNum}} > 0) {
+    notice.style.visibility="visible"
+    }else{
+    notice.style.visibility="hidden" 
+    }
+  }
   function myscroll(){
     h = $(window).height();
     t = $(document).scrollTop();
@@ -107,6 +115,11 @@ function onclikProvince(key){
     temp.method = "post";        
     temp.enctype = "multipart/form-data";             
     temp.submit();
+}
+function onNotice(){
+  var url = "/mynotice";
+  // alert(url)
+  window.location.href = url
 }
 </script>
 <div id="myCarousel" class="carousel slide">
@@ -211,5 +224,4 @@ function onclikProvince(key){
 <img src="./static/img/qrcode.png"></div>
 -->
 <a id="gotop" class="home_font">返回顶部</a>
-</div>
 {{template "footer.html" .}}

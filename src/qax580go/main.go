@@ -82,6 +82,16 @@ func timeFormat1(in int64) (out string) {
 	}
 	return result
 }
+func timeFormat2(in int64) (out string) {
+	t := time.Unix(in, 0)
+	nt := t.Format("2006-01-02 03:04")
+	return nt
+}
+func timeFormat3(in int64) (out string) {
+	t := time.Unix(in, 0)
+	nt := t.Format("2006-01-02 03:04:00")
+	return nt
+}
 func moneyRecord(in int64) (out string) {
 	beego.Debug("moneyRecord in", in)
 	record := "未知的获得途径"
@@ -127,6 +137,19 @@ func isImgPath(in string) (out string) {
 	}
 	return fmt.Sprintf("%s%s", url, in)
 }
+
+/**
+是否过期
+*/
+func isOverdue(in int64) (out bool) {
+	my_time := time.Now().Unix()
+	if my_time > in {
+		return true
+	} else {
+		return false
+	}
+}
+
 func versionInfo() (out string) {
 	version := "1.0.0_beta"
 	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
@@ -138,6 +161,16 @@ func versionInfo() (out string) {
 	return version
 }
 
+func pollNumber(in int64, in1 string) (out string) {
+	return fmt.Sprintf("%d号  %s", in, in1)
+}
+
+/**
+排名
+*/
+func ranking(in int32) (out string) {
+	return fmt.Sprintf("排名 %d", in+1)
+}
 func init() {
 	// 注册数据库
 	models.RegisterDB()
@@ -153,10 +186,15 @@ func main() {
 
 	beego.AddFuncMap("timeformat", timeFormat)
 	beego.AddFuncMap("timeformat1", timeFormat1)
+	beego.AddFuncMap("timeformat2", timeFormat2)
+	beego.AddFuncMap("timeformat3", timeFormat3)
 	beego.AddFuncMap("isImgPath", isImgPath)
 	beego.AddFuncMap("versionInfo", versionInfo)
 	beego.AddFuncMap("moneyrecord", moneyRecord)
 	beego.AddFuncMap("moneyrecordinfo", moneyRecordInfo)
+	beego.AddFuncMap("pollnumber", pollNumber)
+	beego.AddFuncMap("ranking", ranking)
+	beego.AddFuncMap("isoverdue", isOverdue)
 	beego.SetStaticPath("/web", "web")
 	beego.Run()
 }

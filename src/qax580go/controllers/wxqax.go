@@ -238,9 +238,24 @@ func getToken() (errcode int64, token string) {
 
 func getWxUser(openid string, access_token string) (models.Wxuserinfo, error) {
 	user := models.Wxuserinfo{}
+	response_json := `{"errcode":1,"errmsg":"getWxUser error"}`
 	// ?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
 	query_url := "[REALM]?access_token=[ACCESS_TOKEN]&openid=[OPENID]&lang=zh_CN"
-	query_url = strings.Replace(query_url, "[REALM]", "https://api.weixin.qq.com/cgi-bin/user/info", -1)
+	isdebug := "true"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+	}
+	realm_name := ""
+	if isdebug == "true" {
+		realm_name = "http://localhost:9091"
+	} else {
+		realm_name = "https://api.weixin.qq.com/cgi-bin/user/info"
+	}
+	realm_name = "https://api.weixin.qq.com/cgi-bin/user/info"
+	query_url = strings.Replace(query_url, "[REALM]", realm_name, -1)
 	query_url = strings.Replace(query_url, "[ACCESS_TOKEN]", access_token, -1)
 	query_url = strings.Replace(query_url, "[OPENID]", openid, -1)
 	beego.Debug("importUser url:", query_url)
@@ -251,24 +266,243 @@ func getWxUser(openid string, access_token string) (models.Wxuserinfo, error) {
 	}
 
 	defer resp.Body.Close()
-	beego.Debug("----------------get UserInfo body--------------------")
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		beego.Debug(err)
+		body = []byte(response_json)
 	} else {
-		beego.Debug(string(body))
+		beego.Debug("wxqax get UserInfo body", string(body))
 	}
 	var uij models.Wxuserinfo
 	if err := json.Unmarshal(body, &uij); err == nil {
-		beego.Debug("----------------get UserInfo json--------------------")
-		beego.Debug(uij)
+		beego.Debug("wxqax get UserInfo json", uij)
 		if uij.ErrCode == 0 {
 			user = uij
 		}
 
 	} else {
-		beego.Debug("----------------get UserInfo json error--------------------")
-		beego.Debug(err)
+		beego.Error(err)
 	}
 	return user, err
+}
+
+/**
+投票校验json
+0 成功 用户已注册 1失败 openid参数错误 2 失败 pollsid参数错误 3 参与投票数据错误 100 失败 未知错误
+*/
+type PollCheck struct {
+	ErrCode int32  `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
+}
+
+/**
+投票资格验证
+*/
+func (c *WxqaxController) Qualification() {
+	response_json := `{"errcode":100,"errmsg":"未知错误"}`
+	pollChecks := [7]PollCheck{PollCheck{int32(0), "用户已经关注，可以操作"}, PollCheck{int32(1), "openid参数错误"},
+		PollCheck{int32(2), "pollsid参数错误"}, PollCheck{int32(3), "参与投票数据错误"}, PollCheck{int32(4), "获取token错误"},
+		PollCheck{int32(5), "获取userinfo错误"}, PollCheck{int32(6), "用户未关注"}}
+	var pollCheck PollCheck
+	pollCheck.ErrCode = int32(100)
+	pollCheck.ErrMsg = "未知错误"
+	openid := c.Input().Get("openid")
+	pollsid := c.Input().Get("pollsid")
+	beego.Debug("/wxqax/qualification openid:", openid)
+	beego.Debug("/wxqax/qualification pollsid:", pollsid)
+	//验证openid
+	if len(openid) == 0 {
+		pollCheck.ErrCode = pollChecks[1].ErrCode
+		pollCheck.ErrMsg = pollChecks[1].ErrMsg
+		res_json, err := json.Marshal(pollCheck)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			response_json = string(res_json)
+		}
+		c.Ctx.WriteString(response_json)
+		return
+	}
+	//验证pollsid
+	if len(pollsid) == 0 {
+		pollCheck.ErrCode = pollChecks[2].ErrCode
+		pollCheck.ErrMsg = pollChecks[2].ErrMsg
+		res_json, err := json.Marshal(pollCheck)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			response_json = string(res_json)
+		}
+		c.Ctx.WriteString(response_json)
+		return
+	}
+	obj, err := models.GetOnePolls(pollsid)
+	if err != nil {
+		beego.Error(err)
+		pollCheck.ErrCode = pollChecks[3].ErrCode
+		pollCheck.ErrMsg = pollChecks[3].ErrMsg
+		res_json, err := json.Marshal(pollCheck)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			response_json = string(res_json)
+		}
+		c.Ctx.WriteString(response_json)
+		return
+	} else {
+		appid := obj.Appid
+		secret := obj.Secret
+		beego.Debug("/wxqax/qualification Appid:", appid)
+		beego.Debug("/wxqax/qualification Secret:", secret)
+		if len(appid) != 0 && len(secret) != 0 {
+			//获取用户token
+			tokenobj, err := getWxToken(appid, secret)
+			if err != nil {
+				pollCheck.ErrCode = pollChecks[4].ErrCode
+				pollCheck.ErrMsg = pollChecks[4].ErrMsg
+				res_json, err := json.Marshal(pollCheck)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					response_json = string(res_json)
+				}
+				c.Ctx.WriteString(response_json)
+				return
+			} else {
+				if tokenobj.ErrCode == 0 {
+					//获取用户信息
+					userinfo, err := getWxUser(openid, tokenobj.AccessToken)
+					if err != nil {
+						pollCheck.ErrCode = pollChecks[5].ErrCode
+						pollCheck.ErrMsg = pollChecks[5].ErrMsg
+						res_json, err := json.Marshal(pollCheck)
+						if err != nil {
+							beego.Error(err)
+						} else {
+							response_json = string(res_json)
+						}
+						c.Ctx.WriteString(response_json)
+						return
+					} else {
+						if userinfo.ErrCode == 0 {
+							//判断用户是否注册
+							beego.Debug("/wxqax/qualification subscribe:", userinfo.Subscribe)
+							if userinfo.Subscribe == 1 { //1已经注册
+								pollCheck.ErrCode = pollChecks[0].ErrCode
+								pollCheck.ErrMsg = pollChecks[0].ErrMsg
+								res_json, err := json.Marshal(pollCheck)
+								if err != nil {
+									beego.Error(err)
+								} else {
+									response_json = string(res_json)
+								}
+								beego.Debug("/wxqax/qualification response_json:", response_json)
+								c.Ctx.WriteString(response_json)
+								return
+							} else {
+								pollCheck.ErrCode = pollChecks[6].ErrCode
+								pollCheck.ErrMsg = pollChecks[6].ErrMsg
+								res_json, err := json.Marshal(pollCheck)
+								if err != nil {
+									beego.Error(err)
+								} else {
+									response_json = string(res_json)
+								}
+								beego.Debug("/wxqax/qualification response_json:", response_json)
+								c.Ctx.WriteString(response_json)
+								return
+							}
+						} else {
+							pollCheck.ErrCode = pollChecks[5].ErrCode
+							pollCheck.ErrMsg = pollChecks[5].ErrMsg
+							res_json, err := json.Marshal(pollCheck)
+							if err != nil {
+								beego.Error(err)
+							} else {
+								response_json = string(res_json)
+							}
+							c.Ctx.WriteString(response_json)
+							return
+						}
+					}
+				} else {
+					beego.Error(err)
+					pollCheck.ErrCode = pollChecks[4].ErrCode
+					pollCheck.ErrMsg = pollChecks[4].ErrMsg
+					res_json, err := json.Marshal(pollCheck)
+					if err != nil {
+						beego.Error(err)
+					} else {
+						response_json = string(res_json)
+					}
+					c.Ctx.WriteString(response_json)
+					return
+				}
+			}
+		} else {
+			pollCheck.ErrCode = pollChecks[3].ErrCode
+			pollCheck.ErrMsg = pollChecks[3].ErrMsg
+			res_json, err := json.Marshal(pollCheck)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				response_json = string(res_json)
+			}
+			c.Ctx.WriteString(response_json)
+			return
+		}
+	}
+
+	c.Ctx.WriteString(response_json)
+}
+
+/**
+获得token
+*/
+func getWxToken(appid string, secret string) (models.AccessTokenJson, error) {
+	// https: //api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+	tokenobj := models.AccessTokenJson{}
+	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
+	isdebug := "true"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+	}
+	wx_url := "[REALM]?appid=[APPID]&secret=[SECRET]&grant_type=client_credential"
+	// if beego.AppConfig.Bool("qax580::isdebug") {
+	realm_name := ""
+	if isdebug == "true" {
+		realm_name = "http://localhost:9090"
+	} else {
+		realm_name = "https://api.weixin.qq.com/cgi-bin/token"
+	}
+	realm_name = "https://api.weixin.qq.com/cgi-bin/token"
+	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
+	wx_url = strings.Replace(wx_url, "[APPID]", appid, -1)
+	wx_url = strings.Replace(wx_url, "[SECRET]", secret, -1)
+	beego.Debug("wxqax getWxToken url :", wx_url)
+	resp, err := http.Get(wx_url)
+	if err != nil {
+		beego.Error(err)
+		return tokenobj, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Error(err)
+		body = []byte(response_json)
+	} else {
+		beego.Debug("wxqax getWxToken boey :", string(body))
+	}
+	var atj models.AccessTokenJson
+	if err := json.Unmarshal(body, &atj); err == nil {
+		beego.Debug("get Token obj", atj)
+		tokenobj = atj
+	} else {
+		beego.Error(err)
+	}
+	return tokenobj, err
 }

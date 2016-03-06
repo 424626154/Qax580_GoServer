@@ -4,6 +4,7 @@ package controllers
 后台主页
 */
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"qax580go/models"
 )
@@ -77,6 +78,15 @@ func (c *AdminHomeController) Get() {
 
 			}
 		}
+		if post.Label == 1 {
+			msg := fmt.Sprintf("您发布的[%s]已通过审核", post.Title)
+			beego.Debug("msg:", msg)
+			sid := fmt.Sprintf("%d", post.Id)
+			err = models.AddNotice(username, post.OpenId, true, msg, sid, NTYPE_1)
+			if err != nil {
+				beego.Error(err)
+			}
+		}
 		beego.Debug("is admin examine " + id)
 		c.Redirect("/admin/home", 302)
 		return
@@ -91,6 +101,44 @@ func (c *AdminHomeController) Get() {
 			beego.Error(err)
 		}
 		beego.Debug("is admin examine1" + id)
+		c.Redirect("/admin/home", 302)
+		return
+	case "state1no":
+		id := c.Input().Get("id")
+		if len(id) == 0 {
+			break
+		}
+		id = c.Input().Get("id")
+		err := models.UpdatePostState1(id, 1)
+		if err != nil {
+			beego.Error(err)
+		}
+		post, err := models.GetOnePost(id)
+		if err != nil {
+			beego.Error(err)
+		}
+		if post.Label == 1 {
+			msg := fmt.Sprintf("您发布的[%s]存在违规，请您重新发布", post.Title)
+			sid := fmt.Sprintf("%d", post.Id)
+			err = models.AddNotice(username, post.OpenId, true, msg, sid, NTYPE_2)
+			if err != nil {
+				beego.Error(err)
+			}
+		}
+		beego.Debug("is admin state1no" + id)
+		c.Redirect("/admin/home", 302)
+		return
+	case "state1ok":
+		id := c.Input().Get("id")
+		if len(id) == 0 {
+			break
+		}
+		id = c.Input().Get("id")
+		err := models.UpdatePostState1(id, 0)
+		if err != nil {
+			beego.Error(err)
+		}
+		beego.Debug("is admin state1ok" + id)
 		c.Redirect("/admin/home", 302)
 		return
 	case "back":

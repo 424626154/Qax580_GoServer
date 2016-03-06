@@ -11,7 +11,7 @@ function ocnliDel(id){
 </script>
 <div class="qax_bg container-fluid">
   <div class="col-xs-12 col-md-4 list_col">
-    <img src="{{isImgPath .Canting.Image}}" alt="{{isImgPath .Canting.Image}}" class="list_time_waimai" ></img>
+    <img src="{{isImgPath .Canting.Image}}" alt="{{isImgPath .Canting.Image}}" class="list_time_waimai" >
   <div class="list_time_waimai_info">
     <h4>{{.Canting.Name}}</h4>
   </div>
@@ -23,7 +23,7 @@ function ocnliDel(id){
 <div class="row">
   {{range .Caidans}}
   <div class="col-xs-12 col-md-4 list_col"  onclick="window.location.href= '/admin/caidans?id={{.Id}}'">
-    <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" class="list_time_caidan" ></img>
+    <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" class="list_time_caidan" >
   <div class="list_time_waimai_info">
     <h4>{{.Name}}</h4>
     <h5>{{.Info}}</h5>
@@ -36,4 +36,4 @@ function ocnliDel(id){
 </div>
 
 </div>
-{{template "footer.html" .}}
+{{template "adminfooter.html" .}}
