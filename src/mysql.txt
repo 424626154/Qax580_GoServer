@@ -1,0 +1,11 @@
+1.1.5 Bate版本
+alter table qax580.poll modify column create_time bigint(10);
+alter table qax580.vote modify column create_time bigint(10);
+
+alter table qax580go.polls modify column info varchar(1000);
+
+alter table qax580go.polls modify column prize varchar(1000);
+
+alter table qax580go.polls modify column prize varchar(1000);
+
+alter table qax580go.poll modify column info varchar(1000);

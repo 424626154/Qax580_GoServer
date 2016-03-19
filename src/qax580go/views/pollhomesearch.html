@@ -22,7 +22,7 @@
   }
     function onclikVote(id){
                       $.ajax({
-                url : '/wxqax/qualification?openid=o3AhEuB_wdTELvlErL4F1Em4Nck4&pollsid=1',
+                url : '/wxqax/qualification?openid='+{{.OpenId}}+'&pollsid='+{{.PollsId}},
                 data:{},
                 cache : false, 
                 async : false,

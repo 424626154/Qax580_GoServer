@@ -12,7 +12,7 @@ $(document).ready(function(){
 <ul class="list-group">
   {{range .Objs}}
   <li class="list-group-item">
-    <input type="text" class="form-control" value="{{.Id}}">
+    <input type="text" class="form-control" value="http://www.baoguangguang.cn/poll/pollwx?id={{.Id}}">
     {{if eq .Image ""}}
          {{.Image}}
         {{else}}

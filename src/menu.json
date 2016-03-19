@@ -26,6 +26,12 @@
                         "name": "我的信息", 
                         "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fmymessage%0a&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
+                        "name": "咱这微平台", 
+                        "url": "http://www.baoguangguang.cn/wpt/home", 
+                        "sub_button": [ ]
                     }
                 ]
             }, 

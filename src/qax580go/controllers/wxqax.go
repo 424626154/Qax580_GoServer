@@ -5,12 +5,14 @@ package controllers
 */
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/config"
 	"io/ioutil"
 	"net/http"
 	"qax580go/models"
 	"strings"
+	"time"
 )
 
 type WxqaxController struct {
@@ -505,4 +507,79 @@ func getWxToken(appid string, secret string) (models.AccessTokenJson, error) {
 		beego.Error(err)
 	}
 	return tokenobj, err
+}
+
+func getWxTicket(token string) (models.TicketJson, error) {
+	// https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi
+	ticketobj := models.TicketJson{}
+	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
+	wx_url := "[REALM]?access_token=[ACCESS_TOKEN]&type=jsapi"
+	// if beego.AppConfig.Bool("qax580::isdebug") {
+	realm_name := "https://api.weixin.qq.com/cgi-bin/ticket/getticket"
+	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
+	wx_url = strings.Replace(wx_url, "[ACCESS_TOKEN]", token, -1)
+	beego.Debug("wxqax getWxTicket url :", wx_url)
+	resp, err := http.Get(wx_url)
+	if err != nil {
+		beego.Error(err)
+		return ticketobj, err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Error(err)
+		body = []byte(response_json)
+	} else {
+		beego.Debug("wxqax getWxTicket boey :", string(body))
+	}
+	var atj models.TicketJson
+	if err := json.Unmarshal(body, &atj); err == nil {
+		beego.Debug("get getWxTicket obj", atj)
+		ticketobj = atj
+	} else {
+		beego.Error(err)
+	}
+	return ticketobj, err
+}
+
+func getShare(appid string, secret string, share_url string) models.WxShare {
+	ticket_cookie := ""
+	tokenobj, err := getWxToken(appid, secret)
+	if err != nil {
+		beego.Error(err)
+	}
+	if tokenobj.ErrCode == 0 {
+		ticket, err := getWxTicket(tokenobj.AccessToken)
+		if err != nil {
+			beego.Error(err)
+		}
+		if err != nil {
+			beego.Error()
+		}
+		if ticket.ErrCode == 0 {
+			ticket_cookie = ticket.Ticket
+		}
+	}
+
+	wxShare := models.WxShare{}
+	timestamp := time.Now().Unix()
+	noncestr := getNonceStr(16, KC_RAND_KIND_ALL)
+	basestr := "jsapi_ticket=[TICKET]&noncestr=[NONCESTR]&timestamp=[TIMESTAMP]&url=[URL]"
+	basestr = strings.Replace(basestr, "[TICKET]", ticket_cookie, -1)
+	basestr = strings.Replace(basestr, "[NONCESTR]", noncestr, -1)
+	basestr = strings.Replace(basestr, "[TIMESTAMP]", fmt.Sprintf("%d", timestamp), -1)
+	basestr = strings.Replace(basestr, "[URL]", share_url, -1)
+	signaturestr := goWxJsSha1(basestr)
+	beego.Debug(" getShare basestr", basestr)
+	beego.Debug(" getShare ticket_cookie", ticket_cookie)
+	beego.Debug(" getShare noncestr", noncestr)
+	beego.Debug(" getShare timestamp", fmt.Sprintf("%d", timestamp))
+	beego.Debug(" getShare signaturestr", signaturestr)
+	beego.Debug(" getShare share_url", share_url)
+	wxShare.AppId = appid
+	wxShare.TimeStamp = timestamp
+	wxShare.NonceStr = noncestr
+	wxShare.Signature = signaturestr
+	beego.Debug(" getShare WxShare", wxShare)
+	return wxShare
 }

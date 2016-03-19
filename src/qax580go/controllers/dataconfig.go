@@ -1,6 +1,7 @@
 package controllers
 
 const COOKIE_WX_OPENID = "wx_openid"
+const COOKIE_WX_TICKET = "wx_ticket"
 const COOKIE_CITY = "city"
 const CITY_ALL = "全部"
 const PY_ALL = "all"

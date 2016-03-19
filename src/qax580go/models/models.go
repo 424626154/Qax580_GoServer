@@ -84,7 +84,23 @@ type AccessTokenJson struct {
 	ErrCode      int64  `json:"errcode"`
 	ErrMsg       string `json:"errmsg"`
 }
-
+type TicketJson struct {
+	ExpiresIn int64  `json:"expires_in"`
+	Ticket    string `json:"ticket"`
+	ErrCode   int64  `json:"errcode"`
+	ErrMsg    string `json:"errmsg"`
+}
+type WxShare struct {
+	AppId     string // 必填，公众号的唯一标识
+	TimeStamp int64  // 必填，生成签名的时间戳
+	NonceStr  string // 必填，生成签名的随机串
+	Signature string // 必填，签名，见附录1
+}
+type WxShareCon struct {
+	Title  string // 分享标题
+	Link   string //分享链接
+	ImgUrl string // 分享图标
+}
 type QRCodeJson struct {
 	Ticket         string `json:"ticket"`
 	ExpiresSeconds int64  `json:"expire_seconds"`
@@ -304,7 +320,7 @@ type Keyobj struct {
 type Polls struct {
 	Id            int64
 	Title         string //投票组标题
-	Info          string //投票组内容
+	Info          string `orm:"size(1000)"` //投票组内容
 	Image         string //投票组图片
 	State         int16  //投票组状态 0未上线 1 上线
 	StartTimeLong int64  //投票组开始时间
@@ -313,8 +329,8 @@ type Polls struct {
 	More          string //更多链接
 	Appid         string //验证的投票Appid
 	Secret        string //验证的投票Secret
-	Prize         string //活动奖品
-	Ext           string //扩展信息
+	Prize         string `orm:"size(1000)"` //活动奖品
+	Ext           string `orm:"size(1000)"` //扩展信息
 }
 
 /**
@@ -324,7 +340,7 @@ type Poll struct {
 	Id         int64
 	PollsId    int64  //投票列表id
 	Title      string //投票标题
-	Info       string //投票内容
+	Info       string `orm:"size(1000)"` //投票内容
 	ContactWay string //联系方式
 	Image      string //投票图片
 	State      int16  //状态 0未上线 1 上线
@@ -361,6 +377,49 @@ type Notice struct {
 	CreateTime int64  //投票时间
 	Ext        string //消息扩展 1 帖子ID 2贴在ID
 	NType      int16  //消息类型 1发布信息通过审核通知 2帖子存在违规通知
+}
+
+type RinseJson struct {
+	Rtype   string `json:"rtype"`
+	Data    string `json:"data"`
+	ErrCode int64  `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
+	Phone   string `json:"phone"`
+	Pwd     string `json:"pwd"`
+}
+
+/**
+冲洗绑定
+*/
+// type RBinding struct {
+// 	Id      int64
+// 	BType   int16  //绑定类型 1 手机号
+// 	Phone   string //手机号
+// 	Pwd     string //密码
+// 	Account string //唯一帐号
+// }
+
+/**
+冲洗账户
+*/
+type RUser struct {
+	Id      int64
+	Phone   string //手机号
+	Pwd     string //密码
+	Account string //唯一帐号
+	RId     int64  //显示id
+}
+
+type Wpt struct {
+	Id         int64
+	Title      string `orm:"size(1000)"` //标题
+	Info       string `orm:"size(1000)"` //内容
+	Wid        string //微信号
+	Qrcode     string //二维码
+	WRange     string //服务范围
+	State      int16  //0 未上线 1上线
+	Tuijian    int16  //推荐
+	CreateTime int64  //创建时间
 }
 
 func RegisterDB() {
@@ -402,6 +461,9 @@ func RegisterDB() {
 	orm.RegisterModel(new(Poll))            //投票对象
 	orm.RegisterModel(new(Vote))            //选票
 	orm.RegisterModel(new(Notice))          //通知
+	// orm.RegisterModel(new(RBinding))        //冲洗绑定
+	orm.RegisterModel(new(RUser)) //冲洗帐号
+	orm.RegisterModel(new(Wpt))   //微平台对象
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -1983,7 +2045,7 @@ func GetAllPolls() ([]Polls, error) {
 	o := orm.NewOrm()
 	var objs []Polls
 	_, err := o.Raw("SELECT * FROM polls ORDER BY id DESC").QueryRows(&objs)
-	beego.Debug("GetAllUorders", objs)
+	// beego.Debug("GetAllUorders", objs)
 	return objs, err
 }
 
@@ -2177,7 +2239,7 @@ func GetAllPollState(pollsid string, state int16) ([]Poll, error) {
 	o := orm.NewOrm()
 	var objs []Poll
 	_, err := o.Raw("SELECT * FROM poll WHERE  polls_id = ? AND state = ? ORDER BY id DESC", pollsid, state).QueryRows(&objs)
-	beego.Debug("GetAllPoll", objs)
+	// beego.Debug("GetAllPoll", objs)
 	return objs, err
 }
 
@@ -2209,7 +2271,7 @@ func DelPoll(pollid string, id string) error {
 投票
 */
 
-func AddVote(pollsid string, pollid string) error {
+func AddVote(openid string, pollsid string, pollid string) error {
 	cpollsid, err := strconv.ParseInt(pollsid, 10, 64)
 	if err != nil {
 		return err
@@ -2220,7 +2282,8 @@ func AddVote(pollsid string, pollid string) error {
 	}
 	o := orm.NewOrm()
 	my_time := time.Now().Unix()
-	cate := &Vote{PollsId: cpollsid, PollId: cpollid, CreateTime: my_time}
+	cate := &Vote{OpneId: openid, PollsId: cpollsid, PollId: cpollid, CreateTime: my_time}
+	beego.Debug("AddVote cate", cate)
 	// 插入数据
 	_, err = o.Insert(cate)
 	if err != nil {
@@ -2266,6 +2329,33 @@ func GetVoteAllNum(pollsid string) (int32, error) {
 		return int32(0), err
 	}
 	return int32(num), err
+}
+
+func GetAllVote(pollsid string, pollid string) ([]Vote, error) {
+	o := orm.NewOrm()
+	var objs []Vote
+	_, err := o.Raw("SELECT * FROM vote WHERE polls_id = ? AND poll_id = ?", pollsid, pollid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	// beego.Debug(" GetAllVote objs :", objs)
+	return objs, err
+}
+
+/**
+获得最新一条投票
+*/
+func GetAllVote1(openid string, pollsid string, pollid string) ([]Vote, error) {
+	o := orm.NewOrm()
+	var objs []Vote
+	_, err := o.Raw("SELECT * FROM vote WHERE opne_id = ? AND polls_id = ? AND poll_id = ? order by create_time desc", openid, pollsid, pollid).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	// beego.Debug(" GetOneVote1 objs :", objs)
+	return objs, err
 }
 
 /***********通知*************/
@@ -2373,4 +2463,266 @@ func DeleteAdminUserNotice(id string) error {
 	cate := &Notice{Id: cid}
 	_, err = o.Delete(cate)
 	return err
+}
+
+/***冲洗数据库***/
+
+// func AddRUserPhone(phone string, pwd string) error {
+// 	o := orm.NewOrm()
+// 	cate := &RBinding{BType: int16(1), Phone: phone, Pwd: pwd}
+// 	// 插入数据
+// 	_, err := o.Insert(cate)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+// func GetRUserPhone(phone string, pwd string) (*RBinding, error) {
+// 	o := orm.NewOrm()
+// 	var objs []RBinding
+// 	_, err := o.Raw("SELECT * FROM r_binding  WHERE phone = ? ORDER BY id DESC", phone).QueryRows(&objs)
+// 	if err != nil {
+// 		beego.Error(err)
+// 		return nil, err
+// 	}
+// 	if len(objs) == 0 {
+// 		return nil, nil
+// 	}
+// 	obj := &objs[0]
+// 	return obj, nil
+// }
+/**
+添加用户
+*/
+func AddRUser(phone string, pwd string, account string, rid int64) error {
+	o := orm.NewOrm()
+	obj := &RUser{Phone: phone, Pwd: pwd, Account: account, RId: rid}
+	// 插入数据
+	_, err := o.Insert(obj)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/**
+获得用户
+*/
+func GetRUser(phone string) (*RUser, error) {
+	o := orm.NewOrm()
+	var objs []RUser
+	_, err := o.Raw("SELECT * FROM r_user  WHERE phone = ? ORDER BY id DESC", phone).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) == 0 {
+		return nil, nil
+	}
+	obj := &objs[0]
+	return obj, nil
+}
+
+/**
+获得用户account
+*/
+func GetRUserAccount(account string) (*RUser, error) {
+	o := orm.NewOrm()
+	var objs []RUser
+	_, err := o.Raw("SELECT * FROM r_user  WHERE account = ? ORDER BY id DESC", account).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) == 0 {
+		return nil, nil
+	}
+	obj := &objs[0]
+	return obj, nil
+}
+
+/**
+获得用户account
+*/
+func GetRUserPP(phone string) (*RUser, error) {
+	o := orm.NewOrm()
+	var objs []RUser
+	_, err := o.Raw("SELECT * FROM r_user  WHERE phone = ? ORDER BY id DESC", phone).QueryRows(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) == 0 {
+		return nil, nil
+	}
+	obj := &objs[0]
+	return obj, nil
+}
+
+/**
+活动用户数量
+*/
+
+func GetUserCount() (int64, error) {
+	o := orm.NewOrm()
+	count, err := o.QueryTable("r_user").Count()
+	return count, err
+}
+
+/***微平台数据***/
+func AddWpt(title string, info string, wid string, wrange string, qrcode string) error {
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	obj := &Wpt{Title: title, Info: info, Wid: wid, Qrcode: qrcode, WRange: wrange, CreateTime: my_time}
+	// 插入数据
+	_, err := o.Insert(obj)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/**
+获得所有
+*/
+func GetAllWpts() ([]Wpt, error) {
+	o := orm.NewOrm()
+	var objs []Wpt
+	_, err := o.QueryTable("wpt").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+	}
+	return objs, err
+}
+
+/**
+删除平台
+*/
+func DelWpt(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wpt{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/**
+修改平台状态
+*/
+func UpWptState(id string, state int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wpt{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/**
+修改平台推荐
+*/
+func UpWptTuijian(id string, tuijian int16) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wpt{Id: cid}
+	cate.Tuijian = tuijian
+	_, err = o.Update(cate, "tuijian")
+	if err != nil {
+		beego.Error(err)
+	}
+	return err
+}
+
+/**
+修改图片
+*/
+func UpWptImg(id string, qrcode string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wpt{Id: cid}
+	cate.Qrcode = qrcode
+	_, err = o.Update(cate, "qrcode")
+	return err
+}
+
+/**
+获得平台
+*/
+func GetOneWpt(id string) (*Wpt, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	obj := &Wpt{}
+	err = o.QueryTable("wpt").Filter("id", cid).One(obj)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return obj, err
+}
+
+/**
+修改平台内容
+*/
+func UpWptInfo(id string, title string, info string, wid string, wrange string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Wpt{Id: cid}
+	cate.Title = title
+	cate.Info = info
+	cate.Wid = wid
+	cate.WRange = wrange
+	_, err = o.Update(cate, "title", "info", "wid", "w_range")
+	return err
+}
+
+/**
+返回微信平台
+*/
+func GetAllWptTJ(tuijian int16) ([]Wpt, error) {
+	o := orm.NewOrm()
+	var objs []Wpt
+	_, err := o.Raw("SELECT * FROM wpt WHERE state = 1  AND tuijian = ? ORDER BY id DESC", tuijian).QueryRows(&objs)
+	return objs, err
+}
+
+/**
+返回微信平台
+*/
+func GetAllWpt() ([]Wpt, error) {
+	o := orm.NewOrm()
+	var objs []Wpt
+	_, err := o.Raw("SELECT * FROM wpt WHERE state = 1 ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+
+/**
+返回微信平台 关键字
+*/
+func GetAllWptLike(like string) ([]Wpt, error) {
+	o := orm.NewOrm()
+	var objs []Wpt
+	_, err := o.Raw("SELECT * FROM wpt WHERE title LIKE ? OR wid = ? ORDER BY id DESC ", "%"+like+"%", "%"+like+"%").QueryRows(&objs)
+	return objs, err
 }

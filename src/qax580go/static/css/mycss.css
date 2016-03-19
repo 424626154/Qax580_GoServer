@@ -336,6 +336,8 @@ color:#C9C9C9;
 }
 .poll_nav_font{
     font-size: 20px;
+    color: #000;
+    font-weight:bold;  
 }
 .poll_title{
     font-size: 16px;
@@ -367,3 +369,21 @@ color:#C9C9C9;
       float: right;
       visibility:hidden;
 }
+
+.poll_home_but{
+    border-style:solid;
+    border-width:1px;
+    border-color:#C9C9C9;
+    height: 50px;
+    text-align:center;
+    padding: 0px 0px;
+    background:#fff;
+}
+.wpt_bg{
+    background-color: #fff;
+    padding: 10px 2px;
+}
+.wpt_title{
+    padding-top: 10px;
+}
+

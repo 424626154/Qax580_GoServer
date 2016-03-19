@@ -9,6 +9,11 @@ function onclikOp(state,id){
   // alert(url)
 window.location.href=url; 
 }
+function onclikVotes(id){
+  var url = "/poll/adminpollvote?pollid="+id+"&pollsid="+{{.PollsId}}
+  // alert(url)
+window.location.href=url; 
+}
     </script>
 
 <ul class="list-group">
@@ -24,13 +29,15 @@ window.location.href=url;
       <h1>{{.Title}}</h1>
     </div>
     <div>{{.Info}}</div>
-    <div> {{.ContactWay}}</div>
+    <div>{{.ContactWay}}</div>
+    <div>票数：{{.VoteNum}}</div>
     <div >{{timeformat2 .CreateTime}}</div>
     {{if eq .State 0}}
     <a href="javascript:void(0)" onclick="onclikOp('state',{{.Id}})">未上架</a>
     {{else}}
     <a href="javascript:void(0)" onclick="onclikOp('state1',{{.Id}})">已上架</a>
     {{end}}
+    <a href="javascript:void(0)" onclick="onclikVotes({{.Id}})">详情</a>
   </li>
   {{end}}
 </ul>

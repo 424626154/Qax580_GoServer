@@ -3,8 +3,12 @@ package controllers
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
+	"io/ioutil"
+	"net/http"
 	"path"
 	"qax580go/models"
 	"strings"
@@ -80,6 +84,7 @@ func (c *PollController) AdminUppollsInfo() {
 		c.Redirect("/admin", 302)
 		return
 	}
+	// beego.Debug("c.Input() :", c.Input())
 	if c.Ctx.Input.IsGet() {
 		beego.Debug("AdminUppollsInfo Get")
 	}
@@ -94,6 +99,28 @@ func (c *PollController) AdminUppollsInfo() {
 		secret := c.Input().Get("secret")
 		prize := c.Input().Get("prize")
 		ext := c.Input().Get("ext")
+		// test := []byte("http://mp.weixin.qq.com/s?__biz=MzA5MTQ2NjQ2MA==&mid=401382373&idx=1&sn=f585506b1c883712bc3a2b47ae6f09b7#rd")
+		// beego.Debug("AdminUppollsInfo Post test:", test)
+		// beego.Debug("AdminUppollsInfo Post more:", more)
+		// if len(more) != 0 {
+		// 	more = string(fmt.Sprintf("[%s]", more))
+		// }
+		// beego.Debug("AdminUppollsInfo Post test str:", string(test))
+		// beego.Debug("AdminUppollsInfo Post more str:", more)
+		// beego.Debug("more byte", strings.Split(more, ","))
+		// strs := strings.Split(more, ",")
+		// slice2 := []byte{}
+		// for i := 0; i < len(strs); i++ {
+		// 	is, err := strconv.Atoi(strs[i])
+		// 	if err != nil {
+		// 		beego.Error(err)
+		// 	}
+		// 	slice2 = append(slice2, byte(is))
+		// }
+		// more = string(slice2)
+		more = jsTostr(more)
+		beego.Debug("AdminUppollsInfo Post more ", more)
+		// beego.Debug("AdminUppollsInfo Post test str:", string(strings.Split(more, ",")))
 		if len(title) != 0 && len(info) != 0 && len(more) != 0 && len(appid) != 0 && len(secret) != 0 {
 			beego.Debug("endtime", endtime)
 			//获取本地location
@@ -141,6 +168,8 @@ func (c *PollController) AdminUppollsImg() {
 		c.Redirect("/admin", 302)
 		return
 	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
 	if c.Ctx.Input.IsGet() {
 		beego.Debug("AdminUppollsImg Get")
 	}
@@ -247,11 +276,47 @@ func (c *PollController) Adminpollscon() {
 	if err != nil {
 		beego.Error(err)
 	}
+	for i := 0; i < len(objs); i++ {
+		num, err := models.GetVoteNum(pollsid, objs[i].Id)
+		if err != nil {
+			beego.Error(err)
+		}
+		objs[i].VoteNum = num
+	}
 	beego.Debug("pollsid:", pollsid)
 	beego.Debug("objs:", objs)
 	c.Data["Objs"] = objs
 	c.Data["PollsId"] = pollsid
 	c.TplNames = "adminpollscon.html"
+}
+func (c *PollController) AdminpollVote() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+		c.Data["isUser"] = bool
+		c.Data["User"] = username
+	} else {
+		c.Redirect("/admin", 302)
+		return
+	}
+	pollsid := c.Input().Get("pollsid")
+	pollid := c.Input().Get("pollid")
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Adminpollscon Get")
+	}
+
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Adminpollscon Post")
+	}
+	objs, err := models.GetAllVote(pollsid, pollid)
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Debug("pollsid:", pollsid)
+	beego.Debug("pollid:", pollid)
+	beego.Debug("objs:", objs)
+	c.Data["Objs"] = objs
+	c.Data["PollsId"] = pollsid
+	c.TplNames = "adminpollvote.html"
 }
 
 /**
@@ -343,20 +408,48 @@ func (c *PollController) PollHome() {
 	}
 	pollsid := c.Input().Get("pollsid")
 	beego.Debug("pollsid :", pollsid)
+	state := c.Input().Get("state")
+	code := c.Input().Get("code")
+	beego.Debug("/poll/pollhem state :", state)
+	beego.Debug("/poll/pollhem code :", code)
+	share_url := "http://www.baoguangguang.cn/poll/pollhome"
+	if len(code) != 0 && len(state) != 0 {
+		pollsid = state
+		_, err := getPollWxOpenId(c, pollsid, code)
+		if err != nil {
+			beego.Error(err)
+		}
+		share_url = fmt.Sprintf("http://www.baoguangguang.cn/poll/pollhome?code=%s&state=%s", code, state)
+	}
+	beego.Debug("/poll/pollhem pollsid :", pollsid)
+	openid := getPollCookie(c)
+	//测试openid
+	isdebug := "false"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+	}
+	if isdebug == "true" {
+		openid = "o3AhEuB_wdTELvlErL4F1Em4Nck4"
+		c.Data["OpenId"] = openid
+	}
+
 	op := c.Input().Get("op")
 	beego.Debug("op :", op)
 	switch op {
 	case "vote":
 		id := c.Input().Get("id")
-		err := models.AddVote(pollsid, id)
+		err := models.AddVote(openid, pollsid, id)
 		if err != nil {
-			beego.Debug(err)
+			beego.Error(err)
 		}
 		url := fmt.Sprintf("/poll/pollhome?pollsid=%s", pollsid)
 		c.Redirect(url, 302)
 		return
 	}
-
+	c.Data["Time"] = int64(0)
 	if len(pollsid) != 0 {
 		err := models.AddPollsPv(pollsid)
 		if err != nil {
@@ -367,6 +460,7 @@ func (c *PollController) PollHome() {
 			beego.Error(err)
 		}
 		beego.Debug("polls", polls)
+		c.Data["Time"] = polls.EndTimeLong
 		c.Data["Polls"] = polls
 		pv, err := models.GetPollsPv(pollsid)
 		c.Data["PV"] = pv
@@ -385,7 +479,6 @@ func (c *PollController) PollHome() {
 			_, cmon, cday := time.Now().Date()
 			hour, min, _ := t.Clock()
 			chour, cmin, _ := time.Now().Clock()
-			beego.Debug("---------")
 			timestr = fmt.Sprintf("%d月%d天%02d小时%02d分", mon-cmon, day-cday, hour-chour, min-cmin)
 			// beego.Debug(timestr)
 		}
@@ -402,10 +495,14 @@ func (c *PollController) PollHome() {
 			}
 			objs[i].VoteNum = num
 		}
-		beego.Debug("objs :", objs)
+		// beego.Debug("objs :", objs)
 		c.Data["Objs"] = objs
+		wxShareCon := models.WxShareCon{}
+		wxShareCon.Title = polls.Title
+		wxShareCon.Link = fmt.Sprintf("http://www.baoguangguang.cn/poll/pollwx?id=%s", pollsid)
+		wxShareCon.ImgUrl = fmt.Sprintf("http://182.92.167.29:8080/imagehosting/%s", polls.Image)
+		getPollShare(polls.Appid, polls.Secret, share_url, wxShareCon, c)
 	}
-	c.Data["EndTimeLong"] = 0
 	c.Data["PollsId"] = pollsid
 	c.TplNames = "pollhome.html"
 }
@@ -420,6 +517,7 @@ func (c *PollController) PollHomeCon() {
 	if c.Ctx.Input.IsPost() {
 		beego.Debug("PollHome Post")
 	}
+	openid := getPollCookie(c)
 	pollsid := c.Input().Get("pollsid")
 	pollid := c.Input().Get("pollid")
 	beego.Debug("pollsid:", pollsid)
@@ -430,7 +528,7 @@ func (c *PollController) PollHomeCon() {
 	beego.Debug("op:", op)
 	switch op {
 	case "vote":
-		err := models.AddVote(pollsid, pollid)
+		err := models.AddVote(openid, pollsid, pollid)
 		if err != nil {
 			beego.Debug(err)
 		}
@@ -452,6 +550,13 @@ func (c *PollController) PollHomeCon() {
 	if err != nil {
 		beego.Error(err)
 	}
+
+	wxShareCon := models.WxShareCon{}
+	wxShareCon.Title = obj.Title
+	wxShareCon.Link = fmt.Sprintf("http://www.baoguangguang.cn/poll/pollwx?id=%s", pollsid)
+	wxShareCon.ImgUrl = fmt.Sprintf("http://182.92.167.29:8080/imagehosting/%s", obj.Image)
+	shaer_url := fmt.Sprintf("http://www.baoguangguang.cn/poll/pollhomecon?pollsid=%s&pollid=%s", pollsid, pollid)
+	getPollShare(polls.Appid, polls.Secret, shaer_url, wxShareCon, c)
 	beego.Debug("VoteNum", num)
 	obj.VoteNum = num
 	c.Data["Time"] = polls.EndTimeLong
@@ -470,6 +575,7 @@ func (c *PollController) PollHomeSearch() {
 	if c.Ctx.Input.IsPost() {
 		beego.Debug("PollHomeSearch Post")
 	}
+	openid := getPollCookie(c)
 	pollsid := c.Input().Get("pollsid")
 	search := c.Input().Get("search")
 	beego.Debug("pollsid:", pollsid)
@@ -481,7 +587,7 @@ func (c *PollController) PollHomeSearch() {
 	switch op {
 	case "vote":
 		pollid := c.Input().Get("pollid")
-		err := models.AddVote(pollsid, pollid)
+		err := models.AddVote(openid, pollsid, pollid)
 		if err != nil {
 			beego.Debug(err)
 		}
@@ -558,7 +664,6 @@ func (c *PollController) PollHomeRanking() {
 func (c *PollController) AddPoll() {
 	openid := getPollCookie(c)
 	pollsid := c.Input().Get("pollsid")
-	openid = "o3AhEuB_wdTELvlErL4F1Em4Nck4"
 	op := c.Input().Get("op")
 	switch op {
 	case "del":
@@ -634,22 +739,199 @@ func (c *PollController) AddPoll() {
 	c.TplNames = "addpoll.html"
 }
 
-func getPollCookie(c *PollController) string {
-	isUser := false
-	openid := c.Ctx.GetCookie(COOKIE_WX_OPENID)
-	// beego.Debug("------------openid--------")
-	// beego.Debug(openid)
-	if len(openid) != 0 {
-		wxuser, err := models.GetOneWxUserInfo(openid)
+func (c *PollController) PollWx() {
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("PollWx Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("PollWx Post")
+	}
+	id := c.Input().Get("id")
+	if len(id) != 0 {
+		polls, err := models.GetOnePolls(id)
 		if err != nil {
 			beego.Error(err)
 		} else {
-			isUser = true
-			// beego.Debug("--------------wxuser----------")
-			// beego.Debug(wxuser)
-			c.Data["WxUser"] = wxuser
+			appid := polls.Appid
+			secret := polls.Secret
+			if len(appid) != 0 && len(secret) != 0 {
+				isdebug := "true"
+				iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+				if err != nil {
+					beego.Debug(err)
+				} else {
+					isdebug = iniconf.String("qax580::isdebug")
+				}
+				wx_url := "[REALM]?appid=[APPID]&redirect_uri=[REDIRECT_URI]&response_type=code&scope=snsapi_base&state=[STATE]#wechat_redirect"
+				realm_name := ""
+				if isdebug == "true" {
+					realm_name = "http://localhost:9095"
+				} else {
+					realm_name = "https://open.weixin.qq.com/connect/oauth2/authorize"
+				}
+				redirect_uri := "http%3a%2f%2fwww.baoguangguang.cn%2fpoll%2fpollhome"
+				state := id
+				wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
+				wx_url = strings.Replace(wx_url, "[APPID]", appid, -1)
+				wx_url = strings.Replace(wx_url, "[REDIRECT_URI]", redirect_uri, -1)
+				wx_url = strings.Replace(wx_url, "[STATE]", state, -1)
+				beego.Debug("/poll/pollwx autho url :", wx_url)
+				c.Redirect(wx_url, 302)
+				return
+			}
 		}
 	}
-	c.Data["isUser"] = isUser
+	c.TplNames = "pollwx.html"
+}
+
+//校验是否可以投票
+func (c *PollController) PollCheckVote() {
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("PollCheckVote Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("PollCheckVote Post")
+	}
+	request_json := `{"errcode":1,"errmsg":"pollcheckvote error"}`
+	openid := c.Input().Get("openid")
+	pollsid := c.Input().Get("pollsid")
+	pollid := c.Input().Get("pollid")
+	beego.Debug("PollCheckVote openid", openid)
+	beego.Debug("PollCheckVote pollsid", pollsid)
+	beego.Debug("PollCheckVote pollid", pollid)
+	if len(openid) != 0 && len(pollsid) != 0 && len(pollid) != 0 {
+		//判断今天是否投票
+		votes, err := models.GetAllVote1(openid, pollsid, pollid)
+		if err != nil {
+			beego.Error(err)
+		}
+		if len(votes) != 0 {
+			t := time.Unix(votes[0].CreateTime, 0)
+			beego.Debug("PollCheckVote votes[0].CreateTime;", votes)
+			beego.Debug("PollCheckVote time.Now().Unix()", time.Now().Unix())
+			_, _, day := t.Date()
+			_, _, cday := time.Now().Date()
+			beego.Debug("PollCheckVote day;", day, "cday:", cday)
+			if day != cday {
+				request_json = `{"errcode":0,"errmsg":"pollcheckvote ok"}`
+			}
+		} else {
+			request_json = `{"errcode":0,"errmsg":"pollcheckvote ok"}`
+		}
+	}
+	beego.Debug("PollCheckVote request_json;", request_json)
+	c.Ctx.WriteString(request_json)
+}
+
+func getPollWxOpenId(c *PollController, pollsid string, code string) (string, error) {
+	polls, err := models.GetOnePolls(pollsid)
+	if err != nil {
+		beego.Error(err)
+	} else {
+		tokenobj, err := getWxAutoToken(polls.Appid, polls.Secret, code)
+		if err != nil {
+			beego.Error(err)
+		} else {
+			maxAge := 1<<31 - 1
+			c.Ctx.SetCookie(COOKIE_WX_OPENID, tokenobj.OpenID, maxAge, "/")
+			return tokenobj.OpenID, nil
+		}
+	}
+	return "", err
+}
+
+/**
+获得授权token
+*/
+func getWxAutoToken(appid string, secret string, code string) (models.AccessTokenJson, error) {
+	// ?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+	tokenobj := models.AccessTokenJson{}
+	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
+	wx_url := "[REALM]?appid=[APPID]&secret=[SECRET]&&code=[CODE]&grant_type=authorization_code"
+	realm_name := "https://api.weixin.qq.com/sns/oauth2/access_token"
+	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
+	wx_url = strings.Replace(wx_url, "[APPID]", appid, -1)
+	wx_url = strings.Replace(wx_url, "[SECRET]", secret, -1)
+	wx_url = strings.Replace(wx_url, "[CODE]", code, -1)
+	beego.Debug("/poll getWxAutoToken url :", wx_url)
+	resp, err := http.Get(wx_url)
+	if err != nil {
+		beego.Error(err)
+		return tokenobj, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Error(err)
+		body = []byte(response_json)
+	} else {
+		beego.Debug("wxqax getWxToken boey :", string(body))
+	}
+	var atj models.AccessTokenJson
+	if err := json.Unmarshal(body, &atj); err == nil {
+		beego.Debug("get Token obj", atj)
+		tokenobj = atj
+	} else {
+		beego.Error(err)
+	}
+	return tokenobj, err
+}
+
+func getPollCookie(c *PollController) string {
+	openid := c.Ctx.GetCookie(COOKIE_WX_OPENID)
+	c.Data["OpenId"] = openid
+	beego.Debug("/poll getPollCookie openid:", openid)
 	return openid
+}
+
+func getPollShare(appid string, secret string, share_url string, wxShareCon models.WxShareCon, c *PollController) {
+
+	// ticket_cookie := c.Ctx.GetCookie(COOKIE_WX_TICKET)
+	// if len(ticket_cookie) != 0 {
+
+	// } else {
+	ticket_cookie := ""
+	tokenobj, err := getWxToken(appid, secret)
+	if err != nil {
+		beego.Error(err)
+	}
+	if tokenobj.ErrCode == 0 {
+		ticket, err := getWxTicket(tokenobj.AccessToken)
+		if err != nil {
+			beego.Error(err)
+		}
+		if err != nil {
+			beego.Error()
+		}
+		if ticket.ErrCode == 0 {
+			c.Ctx.SetCookie(COOKIE_WX_TICKET, ticket.Ticket, ticket.ExpiresIn, "/")
+			ticket_cookie = ticket.Ticket
+		}
+	}
+	// }
+	wxShare := models.WxShare{}
+	timestamp := time.Now().Unix()
+	noncestr := getNonceStr(16, KC_RAND_KIND_ALL)
+	basestr := "jsapi_ticket=[TICKET]&noncestr=[NONCESTR]&timestamp=[TIMESTAMP]&url=[URL]"
+	basestr = strings.Replace(basestr, "[TICKET]", ticket_cookie, -1)
+	basestr = strings.Replace(basestr, "[NONCESTR]", noncestr, -1)
+	basestr = strings.Replace(basestr, "[TIMESTAMP]", fmt.Sprintf("%d", timestamp), -1)
+	basestr = strings.Replace(basestr, "[URL]", share_url, -1)
+	signaturestr := goWxJsSha1(basestr)
+	beego.Debug(" getPollShare basestr", basestr)
+	beego.Debug(" getPollShare ticket_cookie", ticket_cookie)
+	beego.Debug(" getPollShare noncestr", noncestr)
+	beego.Debug(" getPollShare timestamp", fmt.Sprintf("%d", timestamp))
+	beego.Debug(" getPollShare signaturestr", signaturestr)
+	beego.Debug(" getPollShare share_url", share_url)
+	wxShare.AppId = appid
+	wxShare.TimeStamp = timestamp
+	wxShare.NonceStr = noncestr
+	wxShare.Signature = signaturestr
+	// beego.Debug(" getPollShare WxShare", wxShare)
+	c.Data["WxShare"] = wxShare
+	c.Data["WxShareCon"] = wxShareCon
+	beego.Debug(" getPollShare wxShareCon", wxShareCon)
+
 }

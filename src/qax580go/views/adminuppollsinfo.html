@@ -50,13 +50,30 @@ function initData(){
       alert("请输入secret");
       return;
     }
-    var url = "/poll/adminuppollsinfo?title="+title+"&info="+info+"&more="+more+"&endtime="+end_time+"&id="+{{.Id}}+"&appid="+appid+"&secret="+secret+"&prize="+prize+"&ext="+ext;
+    var url = "/poll/adminuppollsinfo?title="+title+"&info="+info+"&more="+stringToBytes(more)+"&endtime="+end_time+"&id="+{{.Id}}+"&appid="+appid+"&secret="+secret+"&prize="+prize+"&ext="+ext;
     // alert(url)
-    document.getElementById("add").action = url;
+     document.getElementById("add").action = url;
      document.getElementById("add").method = "post";   
      document.getElementById("add").enctype = "multipart/form-data";
      document.getElementById("add").submit();
   }
+  function stringToBytes ( str ) {  
+  var ch, st, re = [];  
+  for (var i = 0; i < str.length; i++ ) {  
+    ch = str.charCodeAt(i);  // get char   
+    st = [];                 // set up "stack"  
+    do {  
+      st.push( ch & 0xFF );  // push byte to stack  
+      ch = ch >> 8;          // shift value down by 1 byte  
+    }    
+    while ( ch );  
+    // add stack contents to result  
+    // done because chars have "wrong" endianness  
+    re = re.concat( st.reverse() );  
+  }  
+  // return an array of bytes  
+  return re;  
+}  
     </script>
 
 <form id = "add" name="add" class="form-inline" method="post" action="/poll/adminaddpoll" enctype="multipart/form-data">
