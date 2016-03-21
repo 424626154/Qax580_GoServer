@@ -1,5 +1,5 @@
 {{template "adminheader.html" .}}
-<script type="text/javascript" src="../static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     analyticalData();
@@ -63,11 +63,54 @@ $(document).ready(function(){
     var url = "/admin/uplode?title="+title+"&info="+info+"&image="+img_path+"&city="+city+"&bfrom="+bfrom
     +"&fromshow="+fromshow+"&fromurl="+fromurl;
     // alert(url)
-    document.getElementById("add").action = url;
-     document.getElementById("add").method = "post";   
-     document.getElementById("add").enctype = "multipart/form-data";
-     document.getElementById("add").submit(); 
+    // document.getElementById("add").action = url;
+    //  document.getElementById("add").method = "post";   
+    //  document.getElementById("add").enctype = "multipart/form-data";
+    //  document.getElementById("add").submit();       
+      //调用方法 如        
+      var post_map = { title: title, info: info , image: img_path ,city:city,"bfrom":bfrom,fromshow:fromshow,fromurl:fromurl} 
+      var post_url = "/adminpost/addpost";
+      $.ajax({
+                url : post_url,
+                data: post_map,
+                cache : false, 
+                async : false,
+                type : "POST",
+                enctype: 'multipart/form-data',
+                dataType : 'json',
+                success : function (result){
+                    // alert(result.errcode)
+                    if(result.errcode == 0){
+                        window.location.href="/admin";  
+                    }else{
+                        alert(result.errmsg)
+                    }
+                },
+               error: function(XMLHttpRequest, textStatus, errorThrown) {
+               // alert(XMLHttpRequest.status);
+               // alert(XMLHttpRequest.readyState);
+               // alert(textStatus);
+               }
+            });
   }
+  function post(URL, PARAMS) {        
+            var temp = document.createElement("form");        
+            temp.action = URL;        
+            temp.method = "post";        
+            temp.style.display = "none";        
+            for (var x in PARAMS) {        
+                var opt = document.createElement("textarea");        
+                opt.name = x;        
+                opt.value = PARAMS[x];        
+                // alert(opt.name)      
+                temp.appendChild(opt);        
+            }        
+            alert(document.body)
+            document.body.appendChild(temp);   
+            // alert(PARAMS)     
+            temp.submit();        
+            return temp;        
+        }
 function checkURL(URL){
     var str=URL;
     //判断URL地址的正则表达式为:http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?
@@ -81,7 +124,7 @@ function checkURL(URL){
     }
 } 
 </script>
-<form id = "add" name="add" class="form-inline" method="post" action="/admin/uplode" enctype="multipart/form-data">
+<!-- <form id = "add" name="add" class="form-inline" method="post" action="/admin/uplode" enctype="multipart/form-data"> -->
   <div class="">
     <label for="">标题</label>
     <input type="text" class="form-control" id="title" name="title" placeholder="输入标题"></div>
@@ -101,6 +144,9 @@ function checkURL(URL){
   <div class="form-group"> <font class="up_fnt" for="" style="color:#000">选择区域:</font>
     <select style="width:100px;font-size:20px" id="city" name="city"></select>
   </div>
-  <button type="submit" class="btn btn-default" onclick="addPost();">发布</button>
-</form>
+  <!--富文本-->
+  <!--富文本-->
+  <button class="btn btn-default" onclick="addPost();">发布</button>
+<!-- </form> -->
+<script type="text/javascript"></script>
 {{template "adminfooter.html" .}}

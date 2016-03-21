@@ -39,6 +39,7 @@ func (c *AdminUplodeController) Get() {
 }
 
 func (c *AdminUplodeController) Post() {
+	beego.Debug(c.Input())
 	image_name := ""
 	title := c.Input().Get("title")
 	info := c.Input().Get("info")

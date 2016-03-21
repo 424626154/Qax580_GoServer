@@ -558,6 +558,16 @@ func GetAllStateNum() (int, error) {
 	return len(posts), err
 }
 
+/**
+违规数量
+*/
+func GetAllState1Num() (int, error) {
+	o := orm.NewOrm()
+	var posts []Post
+	_, err := o.Raw("SELECT * FROM post WHERE state1 = ? ORDER BY id DESC ", 1).QueryRows(&posts)
+	return len(posts), err
+}
+
 //获得我发布的帖子
 func GetAllPostsOpenid(openid string) ([]Post, error) {
 	o := orm.NewOrm()
@@ -669,6 +679,16 @@ func QueryFuzzyLimitPost(fuzzy string, nums int64) ([]Post, error) {
 	return posts, err
 }
 
+/**
+后台分页查询
+*/
+func QueryAdminPagePost(page int32, nums int32) ([]Post, error) {
+	o := orm.NewOrm()
+	var posts []Post
+	_, err := o.Raw("SELECT * FROM post ORDER BY id DESC LIMIT ?,? ", page*nums, nums).QueryRows(&posts)
+	return posts, err
+}
+
 /*
 返回帖子数量
 */
@@ -681,6 +701,15 @@ func GetPostCount() (int32, error) {
 
 	// }
 	count, err := o.QueryTable("post").Filter("examine", 1).Count()
+	return int32(count), err
+}
+
+/*
+返回后台帖子数量
+*/
+func GetAdminPostCount() (int32, error) {
+	o := orm.NewOrm()
+	count, err := o.QueryTable("post").Count()
 	return int32(count), err
 }
 

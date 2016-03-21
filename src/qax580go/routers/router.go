@@ -112,7 +112,8 @@ func init() {
 	beego.Router("admin/updatelog", &controllers.AdminUpdateLogController{})                    //后台更新日志
 	beego.Router("admin/notice", &controllers.AdminNoticeController{})                          //后台通知管理
 
-	beego.AutoRouter(&controllers.PollController{})  //投票系统
-	beego.AutoRouter(&controllers.RinseController{}) //冲洗系统
-	beego.AutoRouter(&controllers.WptController{})   //微信平台
+	beego.AutoRouter(&controllers.PollController{})      //投票系统
+	beego.AutoRouter(&controllers.RinseController{})     //冲洗系统
+	beego.AutoRouter(&controllers.WptController{})       //微信平台
+	beego.AutoRouter(&controllers.AdminPostController{}) //后台提交post
 }

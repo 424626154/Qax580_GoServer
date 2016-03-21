@@ -13,7 +13,7 @@ type AdminModifyController struct {
 }
 
 func (c *AdminModifyController) Get() {
-
+	// beego.Debug(c.Input())
 	bool, username := chackAccount(c.Ctx)
 	if bool {
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"qax580go/models"
+	"strconv"
 )
 
 type AdminHomeController struct {
@@ -21,20 +22,8 @@ func (c *AdminHomeController) Get() {
 		c.Redirect("/admin", 302)
 		return
 	}
-	posts, err := models.GetAllPostsAdmin()
-	if err != nil {
-		beego.Error(err)
-	}
-	num, err := models.GetAllStateNum()
-	if err != nil {
-		beego.Error(err)
-	}
-	c.TplNames = "adminhome.html"
-	c.Data["Posts"] = posts
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.Data["Num"] = num
-	c.Data["All"] = len(posts)
 	op := c.Input().Get("op")
 	switch op {
 	case "del":
@@ -147,4 +136,63 @@ func (c *AdminHomeController) Get() {
 		c.Redirect("/admin", 302)
 		return
 	}
+
+	CurrentPage := int32(1)
+	count, err := models.GetAdminPostCount() //后台用户数量
+	NumberofPages := int32(30)
+	temp := count / NumberofPages
+	if (count % NumberofPages) != 0 {
+		temp = temp + 1
+	}
+	CotalPages := temp
+	pagetype := c.Input().Get("type")
+	page := c.Input().Get("page")
+	// beego.Debug("pagetype:", pagetype)
+
+	if len(pagetype) != 0 && len(page) != 0 {
+		switch pagetype {
+		case "first": //首页
+			CurrentPage = 1
+		case "prev": //上一页
+			pageint, error := strconv.Atoi(page)
+			if error != nil {
+				beego.Error(error)
+			}
+			CurrentPage = int32(pageint)
+		case "next": //下一页
+			pageint, error := strconv.Atoi(page)
+			if error != nil {
+				beego.Error(error)
+			}
+			CurrentPage = int32(pageint)
+		case "last": //尾页
+			CurrentPage = CotalPages
+		case "page": //页码
+			pageint, error := strconv.Atoi(page)
+			if error != nil {
+				beego.Error(error)
+			}
+			CurrentPage = int32(pageint)
+		}
+	}
+	c.Data["CurrentPage"] = CurrentPage
+	c.Data["CotalPages"] = CotalPages
+	c.Data["NumberofPages"] = NumberofPages
+	posts, err := models.QueryAdminPagePost(CurrentPage-1, NumberofPages)
+	if err != nil {
+		beego.Error(err)
+	}
+	c.Data["Posts"] = posts
+	num, err := models.GetAllStateNum()
+	if err != nil {
+		beego.Error(err)
+	}
+	num1, err := models.GetAllState1Num()
+	if err != nil {
+		beego.Error(err)
+	}
+	c.Data["Num"] = num
+	c.Data["Num1"] = num1
+	c.Data["All"] = count
+	c.TplNames = "adminhome.html"
 }

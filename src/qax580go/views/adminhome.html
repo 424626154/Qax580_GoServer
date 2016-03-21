@@ -21,35 +21,40 @@
   <a type="button" class="btn btn-default" href="/wpt/adminhome">微平台</a>
 </div>
 <div class="time_font">
-  <a>
-    <h5>未审核({{.Num}})</h5>
-  </a>
-  <a>
-    <h5>共计({{.All}})</h5>
-  </a>
+  <span class="label label-default">未审核({{.Num}})</span>
+  <span class="label label-danger">违规({{.Num1}})</span>
+  <span class="label label-success">共计({{.All}})</span>
 </div>
 <ul class="list-group">
   {{range .Posts}}
   <li class="list-group-item">
     <div>
-      <a href="/admin/content?op=con&id={{.Id}}">
-        <h1>{{.Title}}</h1>
-      </a>
+
+      <h1>{{.Title}}</h1>
+
     </div>
-    <div>{{.Info}}</div>
-    {{if eq .Image ""}}
+    <!-- <div>{{.Info}}</div>
+  -->
+  <div id="info{{.Id}}"></div>
+  <script type="text/javascript">
+    load({{.Id}},{{.Info}})
+    function load(pid,info){
+      var id = "info"+pid;
+        var info = document.getElementById(id).innerHTML = info
+    }
+  </script>
+  {{if eq .Image ""}}
             {{.Image}}
           {{else}}
-    <div id="image_fnot" >
-      <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
-    {{end}}
+  <div id="image_fnot" >
+    <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
+  {{end}}
           {{ if eq .OpenId ""}}
 
         {{else}}
-    <div class="time_font">
-      <span > <font style="color: #000;font-size:12px;">{{ .NickeName}}</font>
-        <img src="{{.HeadImgurl}}" width="40px" height="40px">
-    </span>
+  <div class="time_font">
+    <span > <font style="color: #000;font-size:12px;">{{ .NickeName}}</font>
+      <img src="{{.HeadImgurl}}" width="40px" height="40px"></span>
   </div>
   {{ end}}
   <div class="time_font">{{timeformat .Time}}</div>
@@ -72,20 +77,57 @@
   <div > <font>{{.Fromurl}}</font>
   </div>
   {{end}}
-  <a href="/admin/home?op=del&id={{.Id}}" >删除</a>
-  <a href="/admin/modify?op=m&id={{.Id}}" >修改</a>
-  {{if eq .Examine 0}}
-  <a href="/admin/home?op=examine&id={{.Id}}" >审核</a>
-  {{else}}
-  <a href="/admin/home?op=examine1&id={{.Id}}" >已审核</a>
-  {{end}}
+  <!--操作标签-->
+  <div style="padding-top: 10px;">
+    <a class="label label-primary" href="/admin/content?op=con&id={{.Id}}" >详情</a>
+    <a class="label label-primary" href="/admin/home?op=del&id={{.Id}}" >删除</a>
+    <a class="label label-primary" href="/admin/modify?op=m&id={{.Id}}" >修改</a>
+    {{if eq .Examine 0}}
+    <a class="label label-default" href="/admin/home?op=examine&id={{.Id}}" >待审核</a>
+    {{else}}
+    <a class="label label-success" href="/admin/home?op=examine1&id={{.Id}}" >已审核</a>
+    {{end}}
   {{if eq .State1 0}}
-  <a href="/admin/home?op=state1no&id={{.Id}}" >合格(标记为违规)</a>
-  {{else}}
-  <a href="/admin/home?op=state1ok&id={{.Id}}" style="color:#FF0000;">不合格(标记为合格)</a>
-  {{end}}
-  
+    <a class="label label-success" href="/admin/home?op=state1no&id={{.Id}}" >合格(标记为违规)</a>
+    {{else}}
+    <a class="label label-danger" href="/admin/home?op=state1ok&id={{.Id}}">不合格(标记为合格)</a>
+    {{end}}
+  </div>
+  <!--操作标签-->
 </li>
 {{end}}
 </ul>
+<!--分页控件-->
+<script type="text/javascript" src="/static/jquery/jquery-1.8.3.min.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/static/js/bootstrap-paginator.min.js"></script>
+<div style="text-align:center">
+<div id="example"></div>
+<script type='text/javascript'>  
+          var options = {  
+              currentPage: {{.CurrentPage}},//当前页
+              totalPages: {{.CotalPages}},//总页数
+              numberofPages: {{.NumberofPages}},//显示的页数
+              itemTexts: function (type, page, current) {
+                switch (type) {
+                  case "first":
+                    return "<<";
+                  case "prev":
+                    return "<";
+                  case "next":
+                    return ">";
+                  case "last":
+                    return ">>";
+                  case "page":
+                    return page;
+                }
+              },  
+              onPageClicked: function (e, originalEvent, type, page) {  
+                  // alert("type:" + type + ",Page:" + page);  
+                  window.location.href = "?type="+type+"&page="+page
+              }  
+          }  
+          $('#example').bootstrapPaginator(options);  
+  </script>
+</div>
+<!--分页控件-->
 {{template "adminfooter.html" .}}

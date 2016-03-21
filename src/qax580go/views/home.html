@@ -155,40 +155,51 @@ function onNotice(){
           <div class="list_item_1">
             <div> <font  class="title_fnot" >{{.Title}}</font>
             </div>
-            <div class="cont_info"> <font class="info_fnot" >{{.Info}}</font>
-            </div>
-            {{if eq .Image ""}}
+            <!--     <div class="cont_info"> <font class="info_fnot" >{{.Info}}</font>
+          </div>
+          -->
+          <div class="cont_info" id="info{{.Id}}"></div>
+          <script type="text/javascript">
+    load({{.Id}},{{.Info}})
+    function load(pid,info){
+      var id = "info"+pid;
+        var info = document.getElementById(id).innerHTML = "<font class='info_fnot' >"+info+"</font>";
+    }
+  </script>
+          {{if eq .Image ""}}
                     {{.Image}}
                 {{else}}
-            <div id="image_fnot" >
-              <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
-            {{end}}
-            <div id="my_label">
-              <span class="label label-success">已审核</span>
-              {{if eq .Label 1}}
-              <span class="label label-primary">个人</span>
-              {{end}} 
+          <div id="image_fnot" >
+            <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
+          {{end}}
+          <div id="my_label">
+            <span class="label label-success">已审核</span>
+            {{if eq .Label 1}}
+            <span class="label label-primary">个人</span>
+            {{end}} 
                 {{if eq .Label 2}}
-              <span class="label label-primary">官方</span>
-              {{end}}
+            <span class="label label-primary">官方</span>
+            {{end}}
               {{if eq .City ""}}
               {{else}}
-              <span class="label label-info">{{.City}}</span>
-              {{end}}
-            </div>
-            {{if eq .Bfrom true}}
-            <div><a class="from_a" href="{{.Fromurl}}">来自{{.Fromshow}}</a></div>
+            <span class="label label-info">{{.City}}</span>
             {{end}}
           </div>
-          <div class="time_font">{{timeformat .Time}}</div>
+          {{if eq .Bfrom true}}
+          <div>
+            <a class="from_a" href="{{.Fromurl}}">来自{{.Fromshow}}</a>
+          </div>
+          {{end}}
         </div>
+        <div class="time_font">{{timeformat .Time}}</div>
       </div>
-      <!--list_item--> </a>
-    {{end}}
-  </ul>
-  <div style="text-align:center">
-    <div id="example"></div>
-    <script type='text/javascript'>  
+    </div>
+    <!--list_item--> </a>
+  {{end}}
+</ul>
+<div style="text-align:center">
+  <div id="example"></div>
+  <script type='text/javascript'>  
           var options = {  
               currentPage: {{.CurrentPage}},//当前页
               totalPages: {{.CotalPages}},//总页数
@@ -214,14 +225,14 @@ function onNotice(){
           }  
           $('#example').bootstrapPaginator(options);  
   </script>
-  </div>
+</div>
 </div>
 
 <!--   <a id="release" href="/uplode" class="home_font">发布信息</a>
 <a id="qrcode" class="home_font">公众帐号</a>
 <div id="qrcode_info">
 <font>扫描二维码
-  <br>关注咱这580</font>
+<br>关注咱这580</font>
 <img src="./static/img/qrcode.png"></div>
 -->
 <a id="gotop" class="home_font">返回顶部</a>
