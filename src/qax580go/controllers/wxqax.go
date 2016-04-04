@@ -509,6 +509,84 @@ func getWxToken(appid string, secret string) (models.AccessTokenJson, error) {
 	return tokenobj, err
 }
 
+/**
+获得token授权
+*/
+func getWxTokenOauth(appid string, secret string, code string) (models.AccessTokenJson, error) {
+	//https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+	tokenobj := models.AccessTokenJson{}
+	response_json := `{"errcode":1,"errmsg":"getWxAccessToken error"}`
+	wx_url := "[REALM]?appid=[APPID]&secret=[SECRET]&code=[CODE]&grant_type=authorization_code"
+	realm_name := "https://api.weixin.qq.com/sns/oauth2/access_token"
+	wx_url = strings.Replace(wx_url, "[REALM]", realm_name, -1)
+	wx_url = strings.Replace(wx_url, "[APPID]", appid, -1)
+	wx_url = strings.Replace(wx_url, "[SECRET]", secret, -1)
+	wx_url = strings.Replace(wx_url, "[CODE]", code, -1)
+	beego.Debug("getWxTokenFromCode url :", wx_url)
+	resp, err := http.Get(wx_url)
+	if err != nil {
+		beego.Error(err)
+		return tokenobj, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Error(err)
+		body = []byte(response_json)
+	} else {
+		beego.Debug("getWxTokenFromCode body :", string(body))
+	}
+	var atj models.AccessTokenJson
+	if err := json.Unmarshal(body, &atj); err == nil {
+		beego.Debug("get Token obj", atj)
+		tokenobj = atj
+	} else {
+		beego.Error(err)
+	}
+	return tokenobj, err
+}
+
+/**
+获得用户信息授权
+*/
+func getWxUserOauth(openid string, access_token string) (models.WxOauthUser, error) {
+	//https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+	user := models.WxOauthUser{}
+	response_json := `{"errcode":1,"errmsg":"getWxUser error"}`
+	query_url := "[REALM]?access_token=[ACCESS_TOKEN]&openid=[OPENID]&lang=zh_CN"
+	realm_name := "https://api.weixin.qq.com/sns/userinfo"
+	query_url = strings.Replace(query_url, "[REALM]", realm_name, -1)
+	query_url = strings.Replace(query_url, "[ACCESS_TOKEN]", access_token, -1)
+	query_url = strings.Replace(query_url, "[OPENID]", openid, -1)
+	beego.Debug("getWxUserOauth url:", query_url)
+
+	resp, err := http.Get(query_url)
+	if err != nil {
+		beego.Debug(err)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		beego.Debug(err)
+		body = []byte(response_json)
+	} else {
+		beego.Debug("wxqax getWxUserOauth body", string(body))
+	}
+	var uij models.WxOauthUser
+	if err := json.Unmarshal(body, &uij); err == nil {
+		beego.Debug("wxqax getWxUserOauth json", uij)
+		if uij.ErrCode == 0 {
+			user = uij
+		}
+
+	} else {
+		beego.Error(err)
+	}
+	return user, err
+}
+
 func getWxTicket(token string) (models.TicketJson, error) {
 	// https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi
 	ticketobj := models.TicketJson{}

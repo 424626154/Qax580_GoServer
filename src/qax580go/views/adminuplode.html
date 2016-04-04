@@ -63,35 +63,35 @@ $(document).ready(function(){
     var url = "/admin/uplode?title="+title+"&info="+info+"&image="+img_path+"&city="+city+"&bfrom="+bfrom
     +"&fromshow="+fromshow+"&fromurl="+fromurl;
     // alert(url)
-    // document.getElementById("add").action = url;
-    //  document.getElementById("add").method = "post";   
-    //  document.getElementById("add").enctype = "multipart/form-data";
-    //  document.getElementById("add").submit();       
+     document.getElementById("add").action = url;
+     document.getElementById("add").method = "post";   
+     document.getElementById("add").enctype = "multipart/form-data";
+     document.getElementById("add").submit();       
       //调用方法 如        
-      var post_map = { title: title, info: info , image: img_path ,city:city,"bfrom":bfrom,fromshow:fromshow,fromurl:fromurl} 
-      var post_url = "/adminpost/addpost";
-      $.ajax({
-                url : post_url,
-                data: post_map,
-                cache : false, 
-                async : false,
-                type : "POST",
-                enctype: 'multipart/form-data',
-                dataType : 'json',
-                success : function (result){
-                    // alert(result.errcode)
-                    if(result.errcode == 0){
-                        window.location.href="/admin";  
-                    }else{
-                        alert(result.errmsg)
-                    }
-                },
-               error: function(XMLHttpRequest, textStatus, errorThrown) {
-               // alert(XMLHttpRequest.status);
-               // alert(XMLHttpRequest.readyState);
-               // alert(textStatus);
-               }
-            });
+      // var post_map = { title: title, info: info , image: img_path ,city:city,"bfrom":bfrom,fromshow:fromshow,fromurl:fromurl} 
+      // var post_url = "/adminpost/addpost";
+      // $.ajax({
+      //           url : post_url,
+      //           data: post_map,
+      //           cache : false, 
+      //           async : false,
+      //           type : "POST",
+      //           enctype: 'multipart/form-data',
+      //           dataType : 'json',
+      //           success : function (result){
+      //               // alert(result.errcode)
+      //               if(result.errcode == 0){
+      //                   window.location.href="/admin";  
+      //               }else{
+      //                   alert(result.errmsg)
+      //               }
+      //           },
+      //          error: function(XMLHttpRequest, textStatus, errorThrown) {
+      //          // alert(XMLHttpRequest.status);
+      //          // alert(XMLHttpRequest.readyState);
+      //          // alert(textStatus);
+      //          }
+      //       });
   }
   function post(URL, PARAMS) {        
             var temp = document.createElement("form");        
@@ -124,7 +124,8 @@ function checkURL(URL){
     }
 } 
 </script>
-<!-- <form id = "add" name="add" class="form-inline" method="post" action="/admin/uplode" enctype="multipart/form-data"> -->
+<form id = "add" name="add" class="form-inline" method="post" action="/admin/uplode" enctype="multipart/form-data" onsubmit="return false">
+
   <div class="">
     <label for="">标题</label>
     <input type="text" class="form-control" id="title" name="title" placeholder="输入标题"></div>
@@ -147,6 +148,7 @@ function checkURL(URL){
   <!--富文本-->
   <!--富文本-->
   <button class="btn btn-default" onclick="addPost();">发布</button>
-<!-- </form> -->
+</form>
+
 <script type="text/javascript"></script>
 {{template "adminfooter.html" .}}

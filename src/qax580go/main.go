@@ -137,6 +137,23 @@ func isImgPath(in string) (out string) {
 	}
 	return fmt.Sprintf("%s%s", url, in)
 }
+func isImgServerPath(in string) (out string) {
+	url := ""
+	isdebug := "flase"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Error(err)
+	} else {
+		isdebug = iniconf.String("qax580::isdebug")
+		if isdebug == "true" {
+			url = iniconf.String("qax580::imgservertest")
+		} else {
+			url = iniconf.String("qax580::imgserver")
+		}
+
+	}
+	return fmt.Sprintf("%s%s", url, in)
+}
 
 /**
 是否过期
@@ -183,12 +200,14 @@ func main() {
 	orm.RunSyncdb("default", false, true)
 
 	beego.SetStaticPath("/game", "game")
+	beego.SetStaticPath("/admin/imageserver", "imageserver")
 
 	beego.AddFuncMap("timeformat", timeFormat)
 	beego.AddFuncMap("timeformat1", timeFormat1)
 	beego.AddFuncMap("timeformat2", timeFormat2)
 	beego.AddFuncMap("timeformat3", timeFormat3)
 	beego.AddFuncMap("isImgPath", isImgPath)
+	beego.AddFuncMap("isImgServerPath", isImgServerPath)
 	beego.AddFuncMap("versionInfo", versionInfo)
 	beego.AddFuncMap("moneyrecord", moneyRecord)
 	beego.AddFuncMap("moneyrecordinfo", moneyRecordInfo)

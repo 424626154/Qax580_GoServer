@@ -130,6 +130,23 @@ type Wxuserinfo struct {
 	Money         int64  //金钱
 }
 
+/**
+授权用户信息
+*/
+type WxOauthUser struct {
+	Id         int64
+	OpenId     string `json:"openid"`     //用户的标识，对当前公众号唯一
+	NickeName  string `json:"nickname"`   //用户的昵称
+	Sex        int32  `json:"sex"`        //用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
+	City       string `json:"city"`       //用户所在城市
+	Country    string `json:"country"`    //用户所在国家
+	Province   string `json:"province"`   //	用户所在省份
+	HeadImgurl string `json:"headimgurl"` //用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
+	Unionid    string `json:"unionid"`    //只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。详见：获取用户个人信息（UnionID机制）
+	ErrCode    int32  `json:"errcode"`    //0 成功 1 失败 参数错误
+	ErrMsg     string `json:"errmsg"`     //失败详情
+}
+
 /*
 用户金钱纪录
 */
@@ -422,6 +439,102 @@ type Wpt struct {
 	CreateTime int64  //创建时间
 }
 
+/**
+相册授权
+*/
+type Poauth struct {
+	Id         int64
+	Appid      string
+	Secret     string
+	CreateTime int64 //创建时间
+}
+
+type Puser struct {
+	Id         int64
+	OpenId     string //用户的标识，对当前公众号唯一
+	NickeName  string //用户的昵称
+	Sex        int32  //用户的性别，值为1时是男性，值为2时是女性，值为0时是未知
+	City       string //用户所在城市
+	Country    string //用户所在国家
+	Province   string //	用户所在省份
+	HeadImgurl string //用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空。若用户更换头像，原有头像URL将失效。
+	Unionid    string //只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。详见：获取用户个人信息（UnionID机制）
+	Appid      string
+	Secret     string
+	CreateTime int64 //创建时间
+}
+
+/**
+相册组
+*/
+type Photos struct {
+	Id         int64
+	OpenId     string
+	Image      string //相册地址
+	GroupId    string //分组
+	CreateTime int64  //创建时间
+}
+
+/**
+选择相片
+*/
+type SPhotos struct {
+	Id     int64
+	OpenId string
+	Image  string //相册地址
+	Select bool
+}
+
+/**
+相片尺寸
+*/
+type Psize struct {
+	Id         int64
+	Title      string
+	Money      int32
+	State      int8 //0未上线 1 上线
+	CreateTime int64
+}
+
+/**
+模版
+*/
+type Ptemp struct {
+	Id         int64
+	Title      string
+	Image      string
+	Money      int32
+	State      int8 //0未上线 1 上线
+	CreateTime int64
+}
+
+/**
+订单
+*/
+type Porder struct {
+	Id         int64
+	OpenId     string
+	Pnumber    string //订单编号
+	Photos     string //照片 [22,21,20,19]
+	PtempId    int64  //模版id
+	PsizeId    int64  //尺寸id
+	State      int8   //订单状态 1生成订单
+	Del        int8   //0 未删除 1已删除
+	CreateTime int64
+}
+
+/**
+订单请求
+*/
+type Pdetails struct {
+	Id         int64
+	OpenId     string
+	Pnumber    string //订单编号
+	Pdtype     int8   //类型
+	Ddetails   string //描述
+	CreateTime int64
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -462,8 +575,15 @@ func RegisterDB() {
 	orm.RegisterModel(new(Vote))            //选票
 	orm.RegisterModel(new(Notice))          //通知
 	// orm.RegisterModel(new(RBinding))        //冲洗绑定
-	orm.RegisterModel(new(RUser)) //冲洗帐号
-	orm.RegisterModel(new(Wpt))   //微平台对象
+	orm.RegisterModel(new(RUser))    //冲洗帐号
+	orm.RegisterModel(new(Wpt))      //微平台对象
+	orm.RegisterModel(new(Poauth))   //照片授权
+	orm.RegisterModel(new(Puser))    //照片用户
+	orm.RegisterModel(new(Photos))   //相册
+	orm.RegisterModel(new(Psize))    //尺寸
+	orm.RegisterModel(new(Ptemp))    //模版
+	orm.RegisterModel(new(Porder))   //订单详情
+	orm.RegisterModel(new(Pdetails)) //订单描述
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -2753,5 +2873,473 @@ func GetAllWptLike(like string) ([]Wpt, error) {
 	o := orm.NewOrm()
 	var objs []Wpt
 	_, err := o.Raw("SELECT * FROM wpt WHERE title LIKE ? OR wid = ? ORDER BY id DESC ", "%"+like+"%", "%"+like+"%").QueryRows(&objs)
+	return objs, err
+}
+
+/**
+添加
+*/
+func AddPoauth(appid string, secret string) (int64, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	cate := &Poauth{Appid: appid, Secret: secret, CreateTime: create_time}
+	// 查询数据
+	qs := o.QueryTable("poauth")
+	err := qs.Filter("appid", appid).Filter("secret", secret).One(cate)
+	if err == nil {
+		return cate.Id, err
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+
+	return cate.Id, nil
+}
+
+/**
+获得所有
+*/
+func GetPoauth() ([]Poauth, error) {
+	o := orm.NewOrm()
+	var objs []Poauth
+	_, err := o.QueryTable("poauth").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+	}
+	return objs, err
+}
+func GetPoauthFromAppid(appid string) (*Poauth, error) {
+	o := orm.NewOrm()
+	var objs []Poauth
+	_, err := o.QueryTable("poauth").Filter("appid", appid).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+	}
+	if len(objs) > 0 {
+		return &objs[0], err
+	}
+	return nil, err
+}
+func GetPoauthFromId(id string) (*Poauth, error) {
+	o := orm.NewOrm()
+	var objs []Poauth
+	_, err := o.QueryTable("poauth").Filter("id", id).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+	}
+	if len(objs) > 0 {
+		return &objs[0], err
+	}
+	return nil, err
+}
+
+/**
+删除
+*/
+func DelPoauth(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Poauth{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/**
+添加用户
+*/
+func AddPuser(user WxOauthUser, appid string, secret string) (*Puser, error) {
+	beego.Debug("AddPuser user", user)
+	o := orm.NewOrm()
+	cate := &Puser{OpenId: user.OpenId, NickeName: user.NickeName, Sex: user.Sex,
+		Province: user.Province, City: user.City, Country: user.Country,
+		HeadImgurl: user.HeadImgurl, Unionid: user.Unionid, Appid: appid, Secret: secret}
+
+	// 查询数据
+	qs := o.QueryTable("puser")
+	err := qs.Filter("open_id", user.OpenId).One(cate)
+	if err == nil { //存在则更新
+		// beego.Debug("cate:", cate)
+		cate.NickeName = user.NickeName
+		cate.Sex = user.Sex
+		cate.HeadImgurl = user.HeadImgurl
+		_, err = o.Update(cate, "nicke_name", "sex", "head_imgurl")
+		if err != nil {
+			beego.Error(err)
+			return nil, err
+		} else {
+			return cate, err
+		}
+
+	}
+
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return nil, err
+	}
+
+	return cate, nil
+}
+
+func GetPuserFromOpenId(openid string) (*Puser, error) {
+	o := orm.NewOrm()
+	var objs []Puser
+	_, err := o.Raw("SELECT * FROM puser WHERE open_id = ? ", openid).QueryRows(&objs)
+	obj := &Puser{}
+	if len(objs) > 0 {
+		obj = &objs[0]
+		return obj, err
+	}
+	return nil, err
+}
+
+/**
+添加相册
+*/
+func AddPhotos(openid string, groupid string, image string) (int64, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	cate := &Photos{OpenId: openid, GroupId: groupid, Image: image, CreateTime: create_time}
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+
+	return cate.Id, nil
+}
+
+/**
+获得相册
+*/
+func GetAllPhotos(openid string) ([]Photos, error) {
+	o := orm.NewOrm()
+	var objs []Photos
+	_, err := o.Raw("SELECT * FROM photos WHERE  open_id = ? ORDER BY id DESC ", openid).QueryRows(&objs)
+	return objs, err
+}
+
+func GetOnePhotos(id int64) (*Photos, error) {
+	o := orm.NewOrm()
+	var objs []Photos
+	_, err := o.QueryTable("photos").Filter("id", id).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+/**
+添加尺寸
+*/
+
+func AddPsize(title string, money string) (int64, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	money_i, err := strconv.ParseInt(money, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	cate := &Psize{Title: title, Money: int32(money_i), CreateTime: create_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+
+	return cate.Id, nil
+}
+
+/**
+删除尺寸
+*/
+func DelPsize(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Psize{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/**
+刷新尺寸
+*/
+func UpdatePsize(id string, state int8) error {
+	// beego.Debug("UpdatePsize ", id, state)
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Psize{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
+func GetOnePsize(id int64) (*Psize, error) {
+	o := orm.NewOrm()
+	var objs []Psize
+	_, err := o.QueryTable("psize").Filter("id", id).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+/**
+获得所有尺寸列表
+*/
+func GetAllPsize() ([]Psize, error) {
+	o := orm.NewOrm()
+	var objs []Psize
+	_, err := o.QueryTable("psize").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+func GetAllPsizeState1() ([]Psize, error) {
+	o := orm.NewOrm()
+	var objs []Psize
+	_, err := o.QueryTable("psize").Filter("state", 1).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+/**
+添加模版
+*/
+
+func AddPtemp(title string, image string, money string) (int64, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	money_i, err := strconv.ParseInt(money, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	cate := &Ptemp{Title: title, Image: image, Money: int32(money_i), CreateTime: create_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+
+	return cate.Id, nil
+}
+
+/**
+删除尺寸
+*/
+func DelPtemp(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &Ptemp{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+
+/**
+刷新尺寸
+*/
+func UpdatePtemp(id string, state int8) error {
+	// beego.Debug("UpdatePsize ", id, state)
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Ptemp{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
+
+/**
+获得所有尺寸列表
+*/
+func GetAllPtemp() ([]Ptemp, error) {
+	o := orm.NewOrm()
+	var objs []Ptemp
+	_, err := o.QueryTable("ptemp").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+/**
+获得已审核尺寸列表
+*/
+func GetAllPtempState1() ([]Ptemp, error) {
+	o := orm.NewOrm()
+	var objs []Ptemp
+	_, err := o.QueryTable("ptemp").Filter("state", 1).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+func GetOnePtemp(id int64) (*Ptemp, error) {
+	o := orm.NewOrm()
+	var objs []Ptemp
+	_, err := o.QueryTable("ptemp").Filter("id", id).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+/**
+添加订单
+*/
+
+func AddPorder(openid string, pnumber string, photos string, tempid string, sizeid string) (int64, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	tempid_i, err := strconv.ParseInt(tempid, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	sizeid_i, err := strconv.ParseInt(sizeid, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	cate := &Porder{OpenId: openid, Pnumber: pnumber, Photos: photos, PtempId: tempid_i, PsizeId: sizeid_i, State: 1, CreateTime: create_time}
+	// 插入数据
+	_, err = o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+	return cate.Id, nil
+}
+
+/**
+修改订单状态
+*/
+func UpPorderState(id string, state string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	statei, err := strconv.ParseInt(state, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &Porder{Id: cid}
+	obj.State = int8(statei)
+	_, err = o.Update(obj, "state")
+	return err
+}
+
+/**
+订单数量
+*/
+func GetAllPorderNum() (int64, error) {
+	o := orm.NewOrm()
+	cnt, err := o.QueryTable("porder").Count()
+	return cnt, err
+}
+
+func GetPorder(id string) (*Porder, error) {
+	o := orm.NewOrm()
+	var objs []Porder
+	_, err := o.QueryTable("porder").Filter("id", id).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+/**
+获得订单列表
+*/
+func GetAdminPorder() ([]Porder, error) {
+	o := orm.NewOrm()
+	var objs []Porder
+	_, err := o.QueryTable("porder").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+/**
+获得我的订单
+*/
+func GetMyAllPorder(openid string) ([]Porder, error) {
+	o := orm.NewOrm()
+	var objs []Porder
+	_, err := o.QueryTable("porder").Filter("open_id", openid).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+/**
+添加订单详情
+*/
+func AddPdetails(openid string, pnumber string, otype int8, det string) (int64, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	cate := &Pdetails{OpenId: openid, Pnumber: pnumber, Pdtype: otype, Ddetails: det, CreateTime: create_time}
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return 0, err
+	}
+	return cate.Id, nil
+}
+
+/**
+获得订单详情列表
+*/
+func GetPdetails(openid string, pnumber string) ([]Pdetails, error) {
+	o := orm.NewOrm()
+	var objs []Pdetails
+	_, err := o.QueryTable("pdetails").Filter("open_id", openid).Filter("pnumber", pnumber).OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
 	return objs, err
 }

@@ -1,6 +1,9 @@
 html,body {
   height: 100%;
 }
+body{
+  background-color: #efeff4;
+}
 .rbody {
   background: #efeff4;
 }
@@ -12,4 +15,8 @@ html,body {
   text-align: center;
   color: #888;
   font-weight: normal;
+}
+.home_err_div{
+	text-align:center;
+	padding-top: 40px;
 }
