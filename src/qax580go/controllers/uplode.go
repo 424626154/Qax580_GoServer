@@ -20,6 +20,7 @@ type UplodeController struct {
 
 func (c *UplodeController) Get() {
 	getUplodeCookie(c)
+	c.Data["FromType"] = getUplodeFromType(c)
 	c.TplNames = "uplode.html"
 }
 
@@ -94,4 +95,15 @@ func getUplodeCookie(c *UplodeController) string {
 	}
 	c.Data["isUser"] = isUser
 	return openid
+}
+
+/**
+*来源类型
+ */
+func getUplodeFromType(c *UplodeController) string {
+	from_type := c.Ctx.GetCookie(COOKIE_FROM_TYPE)
+	if len(from_type) == 0 {
+		from_type = COOKIE_FROM_ALL
+	}
+	return from_type
 }

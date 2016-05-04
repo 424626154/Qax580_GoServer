@@ -25,6 +25,7 @@ func (c *WxUplodeController) Get() {
 	if len(code) != 0 && len(state) != 0 {
 		beego.Debug(code)
 		beego.Debug(state)
+		saveUplodeFromType(state, c)
 		getUplodeAccessToken(code, c)
 	}
 	c.TplNames = "wxhome.html"
@@ -144,4 +145,12 @@ func getUplodeUserInfo(access_toke, openid string, c *WxUplodeController) {
 		beego.Debug("----------------get UserInfo json error--------------------")
 		beego.Debug(err)
 	}
+}
+
+/**
+*根据登录类型保存
+ */
+func saveUplodeFromType(from string, c *WxUplodeController) {
+	maxAge := 1<<31 - 1
+	c.Ctx.SetCookie(COOKIE_FROM_TYPE, from, maxAge, "/")
 }

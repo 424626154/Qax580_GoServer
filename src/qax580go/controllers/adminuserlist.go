@@ -20,11 +20,11 @@ func (c *AdminUserListController) Get() {
 		c.Redirect("/admin", 302)
 		return
 	}
-	posts, err := models.GetAllPostsAdmin()
-	if err != nil {
-		beego.Error(err)
-	}
-	c.Data["Posts"] = posts
+	// posts, err := models.GetAllPostsAdmin()
+	// if err != nil {
+	// 	beego.Error(err)
+	// }
+	// c.Data["Posts"] = posts
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
 

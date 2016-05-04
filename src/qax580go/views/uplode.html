@@ -6,18 +6,41 @@ $(document).ready(function(){
         });
   function analyticalData(){
     var citys = new Array()
-    citys[0] = "庆安县"
-    citys[1] = "铁力市"
-    citys[2] = "北林市"
-    citys[3] = "安达市"
-    citys[4] = "肇东市"
-    citys[5] = "海伦市"
-    citys[6] = "望奎市"
-    citys[7] = "兰西县"
-    citys[8] = "青冈县"
-    citys[9] = "明水县"
-    citys[10] = "绥棱县"
-    citys[11] = "绥化市"
+    var fromtype = {{.FromType}}
+    // alert(fromtype)
+    if(fromtype == "from_qingan"){
+          citys[0] = "庆安县"
+          citys[1] = "北林市"
+          citys[2] = "安达市"
+          citys[3] = "肇东市"
+          citys[4] = "海伦市"
+          citys[5] = "望奎市"
+          citys[6] = "兰西县"
+          citys[7] = "青冈县"
+          citys[8] = "明水县"
+          citys[9] = "绥棱县"
+          citys[10] = "绥化市"
+    }else if(fromtype == "from_tieli"){
+      citys[0] = "铁力市"
+    }else if(fromtype == "from_maoxian"){
+      citys[0] = "茂县"
+    }else{
+          citys[0] = "庆安县"
+          citys[1] = "铁力市"
+          citys[2] = "北林市"
+          citys[3] = "安达市"
+          citys[4] = "肇东市"
+          citys[5] = "海伦市"
+          citys[6] = "望奎市"
+          citys[7] = "兰西县"
+          citys[8] = "青冈县"
+          citys[9] = "明水县"
+          citys[10] = "绥棱县"
+          citys[11] = "绥化市"
+          citys[12] = "茂县"
+    }
+
+
     // alert(JSON.stringify(citys))
         document.getElementById("city").options.length=0;
         for(var i = 0 ; i < citys.length ; i ++ ){

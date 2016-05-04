@@ -25,6 +25,7 @@ func (c *WxHomeController) Get() {
 	if len(code) != 0 && len(state) != 0 {
 		beego.Debug(code)
 		beego.Debug(state)
+		saveHomeFromType(state, c)
 		getHomeAccessToken(code, c)
 	}
 	c.TplNames = "wxhome.html"
@@ -136,7 +137,7 @@ func getHomeUserInfo(access_toke, openid string, c *WxHomeController) {
 			// beego.Debug(wx_home)
 			// c.Redirect(wx_home, 302)
 			maxAge := 1<<31 - 1
-			c.Ctx.SetCookie("wx_openid", uij.OpenId, maxAge, "/")
+			c.Ctx.SetCookie(COOKIE_WX_OPENID, uij.OpenId, maxAge, "/")
 			c.Redirect("/", 302)
 		}
 		return
@@ -144,4 +145,13 @@ func getHomeUserInfo(access_toke, openid string, c *WxHomeController) {
 		beego.Debug("----------------get UserInfo json error--------------------")
 		beego.Debug(err)
 	}
+}
+
+/**
+*根据登录类型保存
+ */
+func saveHomeFromType(from string, c *WxHomeController) {
+	maxAge := 1<<31 - 1
+	c.Ctx.SetCookie(COOKIE_FROM_TYPE, from, maxAge, "/")
+	beego.Debug("save COOKIE_FROM_TYPE:", from, maxAge)
 }

@@ -6,13 +6,13 @@
                     {
                         "type": "view", 
                         "name": "咱这580", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxhome&response_type=code&scope=snsapi_userinfo&state=from_tieli#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
                         "type": "view", 
                         "name": "发布信息", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=from_tieli#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
@@ -24,7 +24,7 @@
                     {
                         "type": "view", 
                         "name": "我的信息", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fmymessage%0a&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.baoguangguang.cn%2fmymessage%0a&response_type=code&scope=snsapi_userinfo&state=from_tieli#wechat_redirect", 
                         "sub_button": [ ]
                     }
                 ]

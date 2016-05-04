@@ -29,6 +29,8 @@ const CITY_SL = "绥棱县"
 const PY_SL = "suilingxian"
 const CITY_TL = "铁力市"
 const PY_TL = "tilishi"
+const CITY_MX = "茂县"
+const PY_MX = "maoxian"
 
 const SH_CANYIN = "餐饮小吃"
 const CANYIN_TYPE = 1
@@ -55,3 +57,6 @@ const qa_secret = "c4b26e95739bc7defcc42e556cc7ae42"
 
 const NTYPE_1 = 1 //审核通过
 const NTYPE_2 = 2 //发帖内容违规
+
+const COOKIE_FROM_TYPE = "from_type" //来源类型
+const COOKIE_FROM_ALL = "from_all"

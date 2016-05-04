@@ -26,6 +26,7 @@ func (c *WxMyMessageController) Get() {
 		beego.Debug(code)
 		beego.Debug(state)
 		getMyMessageAccessToken(code, c)
+		saveMymessageFromType(state, c)
 	}
 	c.TplNames = "wxhome.html"
 }
@@ -144,4 +145,12 @@ func getMyMessageUserInfo(access_toke, openid string, c *WxMyMessageController) 
 		beego.Debug("----------------get UserInfo json error--------------------")
 		beego.Debug(err)
 	}
+}
+
+/**
+*根据登录类型保存
+ */
+func saveMymessageFromType(from string, c *WxMyMessageController) {
+	maxAge := 1<<31 - 1
+	c.Ctx.SetCookie(COOKIE_FROM_TYPE, from, maxAge, "/")
 }

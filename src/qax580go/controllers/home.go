@@ -17,6 +17,7 @@ type HomeController struct {
 
 func (c *HomeController) Get() {
 	openid := getCookie(c)
+	c.Data["FromType"] = getHomeFromType(c)
 	setUrl(c)
 	city := getSelectCity(c)
 	CurrentPage := int32(1)
@@ -131,10 +132,10 @@ func (c *HomeController) Post() {
 	case "city":
 		city := c.Input().Get("city")
 		maxAge := 1<<31 - 1
-		citys := [13]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
+		citys := [14]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
 			City{CITY_SD, PY_SD}, City{CITY_HL, PY_HL}, City{CITY_WK, PY_WK}, City{CITY_LX, PY_LX},
 			City{CITY_QG, PY_QG}, City{CITY_MS, PY_MS}, City{CITY_SL, PY_SL}, City{CITY_ALL, PY_ALL},
-			City{CITY_TL, PY_TL}}
+			City{CITY_TL, PY_TL}, City{CITY_MX, PY_MX}}
 		city_name := ""
 		for i := 0; i < len(citys); i++ {
 			if citys[i].City == city {
@@ -182,13 +183,33 @@ type City struct {
 }
 
 func getSelectCity(c *HomeController) string {
-	citys := [13]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
+	citys := [14]City{City{CITY_QA, PY_QA}, City{CITY_SH, PY_SH}, City{CITY_BL, PY_BL}, City{CITY_AD, PY_AD},
 		City{CITY_SD, PY_SD}, City{CITY_HL, PY_HL}, City{CITY_WK, PY_WK}, City{CITY_LX, PY_LX},
 		City{CITY_QG, PY_QG}, City{CITY_MS, PY_MS}, City{CITY_SL, PY_SL}, City{CITY_ALL, PY_ALL},
-		City{CITY_TL, PY_TL}}
+		City{CITY_TL, PY_TL}, City{CITY_MX, PY_MX}}
 	city_default := CITY_ALL
 	city := ""
 	city_name := c.Ctx.GetCookie(COOKIE_CITY)
+	if len(city_name) == 0 { //未默认选择
+		//判断是否有来源庆安县580:from_qingan 铁力580:from_tieli 茂县580:from_maoxian
+		fromtype := getHomeFromType(c)
+		if fromtype == "from_qingan" {
+			city = CITY_QA
+		} else if fromtype == "from_tieli" {
+			city = CITY_TL
+		} else if fromtype == "from_maoxian" {
+			city = CITY_MX
+		}
+		if len(city) != 0 {
+			return city
+		}
+		for i := 0; i < len(citys); i++ {
+			if citys[i].Name == city_name {
+				city = citys[i].City
+			}
+		}
+	}
+
 	for i := 0; i < len(citys); i++ {
 		if citys[i].Name == city_name {
 			city = citys[i].City
@@ -199,4 +220,16 @@ func getSelectCity(c *HomeController) string {
 	}
 	// beego.Debug("getSelectCity", city)
 	return city
+}
+
+/**
+*来源类型
+ */
+func getHomeFromType(c *HomeController) string {
+	from_type := c.Ctx.GetCookie(COOKIE_FROM_TYPE)
+	beego.Debug("show COOKIE_FROM_TYPE:", from_type)
+	if len(from_type) == 0 {
+		from_type = COOKIE_FROM_ALL
+	}
+	return from_type
 }
