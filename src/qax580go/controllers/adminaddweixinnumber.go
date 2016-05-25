@@ -27,7 +27,7 @@ func (c *AdminAddWeixinNumberController) Get() {
 		c.Redirect("/admin", 302)
 		return
 	}
-	c.TplNames = "adminaddweixinnumber.html"
+	c.TplName = "adminaddweixinnumber.html"
 
 }
 func (c *AdminAddWeixinNumberController) Post() {
@@ -76,5 +76,5 @@ func (c *AdminAddWeixinNumberController) Post() {
 		c.Redirect("/admin/weixinnumberlist", 302)
 	}
 
-	c.TplNames = "adminaddweixinnumber.html"
+	c.TplName = "adminaddweixinnumber.html"
 }

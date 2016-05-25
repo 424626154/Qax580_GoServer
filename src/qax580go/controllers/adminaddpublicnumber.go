@@ -34,7 +34,7 @@ func (c *AdminAddPublicNumberController) Get() {
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
 
-	c.TplNames = "adminaddpublicnumber.html"
+	c.TplName = "adminaddpublicnumber.html"
 }
 
 func (c *AdminAddPublicNumberController) Post() {

@@ -42,10 +42,10 @@ func (c *WeatherController) Get() {
 		beego.Debug("latitude:", latitude)
 		beego.Debug("longitude:", longitude)
 		getWeather(longitude, latitude, c)
-		c.TplNames = "location.html"
+		c.TplName = "location.html"
 		return
 	}
-	c.TplNames = "weather.html"
+	c.TplName = "weather.html"
 	appId := ""
 	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
 	if err != nil {
@@ -60,11 +60,11 @@ func (c *WeatherController) Get() {
 	c.Data["NonceStr"] = noncestr
 	getWeatherToken(noncestr, timestamp, c)
 	// getWeather(c)
-	c.TplNames = "weather.html"
+	c.TplName = "weather.html"
 }
 
 func (c *WeatherController) Post() {
-	c.TplNames = "weather.html"
+	c.TplName = "weather.html"
 }
 
 // 随机字符串

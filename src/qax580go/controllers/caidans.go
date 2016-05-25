@@ -33,11 +33,11 @@ func (c *CaidansController) Get() {
 	c.Data["Caidans"] = obj1
 	// beego.Debug("Canting:", obj)
 	beego.Debug("Caidans:", obj1)
-	c.TplNames = "caidans.html"
+	c.TplName = "caidans.html"
 }
 
 func (c *CaidansController) Post() {
-	c.TplNames = "caidans.html"
+	c.TplName = "caidans.html"
 }
 
 func getCaidanCookie(c *CaidansController) string {

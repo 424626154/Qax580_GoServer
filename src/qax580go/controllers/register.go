@@ -13,5 +13,5 @@ type RegisterController struct {
 
 func (this *RegisterController) Get() {
 
-	this.TplNames = "register.html"
+	this.TplName = "register.html"
 }

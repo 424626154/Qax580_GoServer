@@ -14,7 +14,7 @@ type MymoneyController struct {
 
 func (c *MymoneyController) Get() {
 	getMymoneyCookie(c)
-	c.TplNames = "mymoney.html"
+	c.TplName = "mymoney.html"
 
 }
 

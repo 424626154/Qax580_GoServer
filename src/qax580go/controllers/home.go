@@ -87,7 +87,7 @@ func (c *HomeController) Get() {
 	}
 
 	// beego.Debug(posts)
-	c.TplNames = "home.html"
+	c.TplName = "home.html"
 
 	isdebug := "true"
 	iscanting := "false"

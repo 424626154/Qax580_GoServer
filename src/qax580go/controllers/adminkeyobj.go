@@ -73,7 +73,7 @@ func (c *AdminKeyobjController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.TplNames = "adminkeyobj.html"
+	c.TplName = "adminkeyobj.html"
 	beego.Debug("keyid :", keyid)
 	c.Data["KeyId"] = keyid
 	c.Data["Objs"] = commoditys
@@ -81,5 +81,5 @@ func (c *AdminKeyobjController) Get() {
 
 func (c *AdminKeyobjController) Post() {
 	beego.Debug("AdminKeyobjController Post")
-	c.TplNames = "adminkeyobj.html"
+	c.TplName = "adminkeyobj.html"
 }

@@ -88,5 +88,5 @@ func (c *AdminWeixinNumberListController) Get() {
 	}
 	c.Data["WeixinNumbers"] = objs
 	// beego.Debug(objs)
-	c.TplNames = "adminweixinnumberlist.html"
+	c.TplName = "adminweixinnumberlist.html"
 }

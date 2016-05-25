@@ -20,12 +20,12 @@ func (c *WaimaiListController) Get() {
 	}
 	beego.Debug(objs)
 	c.Data["Objs"] = objs
-	c.TplNames = "waimailist.html"
+	c.TplName = "waimailist.html"
 
 }
 
 func (c *WaimaiListController) Post() {
-	c.TplNames = "waimailist.html"
+	c.TplName = "waimailist.html"
 }
 
 func getWaimaiListCookie(c *WaimaiListController) string {

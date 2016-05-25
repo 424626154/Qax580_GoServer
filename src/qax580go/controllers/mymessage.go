@@ -41,11 +41,11 @@ func (c *MyMessageController) Get() {
 		}
 		c.Data["Posts"] = posts
 	}
-	c.TplNames = "mymessage.html"
+	c.TplName = "mymessage.html"
 }
 
 func (c *MyMessageController) Post() {
-	c.TplNames = "mymessage.html"
+	c.TplName = "mymessage.html"
 }
 func getMyMessageCookie(c *MyMessageController) string {
 	isUser := false

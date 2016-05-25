@@ -535,6 +535,17 @@ type Pdetails struct {
 	CreateTime int64
 }
 
+/**
+*微信基础属相
+ */
+type WxAttribute struct {
+	Id              int64
+	AccessToken     string //token
+	AccessTokenTime int64  //更新时间
+	Ticket          string
+	TicketTime      int64
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -575,15 +586,16 @@ func RegisterDB() {
 	orm.RegisterModel(new(Vote))            //选票
 	orm.RegisterModel(new(Notice))          //通知
 	// orm.RegisterModel(new(RBinding))        //冲洗绑定
-	orm.RegisterModel(new(RUser))    //冲洗帐号
-	orm.RegisterModel(new(Wpt))      //微平台对象
-	orm.RegisterModel(new(Poauth))   //照片授权
-	orm.RegisterModel(new(Puser))    //照片用户
-	orm.RegisterModel(new(Photos))   //相册
-	orm.RegisterModel(new(Psize))    //尺寸
-	orm.RegisterModel(new(Ptemp))    //模版
-	orm.RegisterModel(new(Porder))   //订单详情
-	orm.RegisterModel(new(Pdetails)) //订单描述
+	orm.RegisterModel(new(RUser))       //冲洗帐号
+	orm.RegisterModel(new(Wpt))         //微平台对象
+	orm.RegisterModel(new(Poauth))      //照片授权
+	orm.RegisterModel(new(Puser))       //照片用户
+	orm.RegisterModel(new(Photos))      //相册
+	orm.RegisterModel(new(Psize))       //尺寸
+	orm.RegisterModel(new(Ptemp))       //模版
+	orm.RegisterModel(new(Porder))      //订单详情
+	orm.RegisterModel(new(Pdetails))    //订单描述
+	orm.RegisterModel(new(WxAttribute)) //微信基础属性
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -3342,4 +3354,68 @@ func GetPdetails(openid string, pnumber string) ([]Pdetails, error) {
 		return nil, err
 	}
 	return objs, err
+}
+
+/******微信基础属性操作******/
+func GetWxAttribute() (*WxAttribute, error) {
+	o := orm.NewOrm()
+	var objs []WxAttribute
+	_, err := o.QueryTable("wx_attribute").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+func AddWxAttributeToken(token string) (int64, error) {
+	obj, err := GetWxAttribute()
+	if err != nil {
+		return 0, err
+	}
+	create_time := time.Now().Unix()
+	if obj != nil {
+		o := orm.NewOrm()
+		cate := &WxAttribute{Id: obj.Id}
+		cate.AccessToken = token
+		cate.AccessTokenTime = create_time
+		id, err := o.Update(cate, "access_token", "access_token_time")
+		return id, err
+	} else {
+		o := orm.NewOrm()
+		cate := &WxAttribute{AccessToken: token, AccessTokenTime: create_time}
+		// 插入数据
+		_, err = o.Insert(cate)
+		if err != nil {
+			return 0, err
+		}
+		return cate.Id, nil
+	}
+}
+func AddWxAttributeTicket(ticket string) (int64, error) {
+	obj, err := GetWxAttribute()
+	if err != nil {
+		return 0, err
+	}
+	create_time := time.Now().Unix()
+	if obj != nil {
+		o := orm.NewOrm()
+		cate := &WxAttribute{Id: obj.Id}
+		cate.Ticket = ticket
+		cate.TicketTime = create_time
+		id, err := o.Update(cate, "ticket", "ticket_time")
+		return id, err
+	} else {
+		o := orm.NewOrm()
+		cate := &WxAttribute{Ticket: ticket, TicketTime: create_time}
+		// 插入数据
+		_, err = o.Insert(cate)
+		if err != nil {
+			return 0, err
+		}
+		return cate.Id, nil
+	}
 }

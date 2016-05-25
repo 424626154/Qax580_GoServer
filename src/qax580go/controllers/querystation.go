@@ -45,7 +45,7 @@ type QueryStationController struct {
 
 func (c *QueryStationController) Get() {
 	c.Data["IsShow"] = "false"
-	c.TplNames = "querystation.html"
+	c.TplName = "querystation.html"
 }
 
 func (c *QueryStationController) Post() {
@@ -57,7 +57,7 @@ func (c *QueryStationController) Post() {
 		queryStation(start, end, c)
 	}
 
-	c.TplNames = "querystation.html"
+	c.TplName = "querystation.html"
 }
 
 func queryStation(start string, end string, c *QueryStationController) {

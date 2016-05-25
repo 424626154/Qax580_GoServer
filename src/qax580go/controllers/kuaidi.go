@@ -37,7 +37,7 @@ type KuaidiController struct {
 func (c *KuaidiController) Get() {
 	c.Data["IsShow"] = "false"
 	c.Data["Test"] = "aaa"
-	c.TplNames = "kuaidi.html"
+	c.TplName = "kuaidi.html"
 }
 
 func (c *KuaidiController) Post() {
@@ -48,7 +48,7 @@ func (c *KuaidiController) Post() {
 	if len(com) != 0 && len(no) != 0 {
 		queryKuaidi(com, no, c)
 	}
-	c.TplNames = "kuaidi.html"
+	c.TplName = "kuaidi.html"
 }
 
 func queryKuaidi(com string, no string, c *KuaidiController) {

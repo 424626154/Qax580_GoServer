@@ -94,10 +94,10 @@ func (c *AdminShanghusController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.TplNames = "adminshanghus.html"
+	c.TplName = "adminshanghus.html"
 	c.Data["Objs"] = objs
 }
 
 func (c *AdminShanghusController) Post() {
-	c.TplNames = "adminshanghus.html"
+	c.TplName = "adminshanghus.html"
 }

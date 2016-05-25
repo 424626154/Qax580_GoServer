@@ -35,7 +35,7 @@ type QueryQutletsController struct {
 
 func (c *QueryQutletsController) Get() {
 	c.Data["IsShow"] = "false"
-	c.TplNames = "queryqutlets.html"
+	c.TplName = "queryqutlets.html"
 }
 
 func (c *QueryQutletsController) Post() {
@@ -47,7 +47,7 @@ func (c *QueryQutletsController) Post() {
 		queryQutlets(province, city, county, c)
 	}
 
-	c.TplNames = "queryqutlets.html"
+	c.TplName = "queryqutlets.html"
 }
 
 func queryQutlets(province string, city string, county string, c *QueryQutletsController) {

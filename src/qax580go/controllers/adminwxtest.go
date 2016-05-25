@@ -24,7 +24,7 @@ func (c *AdminWxTestController) Get() {
 	}
 	key0 := c.Input().Get("key0")
 	c.Data["Key0"] = key0
-	c.TplNames = "adminwxtest.html"
+	c.TplName = "adminwxtest.html"
 }
 func (c *AdminWxTestController) Post() {
 	beego.Debug("AdminWxTestController Post")
@@ -75,5 +75,5 @@ func (c *AdminWxTestController) Post() {
 		c.Redirect(url, 302)
 		return
 	}
-	c.TplNames = "adminwxtest.html"
+	c.TplName = "adminwxtest.html"
 }

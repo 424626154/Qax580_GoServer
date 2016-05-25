@@ -32,7 +32,7 @@ func (c *AdminaAddKeyobjController) Get() {
 	beego.Debug("keyid :", keyid)
 	c.Data["KeyId"] = keyid
 	c.Data["Image"] = ""
-	c.TplNames = "adminaddkeyobj.html"
+	c.TplName = "adminaddkeyobj.html"
 
 }
 func (c *AdminaAddKeyobjController) Post() {
@@ -75,6 +75,6 @@ func (c *AdminaAddKeyobjController) Post() {
 		c.Redirect(url, 302)
 		return
 	}
-	c.TplNames = "adminaddkeyobj.html"
+	c.TplName = "adminaddkeyobj.html"
 
 }

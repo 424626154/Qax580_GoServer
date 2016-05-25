@@ -28,7 +28,7 @@ func (c *AdminaAddGuanggaoController) Get() {
 		return
 	}
 	c.Data["Image"] = ""
-	c.TplNames = "adminaddguanggao.html"
+	c.TplName = "adminaddguanggao.html"
 
 }
 func (c *AdminaAddGuanggaoController) Post() {
@@ -150,6 +150,6 @@ func (c *AdminaAddGuanggaoController) Post() {
 		c.Redirect("/admin/guanggaos", 302)
 		return
 	}
-	c.TplNames = "adminaddguanggao.html"
+	c.TplName = "adminaddguanggao.html"
 
 }

@@ -20,9 +20,9 @@ func (c *AdminJuheController) Get() {
 		c.Redirect("/admin", 302)
 		return
 	}
-	c.TplNames = "adminjuhe.html"
+	c.TplName = "adminjuhe.html"
 }
 
 func (c *AdminJuheController) Post() {
-	c.TplNames = "adminjuhe.html"
+	c.TplName = "adminjuhe.html"
 }

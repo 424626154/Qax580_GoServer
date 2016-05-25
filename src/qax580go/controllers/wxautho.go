@@ -27,11 +27,11 @@ func (c *WxAuthoController) Get() {
 		beego.Debug(state)
 		getAccessToken(code, c)
 	}
-	c.TplNames = "wxautho.html"
+	c.TplName = "wxautho.html"
 }
 
 func (c *WxAuthoController) Post() {
-	c.TplNames = "wxautho.html"
+	c.TplName = "wxautho.html"
 }
 
 func getAccessToken(code string, c *WxAuthoController) {

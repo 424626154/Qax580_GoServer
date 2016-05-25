@@ -14,7 +14,7 @@ type FeedbackController struct {
 
 func (c *FeedbackController) Get() {
 	openid := getFeedbackCookie(c)
-	c.TplNames = "feedback.html"
+	c.TplName = "feedback.html"
 
 	info := c.Input().Get("info")
 	if len(info) != 0 {

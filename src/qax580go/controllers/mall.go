@@ -16,7 +16,7 @@ type MallController struct {
 func (c *MallController) Get() {
 	beego.Debug("MallController Get")
 	getMallInfoCookie(c)
-	c.TplNames = "mall.html"
+	c.TplName = "mall.html"
 }
 func (c *MallController) Post() {
 	beego.Debug("MallController Post")
@@ -46,7 +46,7 @@ func (c *MallController) Post() {
 			return
 		}
 	}
-	c.TplNames = "mall.html"
+	c.TplName = "mall.html"
 }
 func getMallInfoCookie(c *MallController) string {
 	isUser := false

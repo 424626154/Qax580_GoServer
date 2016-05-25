@@ -111,7 +111,7 @@ func (c *PhotoController) Home() {
 	// beego.Debug("len photo4s", len(photo4s))
 	c.Data["Objs"] = objs
 	beego.Debug(c.Data["Parameter"])
-	c.TplNames = "phome.html"
+	c.TplName = "phome.html"
 }
 func (c *PhotoController) Select() {
 	if c.Ctx.Input.IsGet() {
@@ -150,7 +150,7 @@ func (c *PhotoController) Select() {
 		beego.Error(err)
 	}
 	c.Data["Temps"] = temps
-	c.TplNames = "pselect.html"
+	c.TplName = "pselect.html"
 }
 func (c *PhotoController) Upload() {
 	if c.Ctx.Input.IsGet() {
@@ -159,7 +159,7 @@ func (c *PhotoController) Upload() {
 	if c.Ctx.Input.IsPost() {
 		beego.Debug("Upload Post")
 	}
-	c.TplNames = "pupload.html"
+	c.TplName = "pupload.html"
 }
 
 func (c *PhotoController) My() {
@@ -175,7 +175,7 @@ func (c *PhotoController) My() {
 		beego.Error(err)
 	}
 	c.Data["User"] = obj2
-	c.TplNames = "pmy.html"
+	c.TplName = "pmy.html"
 }
 
 func (c *PhotoController) Order() {
@@ -191,7 +191,7 @@ func (c *PhotoController) Order() {
 	}
 	objs, err := models.GetMyAllPorder(openid)
 	c.Data["Objs"] = objs
-	c.TplNames = "porder.html"
+	c.TplName = "porder.html"
 }
 
 func (c *PhotoController) OrderDet() {
@@ -218,7 +218,7 @@ func (c *PhotoController) OrderDet() {
 		beego.Debug("Pdetails:", pdetails)
 	}
 
-	c.TplNames = "porderdet.html"
+	c.TplName = "porderdet.html"
 }
 
 /*********admin***********/
@@ -232,7 +232,7 @@ func (c *PhotoController) AdminHome() {
 	}
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "padmin.html"
+	c.TplName = "padmin.html"
 }
 
 func (c *PhotoController) AdminUrl() {
@@ -245,7 +245,7 @@ func (c *PhotoController) AdminUrl() {
 	}
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "padminurl.html"
+	c.TplName = "padminurl.html"
 }
 
 func (c *PhotoController) AdminOauth() {
@@ -265,7 +265,7 @@ func (c *PhotoController) AdminOauth() {
 
 	c.Data["Objs"] = objs
 	beego.Debug("objs:", objs)
-	c.TplNames = "padminoauth.html"
+	c.TplName = "padminoauth.html"
 }
 
 func (c *PhotoController) Poauthtest() {
@@ -279,7 +279,7 @@ func (c *PhotoController) Poauthtest() {
 	if c.Ctx.Input.IsPost() {
 		beego.Debug("PhotoController Post")
 	}
-	c.TplNames = "poauthtest.html"
+	c.TplName = "poauthtest.html"
 }
 
 func (c *PhotoController) AdminSize() {
@@ -299,7 +299,7 @@ func (c *PhotoController) AdminSize() {
 
 	c.Data["Objs"] = objs
 	beego.Debug("objs:", objs)
-	c.TplNames = "padminsize.html"
+	c.TplName = "padminsize.html"
 }
 func (c *PhotoController) AdminTemp() {
 	bool, username := chackAccount(c.Ctx)
@@ -318,7 +318,7 @@ func (c *PhotoController) AdminTemp() {
 
 	c.Data["Objs"] = objs
 	beego.Debug("objs:", objs)
-	c.TplNames = "padmintemp.html"
+	c.TplName = "padmintemp.html"
 }
 
 func (c *PhotoController) AdminOrders() {
@@ -336,7 +336,7 @@ func (c *PhotoController) AdminOrders() {
 		beego.Error(err)
 	}
 	c.Data["Objs"] = objes
-	c.TplNames = "padminorders.html"
+	c.TplName = "padminorders.html"
 }
 
 func (c *PhotoController) AdminDetails() {
@@ -393,7 +393,7 @@ func (c *PhotoController) AdminDetails() {
 		c.Data["Photos"] = photoss
 
 	}
-	c.TplNames = "padmindetails.html"
+	c.TplName = "padmindetails.html"
 }
 
 /************post请求************/

@@ -27,7 +27,7 @@ func (c *AdminAddWaimaiController) Get() {
 		c.Redirect("/admin", 302)
 		return
 	}
-	c.TplNames = "adminaddwaimai.html"
+	c.TplName = "adminaddwaimai.html"
 }
 func (c *AdminAddWaimaiController) Post() {
 	image_name := ""
@@ -76,5 +76,5 @@ func (c *AdminAddWaimaiController) Post() {
 		c.Redirect("/admin/waimailist", 302)
 		return
 	}
-	c.TplNames = "adminaddwaimai.html"
+	c.TplName = "adminaddwaimai.html"
 }

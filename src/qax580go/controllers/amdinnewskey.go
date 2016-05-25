@@ -76,7 +76,7 @@ func (c *AdminNewsKeyController) Get() {
 	}
 	beego.Debug("newskey", newskey)
 	c.Data["NewsKeys"] = newskey
-	c.TplNames = "adminnewskey.html"
+	c.TplName = "adminnewskey.html"
 }
 
 func (c *AdminNewsKeyController) Post() {
@@ -104,5 +104,5 @@ func (c *AdminNewsKeyController) Post() {
 	}
 	beego.Debug("newskey", newskey)
 	c.Data["NewsKeys"] = newskey
-	c.TplNames = "adminnewskey.html"
+	c.TplName = "adminnewskey.html"
 }

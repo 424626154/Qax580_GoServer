@@ -27,9 +27,9 @@ func (c *AdminContentController) Get() {
 		}
 		c.Data["Post"] = post
 		beego.Debug("is con " + post.Title)
-		c.TplNames = "admincontent.html"
+		c.TplName = "admincontent.html"
 		return
 	}
-	c.TplNames = "admincontent.html"
+	c.TplName = "admincontent.html"
 
 }

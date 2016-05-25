@@ -15,7 +15,7 @@ type AdminMoneyInfoController struct {
 func (c *AdminMoneyInfoController) Get() {
 	beego.Debug("请求方式 get")
 
-	c.TplNames = "adminmoneyinfo.html"
+	c.TplName = "adminmoneyinfo.html"
 }
 func (c *AdminMoneyInfoController) Post() {
 
@@ -30,5 +30,5 @@ func (c *AdminMoneyInfoController) Post() {
 		}
 		c.Data["UserMoneys"] = usermoneys
 	}
-	c.TplNames = "adminmoneyinfo.html"
+	c.TplName = "adminmoneyinfo.html"
 }

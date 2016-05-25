@@ -35,10 +35,10 @@ func (c *ContentController) Get() {
 		c.Data["HelpNum"] = help_num
 		state, err := models.GatPaseHelpState(id, openid)
 		c.Data["HelpState"] = state
-		c.TplNames = "content.html"
+		c.TplName = "content.html"
 		return
 	}
-	c.TplNames = "content.html"
+	c.TplName = "content.html"
 }
 func (c *ContentController) Post() {
 	openid := getContentCookie(c)
@@ -69,10 +69,10 @@ func (c *ContentController) Post() {
 				return
 			}
 		}
-		c.TplNames = "content.html"
+		c.TplName = "content.html"
 		break
 	}
-	c.TplNames = "content.html"
+	c.TplName = "content.html"
 }
 func getContentCookie(c *ContentController) string {
 	isUser := false

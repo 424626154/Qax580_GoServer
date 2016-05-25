@@ -68,7 +68,7 @@ func (c *AdminGuanggaosController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.TplNames = "adminguanggaos.html"
+	c.TplName = "adminguanggaos.html"
 	c.Data["Guanggaos"] = guanggaos
 	// beego.Debug(guanggaos)
 }

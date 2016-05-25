@@ -19,7 +19,7 @@ func (c *AdminUpShangHuInfoController) Get() {
 		beego.Error(err)
 	}
 	c.Data["Obj"] = obj
-	c.TplNames = "adminupshanghuinfo.html"
+	c.TplName = "adminupshanghuinfo.html"
 }
 func (c *AdminUpShangHuInfoController) Post() {
 	id := c.Input().Get("id")
@@ -45,5 +45,5 @@ func (c *AdminUpShangHuInfoController) Post() {
 		}
 		c.Redirect("/admin/shanghus", 302)
 	}
-	c.TplNames = "adminupshanghuinfo.html"
+	c.TplName = "adminupshanghuinfo.html"
 }

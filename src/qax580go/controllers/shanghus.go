@@ -22,7 +22,7 @@ func (c *ShangHusController) Get() {
 		beego.Debug(objs)
 	}
 	c.Data["Objs"] = objs
-	c.TplNames = "shanghus.html"
+	c.TplName = "shanghus.html"
 }
 func (c *ShangHusController) Post() {
 	getShanghusCookie(c)
@@ -33,7 +33,7 @@ func (c *ShangHusController) Post() {
 		beego.Debug(objs)
 	}
 	c.Data["Objs"] = objs
-	c.TplNames = "shanghus.html"
+	c.TplName = "shanghus.html"
 }
 func getShanghusCookie(c *ShangHusController) string {
 	isUser := false

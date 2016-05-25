@@ -97,9 +97,9 @@ func (c *AdminExchangeController) Get() {
 	}
 	// beego.Debug("ShowOrders :", showOrders)
 	c.Data["ShowOrders"] = showOrders
-	c.TplNames = "adminexchange.html"
+	c.TplName = "adminexchange.html"
 }
 
 func (c *AdminExchangeController) Post() {
-	c.TplNames = "adminexchange.html"
+	c.TplName = "adminexchange.html"
 }

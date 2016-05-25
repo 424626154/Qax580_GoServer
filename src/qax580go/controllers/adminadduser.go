@@ -27,7 +27,7 @@ func (c *AdminAddUserController) Get() {
 	c.Data["Posts"] = posts
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "adminadduser.html"
+	c.TplName = "adminadduser.html"
 }
 func (c *AdminAddUserController) Post() {
 	username := c.Input().Get("user")

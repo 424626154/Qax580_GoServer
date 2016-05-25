@@ -56,7 +56,7 @@ type QueryTrainController struct {
 
 func (c *QueryTrainController) Get() {
 	c.Data["IsShow"] = "false"
-	c.TplNames = "querytrain.html"
+	c.TplName = "querytrain.html"
 }
 
 func (c *QueryTrainController) Post() {
@@ -65,7 +65,7 @@ func (c *QueryTrainController) Post() {
 	if len(name) != 0 {
 		queryTrain(name, c)
 	}
-	c.TplNames = "querytrain.html"
+	c.TplName = "querytrain.html"
 
 }
 func queryTrain(name string, c *QueryTrainController) {

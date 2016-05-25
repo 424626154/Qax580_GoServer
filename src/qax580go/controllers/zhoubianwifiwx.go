@@ -50,7 +50,7 @@ func (c *ZhouBianWifiWXController) Get() {
 		beego.Debug("latitude:", latitude)
 		beego.Debug("longitude:", longitude)
 		getWifi(longitude, latitude, c)
-		c.TplNames = "zhoubianwifi.html"
+		c.TplName = "zhoubianwifi.html"
 		return
 	}
 	appId := ""
@@ -66,13 +66,13 @@ func (c *ZhouBianWifiWXController) Get() {
 	c.Data["TimesTamp"] = timestamp
 	c.Data["NonceStr"] = noncestr
 	getWifiWxJsToken(noncestr, timestamp, c)
-	c.TplNames = "zhoubianwifiwx.html"
+	c.TplName = "zhoubianwifiwx.html"
 	// getWifi("116.366324", "39.905859", c)
-	// c.TplNames = "zhoubianwifi.html"
+	// c.TplName = "zhoubianwifi.html"
 }
 
 func (c *ZhouBianWifiWXController) Post() {
-	c.TplNames = "zhoubianwifiwx.html"
+	c.TplName = "zhoubianwifiwx.html"
 }
 
 func getWifiWxJsToken(noncestr string, timestamp int64, c *ZhouBianWifiWXController) {

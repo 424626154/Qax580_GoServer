@@ -30,7 +30,7 @@ func (c *AdminUpCommodityImgController) Get() {
 		beego.Error(err)
 	}
 	c.Data["Commodity"] = obj
-	c.TplNames = "adminupcommodityimg.html"
+	c.TplName = "adminupcommodityimg.html"
 }
 func (c *AdminUpCommodityImgController) Post() {
 
@@ -73,5 +73,5 @@ func (c *AdminUpCommodityImgController) Post() {
 			}
 		}
 	}
-	c.TplNames = "adminupcommodityimg.html"
+	c.TplName = "adminupcommodityimg.html"
 }

@@ -52,11 +52,11 @@ type LaohuangliController struct {
 func (c *LaohuangliController) Get() {
 	queryLaohuangliRili(c)
 	queryLaohuangliShichen(c)
-	c.TplNames = "laohuangli.html"
+	c.TplName = "laohuangli.html"
 }
 
 func (c *LaohuangliController) Post() {
-	c.TplNames = "laohuangli.html"
+	c.TplName = "laohuangli.html"
 }
 
 //老黄历日历

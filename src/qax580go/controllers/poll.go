@@ -72,7 +72,7 @@ func (c *PollController) Adminpolls() {
 		beego.Error(err)
 	}
 	c.Data["Objs"] = objs
-	c.TplNames = "adminpolls.html"
+	c.TplName = "adminpolls.html"
 }
 
 func (c *PollController) AdminUppollsInfo() {
@@ -156,7 +156,7 @@ func (c *PollController) AdminUppollsInfo() {
 	beego.Debug("obj :", obj)
 	c.Data["Id"] = id
 	c.Data["Obj"] = obj
-	c.TplNames = "adminuppollsinfo.html"
+	c.TplName = "adminuppollsinfo.html"
 }
 
 func (c *PollController) AdminUppollsImg() {
@@ -222,7 +222,7 @@ func (c *PollController) AdminUppollsImg() {
 		beego.Error(err)
 	}
 	c.Data["Obj"] = obj
-	c.TplNames = "adminuppollsimg.html"
+	c.TplName = "adminuppollsimg.html"
 }
 
 func (c *PollController) Adminpollscon() {
@@ -287,7 +287,7 @@ func (c *PollController) Adminpollscon() {
 	beego.Debug("objs:", objs)
 	c.Data["Objs"] = objs
 	c.Data["PollsId"] = pollsid
-	c.TplNames = "adminpollscon.html"
+	c.TplName = "adminpollscon.html"
 }
 func (c *PollController) AdminpollVote() {
 	bool, username := chackAccount(c.Ctx)
@@ -316,7 +316,7 @@ func (c *PollController) AdminpollVote() {
 	beego.Debug("objs:", objs)
 	c.Data["Objs"] = objs
 	c.Data["PollsId"] = pollsid
-	c.TplNames = "adminpollvote.html"
+	c.TplName = "adminpollvote.html"
 }
 
 /**
@@ -393,7 +393,7 @@ func (c *PollController) Adminaddpoll() {
 			return
 		}
 	}
-	c.TplNames = "adminaddpoll.html"
+	c.TplName = "adminaddpoll.html"
 }
 
 /**
@@ -504,7 +504,7 @@ func (c *PollController) PollHome() {
 		getPollShare(polls.Appid, polls.Secret, share_url, wxShareCon, c)
 	}
 	c.Data["PollsId"] = pollsid
-	c.TplNames = "pollhome.html"
+	c.TplName = "pollhome.html"
 }
 
 /**
@@ -562,7 +562,7 @@ func (c *PollController) PollHomeCon() {
 	c.Data["Time"] = polls.EndTimeLong
 	c.Data["Polls"] = polls
 	c.Data["Obj"] = obj
-	c.TplNames = "pollhomecon.html"
+	c.TplName = "pollhomecon.html"
 }
 
 /**
@@ -614,7 +614,7 @@ func (c *PollController) PollHomeSearch() {
 	c.Data["Time"] = polls.EndTimeLong
 	c.Data["Polls"] = polls
 	c.Data["Objs"] = objs
-	c.TplNames = "pollhomesearch.html"
+	c.TplName = "pollhomesearch.html"
 }
 
 /**
@@ -655,7 +655,7 @@ func (c *PollController) PollHomeRanking() {
 		beego.Debug("objs :", objs)
 		c.Data["Objs"] = objs
 	}
-	c.TplNames = "pollhomeranking.html"
+	c.TplName = "pollhomeranking.html"
 }
 
 /**
@@ -736,7 +736,7 @@ func (c *PollController) AddPoll() {
 		}
 	}
 	c.Data["PollsId"] = pollsid
-	c.TplNames = "addpoll.html"
+	c.TplName = "addpoll.html"
 }
 
 func (c *PollController) PollWx() {
@@ -781,7 +781,7 @@ func (c *PollController) PollWx() {
 			}
 		}
 	}
-	c.TplNames = "pollwx.html"
+	c.TplName = "pollwx.html"
 }
 
 //校验是否可以投票

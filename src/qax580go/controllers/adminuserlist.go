@@ -32,7 +32,7 @@ func (c *AdminUserListController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.TplNames = "adminuserlist.html"
+	c.TplName = "adminuserlist.html"
 	beego.Debug(admins)
 	c.Data["Admins"] = admins
 	beego.Error(admins)

@@ -194,5 +194,5 @@ func (c *AdminHomeController) Get() {
 	c.Data["Num"] = num
 	c.Data["Num1"] = num1
 	c.Data["All"] = count
-	c.TplNames = "adminhome.html"
+	c.TplName = "adminhome.html"
 }

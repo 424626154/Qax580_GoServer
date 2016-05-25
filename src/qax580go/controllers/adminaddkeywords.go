@@ -22,7 +22,7 @@ func (c *AdminaAddKeywordsController) Get() {
 		return
 	}
 	c.Data["Image"] = ""
-	c.TplNames = "adminaddkeywords.html"
+	c.TplName = "adminaddkeywords.html"
 
 }
 func (c *AdminaAddKeywordsController) Post() {
@@ -36,6 +36,6 @@ func (c *AdminaAddKeywordsController) Post() {
 		c.Redirect("/admin/keywords", 302)
 		return
 	}
-	c.TplNames = "adminaddkeywords.html"
+	c.TplName = "adminaddkeywords.html"
 
 }

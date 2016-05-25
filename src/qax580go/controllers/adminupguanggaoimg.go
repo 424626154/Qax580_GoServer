@@ -30,7 +30,7 @@ func (c *AdminUpGuanggaoImgController) Get() {
 		beego.Error(err)
 	}
 	c.Data["Guanggao"] = guangao
-	c.TplNames = "adminupguanggaoimg.html"
+	c.TplName = "adminupguanggaoimg.html"
 }
 func (c *AdminUpGuanggaoImgController) Post() {
 
@@ -149,5 +149,5 @@ func (c *AdminUpGuanggaoImgController) Post() {
 			}
 		}
 	}
-	c.TplNames = "adminupguanggaoimg.html"
+	c.TplName = "adminupguanggaoimg.html"
 }

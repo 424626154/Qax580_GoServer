@@ -16,7 +16,7 @@ func (c *WcListController) Get() {
 		beego.Error(err)
 	}
 	beego.Debug(wxnums)
-	c.TplNames = "wxlist.html"
+	c.TplName = "wxlist.html"
 	c.Data["Wxnums"] = wxnums
 }
 func getWXListUser(c *WcListController) {

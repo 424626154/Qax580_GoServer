@@ -40,7 +40,7 @@ type QueryPeccancyController struct {
 }
 
 func (c *QueryPeccancyController) Get() {
-	c.TplNames = "querypeccancy.html"
+	c.TplName = "querypeccancy.html"
 	c.Data["IsShow"] = "false"
 }
 
@@ -54,7 +54,7 @@ func (c *QueryPeccancyController) Post() {
 		queryPeccancy(city, hphm, engineno, c)
 	}
 
-	c.TplNames = "querypeccancy.html"
+	c.TplName = "querypeccancy.html"
 }
 
 func queryPeccancy(city string, hphm string, engineno string, c *QueryPeccancyController) {

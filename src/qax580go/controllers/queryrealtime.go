@@ -46,7 +46,7 @@ type QueryRealTimeController struct {
 
 func (c *QueryRealTimeController) Get() {
 	c.Data["IsShow"] = "false"
-	c.TplNames = "queryrealtime.html"
+	c.TplName = "queryrealtime.html"
 }
 
 func (c *QueryRealTimeController) Post() {
@@ -57,7 +57,7 @@ func (c *QueryRealTimeController) Post() {
 		queryRealTime(start, end, data, c)
 	}
 	c.Data["IsShow"] = "true"
-	c.TplNames = "queryrealtime.html"
+	c.TplName = "queryrealtime.html"
 
 }
 func queryRealTime(start string, end string, date string, c *QueryRealTimeController) {

@@ -27,11 +27,11 @@ func (c *WxFeedbackController) Get() {
 		beego.Debug(state)
 		getFeedbackAccessToken(code, c)
 	}
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func (c *WxFeedbackController) Post() {
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func getFeedbackAccessToken(code string, c *WxFeedbackController) {

@@ -39,7 +39,7 @@ func (c *WptController) Home() {
 	// shaer_url := "http://www.baoguangguang.cn/wpt/home"
 	// wxShare := getShare(tl_appid, tl_secret, shaer_url)
 	// c.Data["WxShare"] = wxShare
-	c.TplNames = "wpthome.html"
+	c.TplName = "wpthome.html"
 }
 
 func (c *WptController) Search() {
@@ -66,7 +66,7 @@ func (c *WptController) Search() {
 
 	}
 
-	c.TplNames = "wptsearch.html"
+	c.TplName = "wptsearch.html"
 }
 
 /**
@@ -134,7 +134,7 @@ func (c *WptController) AdminHome() {
 		beego.Error(err)
 	}
 	c.Data["Objs"] = objs
-	c.TplNames = "wptadminhome.html"
+	c.TplName = "wptadminhome.html"
 }
 
 /**
@@ -198,7 +198,7 @@ func (c *WptController) AdminAdd() {
 		return
 	}
 
-	c.TplNames = "wptadminadd.html"
+	c.TplName = "wptadminadd.html"
 }
 
 /**
@@ -274,7 +274,7 @@ func (c *WptController) AdminUpImg() {
 		beego.Error(err)
 	}
 	c.Data["Obj"] = obj
-	c.TplNames = "wptadminupimg.html"
+	c.TplName = "wptadminupimg.html"
 }
 
 /**
@@ -320,5 +320,5 @@ func (c *WptController) AdminUpInfo() {
 		beego.Error(err)
 	}
 	c.Data["Obj"] = obj
-	c.TplNames = "wptadminupinfo.html"
+	c.TplName = "wptadminupinfo.html"
 }

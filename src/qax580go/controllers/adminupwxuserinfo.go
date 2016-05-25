@@ -14,7 +14,7 @@ type AdminUpWxuserInfoController struct {
 
 func (c *AdminUpWxuserInfoController) Get() {
 
-	c.TplNames = "adminupwxuserinfo.html"
+	c.TplName = "adminupwxuserinfo.html"
 }
 
 func (c *AdminUpWxuserInfoController) Post() {
@@ -41,5 +41,5 @@ func (c *AdminUpWxuserInfoController) Post() {
 		}
 
 	}
-	c.TplNames = "adminupwxuserinfo.html"
+	c.TplName = "adminupwxuserinfo.html"
 }

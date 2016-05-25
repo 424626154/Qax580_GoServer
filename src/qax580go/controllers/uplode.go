@@ -21,7 +21,7 @@ type UplodeController struct {
 func (c *UplodeController) Get() {
 	getUplodeCookie(c)
 	c.Data["FromType"] = getUplodeFromType(c)
-	c.TplNames = "uplode.html"
+	c.TplName = "uplode.html"
 }
 
 func (c *UplodeController) Post() {

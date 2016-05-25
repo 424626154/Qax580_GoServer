@@ -95,11 +95,11 @@ func (c *AdminImportUserController) Get() {
 		}
 		c.Data["ImportUsers"] = importUsers
 	}
-	c.TplNames = "adminimportuser.html"
+	c.TplName = "adminimportuser.html"
 }
 func (c *AdminImportUserController) Post() {
 
-	c.TplNames = "adminimportuser.html"
+	c.TplName = "adminimportuser.html"
 }
 
 func getWxUserList(access_token string, c *AdminImportUserController) []string {

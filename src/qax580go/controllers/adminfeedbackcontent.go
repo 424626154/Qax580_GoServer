@@ -42,9 +42,9 @@ func (c *AdminFeedbackContentController) Get() {
 		}
 		c.Data["Feedback"] = feedback
 		beego.Debug("is adminfeedbackcontent " + feedback.Info)
-		c.TplNames = "adminfeedbackcontent.html"
+		c.TplName = "adminfeedbackcontent.html"
 		return
 	}
-	c.TplNames = "adminfeedbackcontent.html"
+	c.TplName = "adminfeedbackcontent.html"
 
 }

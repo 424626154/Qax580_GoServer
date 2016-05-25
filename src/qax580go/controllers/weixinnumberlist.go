@@ -19,7 +19,7 @@ func (c *WeixinNumberListController) Get() {
 		beego.Error(err)
 	}
 	beego.Debug(objs)
-	c.TplNames = "weixinnumberlist.html"
+	c.TplName = "weixinnumberlist.html"
 	c.Data["WeixinNumbers"] = objs
 }
 func getWeixinNumberListUser(c *WeixinNumberListController) {

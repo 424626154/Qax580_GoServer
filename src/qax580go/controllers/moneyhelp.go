@@ -12,8 +12,8 @@ type MoneyHelpController struct {
 }
 
 func (c *MoneyHelpController) Get() {
-	c.TplNames = "moneyhelp.html"
+	c.TplName = "moneyhelp.html"
 }
 func (c *MoneyHelpController) Post() {
-	c.TplNames = "moneyhelp.html"
+	c.TplName = "moneyhelp.html"
 }

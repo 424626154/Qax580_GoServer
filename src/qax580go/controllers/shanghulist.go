@@ -26,11 +26,11 @@ func (c *ShangHuListController) Get() {
 		c.Data["Objs"] = objs
 	}
 
-	c.TplNames = "shanghulist.html"
+	c.TplName = "shanghulist.html"
 }
 func (c *ShangHuListController) Post() {
 	getShanghuListCookie(c)
-	c.TplNames = "shanghulist.html"
+	c.TplName = "shanghulist.html"
 }
 func getShanghuListCookie(c *ShangHuListController) string {
 	isUser := false

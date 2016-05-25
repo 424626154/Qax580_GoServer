@@ -21,7 +21,7 @@ func (c *AdminUpCommodityInfoController) Get() {
 	}
 	// beego.Debug("AdminUpCommodityInfoController Commodity:", obj)
 	c.Data["Commodity"] = obj
-	c.TplNames = "adminupcommodityinfo.html"
+	c.TplName = "adminupcommodityinfo.html"
 }
 func (c *AdminUpCommodityInfoController) Post() {
 	title := c.Input().Get("title")
@@ -35,5 +35,5 @@ func (c *AdminUpCommodityInfoController) Post() {
 		}
 		c.Redirect("/admin/mall", 302)
 	}
-	c.TplNames = "adminupcommodityinfo.html"
+	c.TplName = "adminupcommodityinfo.html"
 }

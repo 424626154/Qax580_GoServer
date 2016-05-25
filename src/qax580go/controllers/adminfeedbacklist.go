@@ -32,7 +32,7 @@ func (c *AdminFeedbackListController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.TplNames = "adminfeedbacklist.html"
+	c.TplName = "adminfeedbacklist.html"
 	c.Data["Feedbacks"] = feedbacks
 	beego.Error(feedbacks)
 }

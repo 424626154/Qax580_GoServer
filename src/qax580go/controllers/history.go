@@ -36,11 +36,11 @@ type HistoryController struct {
 
 func (c *HistoryController) Get() {
 	queryHistory(c)
-	c.TplNames = "history.html"
+	c.TplName = "history.html"
 }
 
 func (c *HistoryController) Post() {
-	c.TplNames = "history.html"
+	c.TplName = "history.html"
 }
 
 func queryHistory(c *HistoryController) {

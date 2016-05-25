@@ -45,7 +45,7 @@ func (c *MynoticeController) Get() {
 	}
 	beego.Debug(objs)
 	c.Data["Objs"] = objs
-	c.TplNames = "mynotice.html"
+	c.TplName = "mynotice.html"
 
 }
 

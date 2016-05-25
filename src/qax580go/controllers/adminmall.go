@@ -68,10 +68,10 @@ func (c *AdminMallController) Get() {
 	if err != nil {
 		beego.Error(err)
 	}
-	c.TplNames = "adminmall.html"
+	c.TplName = "adminmall.html"
 	c.Data["Commoditys"] = commoditys
 }
 
 func (c *AdminMallController) Post() {
-	c.TplNames = "adminmall.html"
+	c.TplName = "adminmall.html"
 }

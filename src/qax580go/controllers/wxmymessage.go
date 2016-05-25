@@ -28,11 +28,11 @@ func (c *WxMyMessageController) Get() {
 		getMyMessageAccessToken(code, c)
 		saveMymessageFromType(state, c)
 	}
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func (c *WxMyMessageController) Post() {
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func getMyMessageAccessToken(code string, c *WxMyMessageController) {

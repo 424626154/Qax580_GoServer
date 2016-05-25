@@ -15,7 +15,7 @@ type AdminLoginController struct {
 }
 
 func (c *AdminLoginController) Get() {
-	c.TplNames = "adminlogin.html"
+	c.TplName = "adminlogin.html"
 	bool, _ := chackAccount(c.Ctx)
 	if bool {
 		c.Redirect("/admin/home", 302)

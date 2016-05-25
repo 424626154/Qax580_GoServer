@@ -12,7 +12,7 @@ type TrainTicketsController struct {
 }
 
 func (c *TrainTicketsController) Get() {
-	c.TplNames = "traintickets.html"
+	c.TplName = "traintickets.html"
 }
 
 func (c *TrainTicketsController) Post() {

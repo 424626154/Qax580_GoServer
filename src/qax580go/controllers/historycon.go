@@ -38,11 +38,11 @@ func (c *HistoryConController) Get() {
 	if len(id) != 0 {
 		queryHistoryCon(id, c)
 	}
-	c.TplNames = "historycon.html"
+	c.TplName = "historycon.html"
 }
 
 func (c *HistoryConController) Post() {
-	c.TplNames = "historycon.html"
+	c.TplName = "historycon.html"
 }
 
 func queryHistoryCon(id string, c *HistoryConController) {

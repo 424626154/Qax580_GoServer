@@ -46,7 +46,7 @@ func (c *AdminModifyController) Get() {
 		}
 		c.Data["Post"] = post
 		beego.Debug("is con " + post.Title)
-		c.TplNames = "adminmodify.html"
+		c.TplName = "adminmodify.html"
 		return
 	default:
 		id := c.Input().Get("id")

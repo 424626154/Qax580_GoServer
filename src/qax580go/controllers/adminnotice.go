@@ -38,7 +38,7 @@ func (c *AdminNoticeController) Get() {
 		beego.Error(objs)
 	}
 	c.Data["Objs"] = objs
-	c.TplNames = "adminnotice.html"
+	c.TplName = "adminnotice.html"
 }
 
 func (c *AdminNoticeController) Post() {
@@ -51,5 +51,5 @@ func (c *AdminNoticeController) Post() {
 	}
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "adminnotice.html"
+	c.TplName = "adminnotice.html"
 }

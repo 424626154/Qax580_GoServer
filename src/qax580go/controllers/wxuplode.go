@@ -28,11 +28,11 @@ func (c *WxUplodeController) Get() {
 		saveUplodeFromType(state, c)
 		getUplodeAccessToken(code, c)
 	}
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func (c *WxUplodeController) Post() {
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func getUplodeAccessToken(code string, c *WxUplodeController) {

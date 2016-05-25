@@ -26,9 +26,9 @@ func (c *GuanggaoContentController) Get() {
 		}
 		c.Data["Guanggao"] = guangao
 		beego.Debug("guangao :", guangao)
-		c.TplNames = "guanggaocontent.html"
+		c.TplName = "guanggaocontent.html"
 		return
 	}
-	c.TplNames = "guanggaocontent.html"
+	c.TplName = "guanggaocontent.html"
 
 }

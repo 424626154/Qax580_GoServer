@@ -22,7 +22,7 @@ func (c *WxUserListController) Get() {
 	}
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "adminwxuserlist.html"
+	c.TplName = "adminwxuserlist.html"
 	admins, err := models.GetAllWxUsers()
 	if err != nil {
 		beego.Error(err)
@@ -55,5 +55,5 @@ func (c *WxUserListController) Post() {
 		c.Redirect(url, 302)
 		return
 	}
-	c.TplNames = "adminwxuserlist.html"
+	c.TplName = "adminwxuserlist.html"
 }

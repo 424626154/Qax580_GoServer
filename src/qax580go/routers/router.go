@@ -122,4 +122,7 @@ func init() {
 	beego.AutoRouter(&controllers.PhotoController{})     //洗相系统
 
 	beego.AutoRouter(&controllers.ImageController{}) //图床
+
+	beego.AutoRouter(&controllers.WeiZhanController{}) //微站
+	beego.AutoRouter(&controllers.DqsjController{})    //大签世界
 }

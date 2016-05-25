@@ -28,7 +28,7 @@ func (c *AdminAddCaidanController) Get() {
 	}
 	fid := c.Input().Get("fid")
 	c.Data["Fid"] = fid
-	c.TplNames = "adminaddcaidan.html"
+	c.TplName = "adminaddcaidan.html"
 }
 func (c *AdminAddCaidanController) Post() {
 	image_name := ""
@@ -75,5 +75,5 @@ func (c *AdminAddCaidanController) Post() {
 		c.Redirect(url, 302)
 		return
 	}
-	c.TplNames = "adminaddcaidan.html"
+	c.TplName = "adminaddcaidan.html"
 }

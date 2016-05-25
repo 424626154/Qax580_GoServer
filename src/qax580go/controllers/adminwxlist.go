@@ -87,6 +87,6 @@ func (c *AdminWcListController) Get() {
 		beego.Error(err)
 	}
 	beego.Debug(wxnums)
-	c.TplNames = "adminwxlist.html"
+	c.TplName = "adminwxlist.html"
 	c.Data["Wxnums"] = wxnums
 }

@@ -13,7 +13,7 @@ type RecommendController struct {
 }
 
 func (c *RecommendController) Get() {
-	c.TplNames = "recommend.html"
+	c.TplName = "recommend.html"
 }
 
 func (c *RecommendController) Post() {
@@ -36,5 +36,5 @@ func (c *RecommendController) Post() {
 		c.Data["Posts"] = posts
 		beego.Debug(posts)
 	}
-	c.TplNames = "recommend.html"
+	c.TplName = "recommend.html"
 }

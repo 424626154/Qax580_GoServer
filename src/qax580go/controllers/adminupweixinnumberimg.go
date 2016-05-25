@@ -25,7 +25,7 @@ func (c *AdminUpWeixinNumberImgController) Get() {
 		beego.Error(err)
 	}
 	c.Data["WeixinNumber"] = obj
-	c.TplNames = "adminupweixinnumberimg.html"
+	c.TplName = "adminupweixinnumberimg.html"
 }
 func (c *AdminUpWeixinNumberImgController) Post() {
 	id := c.Input().Get("id")
@@ -65,5 +65,5 @@ func (c *AdminUpWeixinNumberImgController) Post() {
 		}
 	}
 
-	c.TplNames = "adminupweixinnumberimg.html"
+	c.TplName = "adminupweixinnumberimg.html"
 }

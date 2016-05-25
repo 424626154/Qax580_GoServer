@@ -25,7 +25,7 @@ func (c *AdminUpUserMoneyController) Get() {
 			c.Data["IsId"] = true
 		}
 	}
-	c.TplNames = "adminupusermoney.html"
+	c.TplName = "adminupusermoney.html"
 }
 
 func (c *AdminUpUserMoneyController) Post() {
@@ -65,5 +65,5 @@ func (c *AdminUpUserMoneyController) Post() {
 		c.Redirect("/admin/wxuserlist", 302)
 		return
 	}
-	c.TplNames = "adminupusermoney.html"
+	c.TplName = "adminupusermoney.html"
 }

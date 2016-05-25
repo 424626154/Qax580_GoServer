@@ -57,9 +57,9 @@ func (c *AdminCaidansController) Get() {
 		c.Redirect(url, 302)
 		return
 	}
-	c.TplNames = "admincaidans.html"
+	c.TplName = "admincaidans.html"
 }
 
 func (c *AdminCaidansController) Post() {
-	c.TplNames = "admincaidans.html"
+	c.TplName = "admincaidans.html"
 }

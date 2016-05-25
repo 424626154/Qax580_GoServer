@@ -37,7 +37,7 @@ func (c *ExchangeController) Get() {
 	}
 	c.Data["ShowOrders"] = showOrders
 	beego.Debug(showOrders)
-	c.TplNames = "exchange.html"
+	c.TplName = "exchange.html"
 }
 func (c *ExchangeController) Post() {
 	beego.Debug("ExchangeController Post")
@@ -64,7 +64,7 @@ func (c *ExchangeController) Post() {
 	}
 	c.Data["ShowOrders"] = showOrders
 	beego.Debug(showOrders)
-	c.TplNames = "exchange.html"
+	c.TplName = "exchange.html"
 }
 func getExchangeeCookie(c *ExchangeController) string {
 	isUser := false

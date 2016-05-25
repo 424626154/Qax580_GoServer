@@ -19,7 +19,7 @@ func (c *AdminUpWxnumInfoController) Get() {
 		beego.Error(err)
 	}
 	c.Data["Wxnum"] = obj
-	c.TplNames = "adminupwxnuminfo.html"
+	c.TplName = "adminupwxnuminfo.html"
 }
 func (c *AdminUpWxnumInfoController) Post() {
 	id := c.Input().Get("id")
@@ -35,5 +35,5 @@ func (c *AdminUpWxnumInfoController) Post() {
 		c.Redirect("/admin/wxlist", 302)
 		return
 	}
-	c.TplNames = "adminupwxnuminfo.html"
+	c.TplName = "adminupwxnuminfo.html"
 }

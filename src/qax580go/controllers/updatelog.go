@@ -14,11 +14,11 @@ type UpdateLogController struct {
 
 func (c *UpdateLogController) Get() {
 	getULCookie(c)
-	c.TplNames = "updatelog.html"
+	c.TplName = "updatelog.html"
 }
 
 func (c *UpdateLogController) Post() {
-	c.TplNames = "updatelog.html"
+	c.TplName = "updatelog.html"
 }
 
 func getULCookie(c *UpdateLogController) string {

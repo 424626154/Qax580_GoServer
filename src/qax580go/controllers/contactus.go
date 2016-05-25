@@ -14,11 +14,11 @@ type ContactusController struct {
 
 func (c *ContactusController) Get() {
 	getConCookie(c)
-	c.TplNames = "contactus.html"
+	c.TplName = "contactus.html"
 }
 
 func (c *ContactusController) Post() {
-	c.TplNames = "contactus.html"
+	c.TplName = "contactus.html"
 }
 
 func getConCookie(c *ContactusController) string {

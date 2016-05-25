@@ -35,7 +35,7 @@ func (c *AdminUplodeController) Get() {
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
 
-	c.TplNames = "adminuplode.html"
+	c.TplName = "adminuplode.html"
 }
 
 func (c *AdminUplodeController) Post() {

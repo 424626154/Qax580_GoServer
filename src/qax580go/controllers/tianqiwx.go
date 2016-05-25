@@ -70,7 +70,7 @@ func (c *TianqiWXController) Get() {
 		beego.Debug("latitude:", latitude)
 		beego.Debug("longitude:", longitude)
 		getTianqi(longitude, latitude, c)
-		c.TplNames = "tianqi.html"
+		c.TplName = "tianqi.html"
 		return
 	}
 	appId := ""
@@ -86,13 +86,13 @@ func (c *TianqiWXController) Get() {
 	c.Data["TimesTamp"] = timestamp
 	c.Data["NonceStr"] = noncestr
 	getTianqiWxJsToken(noncestr, timestamp, c)
-	c.TplNames = "tianqiwx.html"
+	c.TplName = "tianqiwx.html"
 	// getTianqi("116.366324", "39.905859", c)
-	// c.TplNames = "tianqi.html"
+	// c.TplName = "tianqi.html"
 }
 
 func (c *TianqiWXController) Post() {
-	c.TplNames = "tianqiwx.html"
+	c.TplName = "tianqiwx.html"
 }
 
 func getTianqiWxJsToken(noncestr string, timestamp int64, c *TianqiWXController) {

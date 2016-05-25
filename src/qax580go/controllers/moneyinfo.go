@@ -13,7 +13,7 @@ type MoneyInfoController struct {
 }
 
 func (c *MoneyInfoController) Get() {
-	c.TplNames = "moneyinfo.html"
+	c.TplName = "moneyinfo.html"
 }
 func (c *MoneyInfoController) Post() {
 	openid := getMoneyInfoCookie(c)
@@ -23,7 +23,7 @@ func (c *MoneyInfoController) Post() {
 		beego.Error("err :", err)
 	}
 	c.Data["UserMoneys"] = usermoneys
-	c.TplNames = "moneyinfo.html"
+	c.TplName = "moneyinfo.html"
 }
 func getMoneyInfoCookie(c *MoneyInfoController) string {
 	isUser := false

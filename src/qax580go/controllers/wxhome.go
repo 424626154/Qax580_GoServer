@@ -28,11 +28,11 @@ func (c *WxHomeController) Get() {
 		saveHomeFromType(state, c)
 		getHomeAccessToken(code, c)
 	}
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func (c *WxHomeController) Post() {
-	c.TplNames = "wxhome.html"
+	c.TplName = "wxhome.html"
 }
 
 func getHomeAccessToken(code string, c *WxHomeController) {

@@ -67,5 +67,5 @@ func (c *AdminWaimaiListController) Get() {
 		c.Redirect("/admin/waimailist", 302)
 		return
 	}
-	c.TplNames = "adminwaimailist.html"
+	c.TplName = "adminwaimailist.html"
 }

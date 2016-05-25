@@ -64,7 +64,7 @@ func (c *RinseController) Home() {
 		}
 	}
 
-	c.TplNames = "rhome.html"
+	c.TplName = "rhome.html"
 }
 
 /**
@@ -77,7 +77,7 @@ func (c *RinseController) Register() {
 	if c.Ctx.Input.IsPost() {
 		beego.Debug("Register Post")
 	}
-	c.TplNames = "rregister.html"
+	c.TplName = "rregister.html"
 }
 
 /**
@@ -90,7 +90,7 @@ func (c *RinseController) Login() {
 	if c.Ctx.Input.IsPost() {
 		beego.Debug("Login Post")
 	}
-	c.TplNames = "rlogin.html"
+	c.TplName = "rlogin.html"
 }
 
 /**
@@ -98,7 +98,7 @@ func (c *RinseController) Login() {
 */
 func (c *RinseController) Upload() {
 
-	c.TplNames = "rupload.html"
+	c.TplName = "rupload.html"
 }
 
 /******后台******/

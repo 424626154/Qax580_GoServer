@@ -14,5 +14,5 @@ type MyExtensionResponseController struct {
 func (c *MyExtensionResponseController) Get() {
 	openid := c.Input().Get("openid")
 	c.Data["Openid"] = openid
-	c.TplNames = "myextensionresponse.html"
+	c.TplName = "myextensionresponse.html"
 }

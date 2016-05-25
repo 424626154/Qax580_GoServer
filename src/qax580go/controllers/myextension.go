@@ -27,11 +27,11 @@ func (c *MyExtensionController) Get() {
 	} else {
 		c.Data["isOpenid"] = false
 	}
-	c.TplNames = "myextension.html"
+	c.TplName = "myextension.html"
 }
 
 func (c *MyExtensionController) Post() {
-	c.TplNames = "myextension.html"
+	c.TplName = "myextension.html"
 }
 func getMyExtensionCookie(c *MyExtensionController) string {
 	isUser := false

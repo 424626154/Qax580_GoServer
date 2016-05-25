@@ -21,7 +21,7 @@ func (c *AdminUpdateLogController) Get() {
 	}
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "adminupdatelog.html"
+	c.TplName = "adminupdatelog.html"
 }
 
 func (c *AdminUpdateLogController) Post() {
@@ -34,5 +34,5 @@ func (c *AdminUpdateLogController) Post() {
 	}
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
-	c.TplNames = "adminupdatelog.html"
+	c.TplName = "adminupdatelog.html"
 }

@@ -14,11 +14,11 @@ type AboutController struct {
 
 func (c *AboutController) Get() {
 	getAboutCookie(c)
-	c.TplNames = "about.html"
+	c.TplName = "about.html"
 }
 
 func (c *AboutController) Post() {
-	c.TplNames = "about.html"
+	c.TplName = "about.html"
 }
 
 func getAboutCookie(c *AboutController) string {
