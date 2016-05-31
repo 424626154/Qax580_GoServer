@@ -60,3 +60,6 @@ const NTYPE_2 = 2 //发帖内容违规
 
 const COOKIE_FROM_TYPE = "from_type" //来源类型
 const COOKIE_FROM_ALL = "from_all"
+
+const DQSJ_USERNAME = "dqsj_username"
+const DQSJ_PASSWORD = "dqsj_password"

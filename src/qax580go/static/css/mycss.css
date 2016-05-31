@@ -387,3 +387,27 @@ color:#C9C9C9;
     padding-top: 10px;
 }
 
+
+.dqsj_caidn_img_div {
+  height: 90px;
+  width: 90px;
+  padding: 10px;
+}
+
+.dqsj_caidn_info_div {
+  position: relative;
+  top: -80px;
+  left: 100px;
+  padding: 10px 10px;
+}
+
+.dqsj_list_time_caidan{
+    width: 80px;
+    height: 80px;
+    background-size: 80px 80px;
+}
+
+.dqsj_group_div{
+     padding: 10px 10px;
+}
+

@@ -125,4 +125,7 @@ func init() {
 
 	beego.AutoRouter(&controllers.WeiZhanController{}) //微站
 	beego.AutoRouter(&controllers.DqsjController{})    //大签世界
+
+	beego.Router("/admin/dqsj", &controllers.AdminDqsjUserListController{})
+	beego.Router("/admin/adddqsjuser", &controllers.AdminAddDqsjUserController{})
 }

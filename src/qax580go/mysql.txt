@@ -29,3 +29,5 @@ INSERT INTO qax580.admin (username,password) VALUES('3','3');
         `state` tinyint NOT NULL DEFAULT '0' 
     ) ENGINE=InnoDB;
 
+    alter table qax580.cai_item modify price varchar(255)
+
