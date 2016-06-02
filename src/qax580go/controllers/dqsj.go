@@ -612,6 +612,100 @@ func (c *DqsjController) AdminAddGg() {
 	c.TplName = "dqsjadminaddgg.html"
 }
 
+func (c *DqsjController) AdminHuoDong() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminHuoDong Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminHuoDong Post")
+	}
+	op := c.Input().Get("op")
+	switch op {
+	case "uphuodong":
+		huodong := c.Input().Get("huodong")
+		if len(huodong) == 0 {
+			break
+		}
+		err := models.ModifyDqsjHomeHD(huodong)
+		if err != nil {
+			beego.Error(err)
+		}
+		// beego.Debug("is admin del " + id)
+		c.Redirect("/dqsj/adminhuodong", 302)
+		return
+	case "del":
+		id := c.Input().Get("id")
+		if len(id) == 0 {
+			break
+		}
+		id = c.Input().Get("id")
+		err := models.DeleteDqsjHD(id)
+		if err != nil {
+			beego.Error(err)
+		}
+		// beego.Debug("is admin del " + id)
+		c.Redirect("/dqsj/adminhuodong", 302)
+		return
+	case "state":
+		id := c.Input().Get("id")
+		if len(id) == 0 {
+			break
+		}
+		id = c.Input().Get("id")
+		err := models.UpdateDqsjHD(id, 1)
+		if err != nil {
+			beego.Error(err)
+		}
+		// beego.Debug("is admin state " + id)
+		c.Redirect("/dqsj/adminhuodong", 302)
+		return
+	case "state1":
+		id := c.Input().Get("id")
+		if len(id) == 0 {
+			break
+		}
+		id = c.Input().Get("id")
+		err := models.UpdateDqsjHD(id, 0)
+		if err != nil {
+			beego.Error(err)
+		}
+		// beego.Debug("is admin state1" + id)
+		c.Redirect("/dqsj/adminhuodong", 302)
+		return
+	case "additem":
+		content := c.Input().Get("content")
+		if len(content) == 0 {
+			break
+		}
+		err := models.AddDqsjHD(content)
+		if err != nil {
+			beego.Error(err)
+		}
+		// beego.Debug("is admin state1" + id)
+		c.Redirect("/dqsj/adminhuodong", 302)
+		return
+	}
+
+	obj, err := models.GetOneDqsjHome()
+	if err != nil {
+		beego.Debug(err)
+	}
+	c.Data["DqsjHome"] = obj
+	obj1, err := models.GetAllDqsjHD()
+	if err != nil {
+		beego.Debug(err)
+	}
+	c.Data["DqsjHuoDong"] = obj1
+	c.TplName = "dqsjadminhuodong.html"
+}
+
 //主页
 func (c *DqsjController) Home() {
 	if c.Ctx.Input.IsGet() {
@@ -660,6 +754,22 @@ func (c *DqsjController) Home() {
 		beego.Error(err)
 	}
 	c.Data["Guanggaos"] = guanggaos
+
+	obj, err := models.GetOneDqsjHome()
+	if err != nil {
+		beego.Debug(err)
+	}
+	c.Data["DqsjHome"] = obj
+	obj1, err := models.GetAllDqsjHDState1()
+	if err != nil {
+		beego.Debug(err)
+	}
+	if obj1 != nil {
+		for i := 0; i < len(obj1); i++ {
+			obj1[i].ShowId = int64(i + 1)
+		}
+	}
+	c.Data["DqsjHuoDong"] = obj1
 
 	c.TplName = "dqsjhome.html"
 }

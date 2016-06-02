@@ -620,6 +620,18 @@ type DqsjGuanggao struct {
 	ImageItem1 string //内容页图片1
 	ImageItem2 string //内容页图片2
 }
+type DqsjHome struct {
+	Id      int64
+	HuoDong string
+	Time    int64
+}
+type DqsjHuoDong struct {
+	Id      int64
+	ShowId  int64
+	Content string `orm:"size(4096)"`
+	State   int8   //0未上线 1 上线
+	Time    int64
+}
 
 func RegisterDB() {
 	// set default database
@@ -677,6 +689,8 @@ func RegisterDB() {
 	orm.RegisterModel(new(DqsjPanItem))  //转盘
 	orm.RegisterModel(new(DqsjCaiTips))  //菜品提示
 	orm.RegisterModel(new(DqsjGuanggao)) //大签世界广告
+	orm.RegisterModel(new(DqsjHome))     //主页内容
+	orm.RegisterModel(new(DqsjHuoDong))  //主页获得
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -3873,4 +3887,118 @@ func UpdateDqsjGuanggaoInfo(id string, title string, info string, blink bool, li
 	cate.Link = link
 	_, err = o.Update(cate, "title", "content", "blink", "link")
 	return err
+}
+func AddDqsjHomeHD(huodong string) error {
+	create_time := time.Now().Unix()
+	o := orm.NewOrm()
+	obj := &DqsjHome{HuoDong: huodong, Time: create_time}
+	// 查询数据
+	qs := o.QueryTable("dqsj_home")
+	err := qs.Filter("huodong", huodong).One(obj)
+	if err == nil {
+		return err
+	}
+	// 插入数据
+	_, err = o.Insert(obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func UpdateDqsjHomeHD(huodong string, id int64) error {
+	o := orm.NewOrm()
+	cate := &DqsjHome{Id: id}
+	cate.HuoDong = huodong
+	_, err := o.Update(huodong, "huodong")
+	return err
+}
+
+func GetAllDqsjHome() ([]DqsjHome, error) {
+	o := orm.NewOrm()
+	var objs []DqsjHome
+	_, err := o.Raw("SELECT * FROM dqsj_home ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+
+func GetOneDqsjHome() (*DqsjHome, error) {
+	o := orm.NewOrm()
+	var objs []DqsjHome
+	_, err := o.Raw("SELECT * FROM dqsj_home ORDER BY id DESC").QueryRows(&objs)
+	if objs != nil && len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+func ModifyDqsjHomeHD(huodong string) error {
+	objs, err := GetAllDqsjHome()
+	if err != nil {
+		return err
+	}
+	if objs != nil && len(objs) > 0 {
+		err = UpdateDqsjHomeHD(huodong, objs[0].Id)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = AddDqsjHomeHD(huodong)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+/******大签世界活动*****/
+func AddDqsjHD(content string) error {
+	create_time := time.Now().Unix()
+	o := orm.NewOrm()
+	obj := &DqsjHuoDong{Content: content, Time: create_time}
+	// 查询数据
+	qs := o.QueryTable("dqsj_huo_dong")
+	err := qs.Filter("content", content).One(obj)
+	if err == nil {
+		return err
+	}
+	// 插入数据
+	_, err = o.Insert(obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func UpdateDqsjHD(id string, state int8) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjHuoDong{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
+func DeleteDqsjHD(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjHuoDong{Id: cid}
+	_, err = o.Delete(obj)
+	return err
+}
+func GetAllDqsjHD() ([]DqsjHuoDong, error) {
+	o := orm.NewOrm()
+	var objs []DqsjHuoDong
+	_, err := o.Raw("SELECT * FROM dqsj_huo_dong  ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+func GetAllDqsjHDState1() ([]DqsjHuoDong, error) {
+	o := orm.NewOrm()
+	var objs []DqsjHuoDong
+	_, err := o.Raw("SELECT * FROM dqsj_huo_dong  WHERE state = 1 ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
 }

@@ -128,10 +128,11 @@
 </div>
 <div style="	padding-left: 10px;
 	padding-right: 10px;">
-	<h3>开业期间</h3>
+	<h3>{{.DqsjHome.HuoDong}}</h3>
 <ul class="list-group">
-  <li class="list-group-item">1. 全天八折</li>
-  <li class="list-group-item">2. 每桌参与抽奖</li>
+{{range .DqsjHuoDong}}
+  <li class="list-group-item">{{.ShowId}}.{{.Content}}</li>
+{{end}}
 </ul>
 
 <div class="row" style="	padding-left: 10px;
