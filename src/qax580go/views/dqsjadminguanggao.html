@@ -26,6 +26,7 @@
 <div>
   <a type="button" class="btn btn-default" href="/dqsj/adminaddgg">添加广告</a>
 </div>
+<div style="height:4px"></div>
 <ul class="list-group">
   {{range .Guanggaos}}
   <li class="list-group-item">
@@ -39,9 +40,7 @@
           内容中显示广告页
         {{end}}
     <div>
-      <a href="/admin/guanggaocontent?op=con&id={{.Id}}">
         <h1>{{.Title}}</h1>
-      </a>
     </div>
     <div>{{.Content}}</div>
     {{if eq .ImageItem0 ""}}
@@ -67,11 +66,13 @@
     {{end}}
     <div class="time_font">{{timeformat .Time}}</div>
     {{if eq .State 0}}
-    <a href="/dqsj/admingg?op=state&id={{.Id}}" >上线(发布)</a>
+    <a class="btn btn-default" href="/dqsj/admingg?op=state&id={{.Id}}" >上线</a>
     {{else}}
-    <a href="/dqsj/admingg?op=state1&id={{.Id}}" >下线(已发布)</a>
+    <a class="btn btn-info" href="/dqsj/admingg?op=state1&id={{.Id}}" >下线</a>
     {{end}}
-    <a href="/dqsj/admingg?op=del&id={{.Id}}" >删除</a>
+    <a class="btn btn-danger" href="/dqsj/admingg?op=del&id={{.Id}}" >删除</a>
+     <a class="btn btn-danger" href="/dqsj/adminupggcon?id={{.Id}}" >修改内容</a>
+     <a  class="btn btn-danger" href="/dqsj/adminupggimg?id={{.Id}}" >修改图片</a>
   </li>
   {{end}}
 </ul>

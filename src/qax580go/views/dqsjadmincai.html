@@ -25,20 +25,24 @@
 
 <div class="btn-group" role="group" aria-label="...">
   <a type="button" class="btn btn-default" href="/dqsj/adminaddcaigroup">添加菜单分组</a>
-  <a type="button" class="btn btn-default" href="/dqsj/adminaddcaitips">添加菜单分组</a>
+  <a type="button" class="btn btn-default" href="/dqsj/adminaddcaitips">添加菜单提示</a>
 </div>
 	<h5>菜单提示</h5>
 	<ul class="list-group">
 	{{range .CaiTips}}
 	<li class="list-group-item">
 		<div>
-		<span>id：{{.Id}}</span> 提示内容:{{.Info}} 
+			<span class="label label-default">id：{{.Id}}</span><h5> {{.Info}} </h5>
+	</div>
+	<div style="height:4px"></div>
+	<div>
 		 {{if eq .State 0}}
-	    	<div><a href="/dqsj/admincai?op=tipsstate0&id={{.Id}}" >(未上线)上线</a></div>
+	    	<a class="btn btn-default" href="/dqsj/admincai?op=tipsstate0&id={{.Id}}" >上线</a>
 	    {{else}}
-	    	<div><a href="/dqsj/admincai?op=tipsstate1&id={{.Id}}" >(已上线)下线</a></div>
+	    	<a class="btn btn-info" href="/dqsj/admincai?op=tipsstate1&id={{.Id}}" >下线</a>
 	    {{end}}	
-		<a href="/dqsj/admincai?op=tipsdel&id={{.Id}}" >删除</a></div>
+		<a class="btn btn-danger" href="/dqsj/admincai?op=tipsdel&id={{.Id}}" >删除</a>
+		</div>
 	</li>
 	{{end}}
 </ul>
@@ -46,15 +50,20 @@
 <ul class="list-group">
 	{{range .ShowCaiGroup}}
 	<li class="list-group-item">
-		<div>{{.Name}} <span>排序id：{{.OrderId}}</span> 	
+		<div><span class="label label-danger" >{{.Name}}</span> <span class="label label-default">排序id：{{.OrderId}}</span> 	
+		</div>
+		<div style="height:10px"></div>
+		<div>
 		 {{if eq .State 0}}
-	    	<div><a href="/dqsj/admincai?op=state0&id={{.Id}}" >(未上线)上线</a></div>
+	    	<a class="btn btn-default" href="/dqsj/admincai?op=state0&id={{.Id}}" >上线</a>
 	    {{else}}
-	    	<div><a href="/dqsj/admincai?op=state1&id={{.Id}}" >(已上线)下线</a></div>
+	    	<a class="btn btn-info"  href="/dqsj/admincai?op=state1&id={{.Id}}" >下线</a>
 	    {{end}}	
-		<a href="/dqsj/adminaddcaiitem?groupid={{.Id}}" >添加</a>
-		<a href="/dqsj/admincai?op=del&id={{.Id}}" >删除</a></div>
+		<a class="btn btn-primary" href="/dqsj/adminaddcaiitem?groupid={{.Id}}" >添加</a>
+		<a class="btn btn-danger" href="/dqsj/admincai?op=del&id={{.Id}}" >删除</a>
+		</div>
 		<ul class="list-group">
+		<div style="height:10px"></div>
 		{{range .CaiItems}}
 		<li class="list-group-item">
 		      {{if eq .Image ""}}
@@ -64,13 +73,17 @@
             <img src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}" width="auto" height="120px"></div>
           {{end}}
 			<div>{{.Name}}</div>
-			<div>{{.Price}}/{{.PriceDesc}}</div>
+			<div>价格:{{.Price}}</div>
+			<div>显示内容:{{.PriceDesc}}</div>
+			<div>
 			{{if eq .State 0}}
-	    	<div><a href="/dqsj/admincai?op=itemstate0&id={{.Id}}" >(未上线)上线</a></div>
+	    	<a class="btn btn-default" href="/dqsj/admincai?op=itemstate0&id={{.Id}}" >上线</a>
 		    {{else}}
-		    	<div><a href="/dqsj/admincai?op=itemstate1&id={{.Id}}" >(已上线)下线</a></div>
+		    	<a class="btn btn-info" href="/dqsj/admincai?op=itemstate1&id={{.Id}}" >下线</a>
 		    {{end}}	
-		    <div><a href="/dqsj/admincai?op=itemdel&id={{.Id}}" >删除</a></div>
+		    <a class="btn btn-danger" href="/dqsj/admincai?op=itemdel&id={{.Id}}" >删除</a> 
+		    <a class="btn btn-danger" href="/dqsj/admincaiupcon?id={{.Id}}" >修改</a>
+		    </div>
 		</li>
 		{{end}}
 		</ul>

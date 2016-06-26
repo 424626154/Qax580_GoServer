@@ -596,7 +596,24 @@ type DqsjShowCaiGroup struct {
 	State    int8 //0未上线 1 上线
 	CaiItems []DqsjCaiItem
 }
+
+/*
+*转盘元素
+ */
 type DqsjPanItem struct {
+	Id             int64
+	Name           string
+	Info           string
+	State          int8  //0未上线 1 上线
+	Probability    int64 //概率
+	AllProbability int64 //总概率
+	Time           int64
+}
+
+/*
+*刮刮乐元素
+ */
+type DqsjGuaItem struct {
 	Id             int64
 	Name           string
 	Info           string
@@ -631,6 +648,12 @@ type DqsjHuoDong struct {
 	Content string `orm:"size(4096)"`
 	State   int8   //0未上线 1 上线
 	Time    int64
+}
+
+type DqsjConfig struct {
+	Id   int64
+	Bpan bool //转盘
+	Time int64
 }
 
 func RegisterDB() {
@@ -691,6 +714,8 @@ func RegisterDB() {
 	orm.RegisterModel(new(DqsjGuanggao)) //大签世界广告
 	orm.RegisterModel(new(DqsjHome))     //主页内容
 	orm.RegisterModel(new(DqsjHuoDong))  //主页获得
+	orm.RegisterModel(new(DqsjGuaItem))  //刮刮乐元素
+	orm.RegisterModel(new(DqsjConfig))   //配置
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -3514,6 +3539,21 @@ func AddWxAttributeTicket(ticket string) (int64, error) {
 		return cate.Id, nil
 	}
 }
+func UpWxAttributeTime(tokentime int64, tickettime int64) error {
+	obj, err := GetWxAttribute()
+	if err != nil {
+		return err
+	}
+	if obj != nil {
+		o := orm.NewOrm()
+		cate := &WxAttribute{Id: obj.Id}
+		cate.AccessTokenTime = tokentime
+		cate.TicketTime = tickettime
+		_, err := o.Update(cate, "access_token_time", "ticket_time")
+		return err
+	}
+	return nil
+}
 
 /*
 *
@@ -3655,12 +3695,38 @@ func GetAllCaiItem(groupid int64) ([]DqsjCaiItem, error) {
 	_, err := o.Raw("SELECT * FROM dqsj_cai_item  WHERE group_id = ? ORDER BY id DESC", groupid).QueryRows(&objs)
 	return objs, err
 }
+func GetOneCaiItem(id string) (*DqsjCaiItem, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	var objs []DqsjCaiItem
+	_, err = o.Raw("SELECT * FROM dqsj_cai_item  WHERE id = ? ORDER BY id DESC", cid).QueryRows(&objs)
+	if len(objs) > 0 {
+		return &objs[0], err
+	}
+	return nil, err
+}
 
 func GetAllCaiItemState1(groupid int64) ([]DqsjCaiItem, error) {
 	o := orm.NewOrm()
 	var objs []DqsjCaiItem
-	_, err := o.Raw("SELECT * FROM dqsj_cai_item  WHERE group_id = ? AND state = 1 ORDER BY id DESC", groupid).QueryRows(&objs)
+	_, err := o.Raw("SELECT * FROM dqsj_cai_item  WHERE group_id = ? AND state = 1 ORDER BY id ASC", groupid).QueryRows(&objs)
 	return objs, err
+}
+func UpdateCaiItemCon(id string, name string, price string, pricedesc string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &DqsjCaiItem{Id: cid}
+	cate.Name = name
+	cate.Price = price
+	cate.PriceDesc = pricedesc
+	_, err = o.Update(cate, "name", "price", "price_desc")
+	return err
 }
 
 func DeleteCaiGrItem(id string) error {
@@ -3719,12 +3785,41 @@ func AddPanItem(name string, info string, probability string) error {
 	return nil
 }
 
+func UpPanItem(name string, info string, probability string, id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	cprobability, err := strconv.ParseInt(probability, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjPanItem{Id: cid}
+	obj.Name = name
+	obj.Info = info
+	obj.Probability = cprobability
+	_, err = o.Update(obj, "name", "info", "probability")
+	return err
+}
+
 func GetAllPanItem() ([]DqsjPanItem, error) {
 	o := orm.NewOrm()
 	var objs []DqsjPanItem
 	_, err := o.Raw("SELECT * FROM dqsj_pan_item  ORDER BY id DESC").QueryRows(&objs)
 	return objs, err
 }
+func GetOnePanItem(id string) (*DqsjPanItem, error) {
+	o := orm.NewOrm()
+	var objs []DqsjPanItem
+	_, err := o.Raw("SELECT * FROM dqsj_pan_item WHERE id = ? ", id).QueryRows(&objs)
+	obj := &DqsjPanItem{}
+	if len(objs) > 0 {
+		obj = &objs[0]
+	}
+	return obj, err
+}
+
 func UpdatePanItem(id string, state int8) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -3736,6 +3831,7 @@ func UpdatePanItem(id string, state int8) error {
 	_, err = o.Update(obj, "state")
 	return err
 }
+
 func DeletePanItem(id string) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -3910,7 +4006,7 @@ func UpdateDqsjHomeHD(huodong string, id int64) error {
 	o := orm.NewOrm()
 	cate := &DqsjHome{Id: id}
 	cate.HuoDong = huodong
-	_, err := o.Update(huodong, "huodong")
+	_, err := o.Update(cate, "huo_dong")
 	return err
 }
 
@@ -4001,4 +4097,132 @@ func GetAllDqsjHDState1() ([]DqsjHuoDong, error) {
 	var objs []DqsjHuoDong
 	_, err := o.Raw("SELECT * FROM dqsj_huo_dong  WHERE state = 1 ORDER BY id DESC").QueryRows(&objs)
 	return objs, err
+}
+
+/******刮刮乐元素******/
+func AddGuaItem(name string, info string, probability string) error {
+	cprobability, err := strconv.ParseInt(probability, 10, 64)
+	if err != nil {
+		return err
+	}
+	create_time := time.Now().Unix()
+	o := orm.NewOrm()
+	obj := &DqsjGuaItem{Name: name, Info: info, Probability: cprobability, Time: create_time}
+	// 查询数据
+	qs := o.QueryTable("dqsj_gua_item")
+	err = qs.Filter("time", create_time).One(obj)
+	if err == nil {
+		return err
+	}
+	// 插入数据
+	_, err = o.Insert(obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpGuaItem(name string, info string, probability string, id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	cprobability, err := strconv.ParseInt(probability, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjGuaItem{Id: cid}
+	obj.Name = name
+	obj.Info = info
+	obj.Probability = cprobability
+	_, err = o.Update(obj, "name", "info", "probability")
+	return err
+}
+
+func GetAllGuaItem() ([]DqsjGuaItem, error) {
+	o := orm.NewOrm()
+	var objs []DqsjGuaItem
+	_, err := o.Raw("SELECT * FROM dqsj_gua_item  ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+func GetOneGuaItem(id string) (*DqsjGuaItem, error) {
+	o := orm.NewOrm()
+	var objs []DqsjGuaItem
+	_, err := o.Raw("SELECT * FROM dqsj_gua_item WHERE id = ? ", id).QueryRows(&objs)
+	obj := &DqsjGuaItem{}
+	if len(objs) > 0 {
+		obj = &objs[0]
+	}
+	return obj, err
+}
+
+func UpdateGuaItem(id string, state int8) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjGuaItem{Id: cid}
+	obj.State = state
+	_, err = o.Update(obj, "state")
+	return err
+}
+
+func DeleteGuaItem(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjGuaItem{Id: cid}
+	_, err = o.Delete(obj)
+	return err
+}
+
+func GetAllGuaItemState1() ([]DqsjGuaItem, error) {
+	o := orm.NewOrm()
+	var objs []DqsjGuaItem
+	_, err := o.Raw("SELECT * FROM dqsj_gua_item  WHERE state = 1 ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+
+/******管理员配置******/
+func UpConfigPan(bpan bool) (int64, error) {
+	obj, err := GetConfigPan()
+	if err != nil {
+		return 0, err
+	}
+	create_time := time.Now().Unix()
+	if obj != nil {
+		o := orm.NewOrm()
+		cate := &DqsjConfig{Id: obj.Id}
+		cate.Bpan = bpan
+		id, err := o.Update(cate, "bpan")
+		return id, err
+	} else {
+		o := orm.NewOrm()
+		cate := &DqsjConfig{Bpan: bpan, Time: create_time}
+		// 插入数据
+		_, err = o.Insert(cate)
+		if err != nil {
+			return 0, err
+		}
+		return cate.Id, nil
+	}
+}
+
+func GetConfigPan() (*DqsjConfig, error) {
+	o := orm.NewOrm()
+	var objs []DqsjConfig
+	_, err := o.QueryTable("dqsj_config").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], nil
+	}
+	return nil, err
 }

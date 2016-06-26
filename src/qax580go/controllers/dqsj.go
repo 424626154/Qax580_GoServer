@@ -12,6 +12,7 @@ import (
 	"github.com/astaxie/beego/config"
 	"github.com/astaxie/beego/context"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"path"
 	"qax580go/models"
@@ -295,7 +296,45 @@ func (c *DqsjController) AdminAddCaiItem() {
 	}
 	c.TplName = "dqsjadminaddcaiitem.html"
 }
+func (c *DqsjController) AdminCaiUpCon() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
 
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminCaiUpCon Get")
+		id := c.Input().Get("id")
+		beego.Debug("AdminCaiUpCon Get id:", id)
+		if len(id) == 0 {
+			c.Redirect("/dqsj/admincai", 302)
+		}
+		obj, err := models.GetOneCaiItem(id)
+		if err != nil {
+			beego.Error(err)
+		}
+		c.Data["CaiItem"] = obj
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminCaiUpCon Post")
+		id := c.Input().Get("id")
+		name := c.Input().Get("name")
+		price := c.Input().Get("price")
+		pricedesc := c.Input().Get("pricedesc")
+		if len(id) > 0 && len(name) > 0 && len(price) > 0 && len(pricedesc) > 0 {
+			err := models.UpdateCaiItemCon(id, name, price, pricedesc)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/admincai", 302)
+			return
+		}
+
+	}
+	c.TplName = "dqsjadmincaiupcon.html"
+}
 func (c *DqsjController) AdminPan() {
 	if c.Ctx.Input.IsGet() {
 		beego.Debug("AdminPan Get")
@@ -354,6 +393,13 @@ func (c *DqsjController) AdminPan() {
 		panitem[i].AllProbability = allProbability
 	}
 	c.Data["PanItem"] = panitem
+
+	config, err := models.GetConfigPan()
+	bpan := false
+	if config != nil {
+		bpan = config.Bpan
+	}
+	c.Data["Bpan"] = bpan
 	c.TplName = "dqsjadminpan.html"
 }
 func (c *DqsjController) AdminAddPan() {
@@ -365,10 +411,10 @@ func (c *DqsjController) AdminAddPan() {
 		return
 	}
 	if c.Ctx.Input.IsGet() {
-		beego.Debug("AdminAddPanItem Get")
+		beego.Debug("AdminAddPan Get")
 	}
 	if c.Ctx.Input.IsPost() {
-		beego.Debug("AdminAddPanItem Post")
+		beego.Debug("AdminAddPan Post")
 		name := c.Input().Get("name")
 		info := c.Input().Get("info")
 		probability := c.Input().Get("probability")
@@ -384,6 +430,42 @@ func (c *DqsjController) AdminAddPan() {
 
 	}
 	c.TplName = "dqsjadminaddpan.html"
+}
+func (c *DqsjController) AdminUpPan() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminUpPan Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminUpPan Post")
+		pid := c.Input().Get("pid")
+		name := c.Input().Get("name")
+		info := c.Input().Get("info")
+		probability := c.Input().Get("probability")
+		if len(name) != 0 && len(info) != 0 {
+			err := models.UpPanItem(name, info, probability, pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/adminpan", 302)
+		} else {
+			c.Redirect("/dqsj/adminuppan", 302)
+		}
+
+	}
+	pid := c.Input().Get("pid")
+	obj, err := models.GetOnePanItem(pid)
+	if err != nil {
+		beego.Error(err)
+	}
+	c.Data["DqsjPanItem"] = obj
+	c.TplName = "dqsjadminuppan.html"
 }
 func (c *DqsjController) AdminAddCaiTips() {
 	bool, _ := chackDqsjAccount(c.Ctx)
@@ -611,6 +693,192 @@ func (c *DqsjController) AdminAddGg() {
 	}
 	c.TplName = "dqsjadminaddgg.html"
 }
+func (c *DqsjController) AdminUpGgCon() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminUpGgCon Get")
+		id := c.Input().Get("id")
+		if len(id) != 0 {
+			gg, err := models.GetOneDqsjGuanggao(id)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Data["Guanggao"] = gg
+			beego.Debug("gg :", gg)
+		}
+
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminUpGgCon Post")
+		title := c.Input().Get("title")
+		info := c.Input().Get("info")
+		blink := c.Input().Get("blink")
+		link := c.Input().Get("link")
+		id := c.Input().Get("id")
+		if len(id) != 0 && len(title) != 0 && len(info) != 0 {
+			b_link := false
+			s_link := ""
+			if blink == "true" {
+				b_link = true
+				s_link = link
+			}
+
+			err := models.UpdateDqsjGuanggaoInfo(id, title, info, b_link, s_link)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/admingg", 302)
+		}
+	}
+	c.TplName = "dqsjadminupggcon.html"
+}
+
+func (c *DqsjController) AdminUpGgImg() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminUpGgImg Get")
+		id := c.Input().Get("id")
+		if len(id) != 0 {
+			gg, err := models.GetOneDqsjGuanggao(id)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Data["Guanggao"] = gg
+			beego.Debug("gg :", gg)
+		}
+
+	}
+	if c.Ctx.Input.IsPost() {
+		id := c.Input().Get("id")
+		originalimg := c.Input().Get("originalimg")
+		originalitem0 := c.Input().Get("originalitem0")
+		originalitem1 := c.Input().Get("originalitem1")
+		originalitem2 := c.Input().Get("originalitem2")
+		bimg := c.Input().Get("bimg")
+		image_name := originalimg
+		item0_name := originalitem0
+		item1_name := originalitem1
+		item2_name := originalitem2
+		if len(id) != 0 {
+			// 获取附件
+			_, fh, err := c.GetFile("image")
+			// beego.Debug("上传图片:", fh)
+			if err != nil {
+				beego.Error(err)
+			}
+			var attachment string
+			if fh != nil {
+				// 保存附件
+				attachment = fh.Filename
+				t := time.Now().Unix()
+				str2 := fmt.Sprintf("%d", t)
+				s := []string{attachment, str2}
+				h := md5.New()
+				h.Write([]byte(strings.Join(s, ""))) // 需要加密的字符串
+				image_name = hex.EncodeToString(h.Sum(nil))
+				beego.Info(image_name) // 输出加密结果
+				err = c.SaveToFile("image", path.Join("imagehosting", image_name))
+				if err != nil {
+					beego.Error(err)
+					image_name = originalimg
+				}
+			}
+			// 上传图片0
+			_, fh, err = c.GetFile("imageitem0")
+			beego.Debug("上传图片imageitem0:", fh)
+			if err != nil {
+				beego.Error(err)
+			}
+			if fh != nil {
+				// 保存附件
+				attachment = fh.Filename
+				t := time.Now().Unix()
+				str2 := fmt.Sprintf("%d%s", t, "imageitem0")
+				s := []string{attachment, str2}
+				h := md5.New()
+				h.Write([]byte(strings.Join(s, ""))) // 需要加密的字符串
+				item0_name = hex.EncodeToString(h.Sum(nil))
+				beego.Info(item0_name) // 输出加密结果
+				err = c.SaveToFile("imageitem0", path.Join("imagehosting", item0_name))
+				if err != nil {
+					beego.Error(err)
+					item0_name = originalitem0
+				}
+			}
+			// 上传图片1
+			_, fh, err = c.GetFile("imageitem1")
+			beego.Debug("上传图片imageitem1:", fh)
+			if err != nil {
+				beego.Error(err)
+			}
+			if fh != nil {
+				// 保存附件
+				attachment = fh.Filename
+				t := time.Now().Unix()
+				str2 := fmt.Sprintf("%d%s", t, "imageitem1")
+				s := []string{attachment, str2}
+				h := md5.New()
+				h.Write([]byte(strings.Join(s, ""))) // 需要加密的字符串
+				item1_name = hex.EncodeToString(h.Sum(nil))
+				beego.Info(item1_name) // 输出加密结果
+				err = c.SaveToFile("imageitem1", path.Join("imagehosting", item1_name))
+				if err != nil {
+					beego.Error(err)
+					item1_name = originalitem1
+				}
+			}
+			// 上传图片2
+			_, fh, err = c.GetFile("imageitem2")
+			beego.Debug("上传图片imageitem2:", fh)
+			if err != nil {
+				beego.Error(err)
+			}
+			if fh != nil {
+				// 保存附件
+				attachment = fh.Filename
+				t := time.Now().Unix()
+				str2 := fmt.Sprintf("%d%s", t, "imageitem2")
+				s := []string{attachment, str2}
+				h := md5.New()
+				h.Write([]byte(strings.Join(s, ""))) // 需要加密的字符串
+				item2_name = hex.EncodeToString(h.Sum(nil))
+				beego.Info(item2_name) // 输出加密结果
+				err = c.SaveToFile("imageitem2", path.Join("imagehosting", item2_name))
+				if err != nil {
+					beego.Error(err)
+					item2_name = originalitem2
+				}
+			}
+			b_img := false
+			if bimg == "true" {
+				b_img = true
+			}
+			beego.Debug("上传前图片", originalitem0, "上传后图片", item0_name)
+			if len(image_name) != 0 || len(item0_name) != 0 || len(item1_name) != 0 || len(item2_name) != 0 {
+				err := models.UpdateDqsjGuanggaoImg(id, image_name, b_img, item0_name, item1_name, item2_name)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					c.Redirect("/dqsj/admingg", 302)
+					return
+				}
+			}
+		}
+	}
+	c.TplName = "dqsjadminupggimg.html"
+}
 
 func (c *DqsjController) AdminHuoDong() {
 	bool, _ := chackDqsjAccount(c.Ctx)
@@ -630,6 +898,7 @@ func (c *DqsjController) AdminHuoDong() {
 	switch op {
 	case "uphuodong":
 		huodong := c.Input().Get("huodong")
+		beego.Debug("huodong:", huodong)
 		if len(huodong) == 0 {
 			break
 		}
@@ -697,13 +966,185 @@ func (c *DqsjController) AdminHuoDong() {
 	if err != nil {
 		beego.Debug(err)
 	}
-	c.Data["DqsjHome"] = obj
+	c.Data["HuoDong"] = ""
+	if obj != nil {
+		c.Data["HuoDong"] = obj.HuoDong
+	}
 	obj1, err := models.GetAllDqsjHD()
 	if err != nil {
 		beego.Debug(err)
 	}
 	c.Data["DqsjHuoDong"] = obj1
 	c.TplName = "dqsjadminhuodong.html"
+}
+func (c *DqsjController) AdminGua() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminGua Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminGua Post")
+	}
+	op := c.Input().Get("op")
+	beego.Debug("op :", op)
+	switch op {
+	case "del":
+		id := c.Input().Get("id")
+		err := models.DeleteGuaItem(id)
+		if err != nil {
+			beego.Error(err)
+		}
+		c.Redirect("/dqsj/admingua", 302)
+		return
+	case "state0":
+		id := c.Input().Get("id")
+		err := models.UpdateGuaItem(id, 1)
+		if err != nil {
+			beego.Error(err)
+		}
+		c.Redirect("/dqsj/admingua", 302)
+		return
+	case "state1":
+		id := c.Input().Get("id")
+		err := models.UpdateGuaItem(id, 0)
+		if err != nil {
+			beego.Error(err)
+		}
+		c.Redirect("/dqsj/admingua", 302)
+		return
+	}
+	panitem, err := models.GetAllGuaItem()
+	if err != nil {
+		beego.Error(err)
+	}
+	//计算总概率
+	allProbability := int64(0)
+	for i := 0; i < len(panitem); i++ {
+		if panitem[i].State == 1 {
+			allProbability += panitem[i].Probability
+		}
+	}
+	for i := 0; i < len(panitem); i++ {
+		panitem[i].AllProbability = allProbability
+	}
+	c.Data["GuaItem"] = panitem
+
+	c.TplName = "dqsjadmingua.html"
+}
+func (c *DqsjController) AdminAddGua() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminAddGua Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminAddGua Post")
+		name := c.Input().Get("name")
+		info := c.Input().Get("info")
+		probability := c.Input().Get("probability")
+		if len(name) != 0 && len(info) != 0 {
+			err := models.AddGuaItem(name, info, probability)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/admingua", 302)
+		} else {
+			c.Redirect("/dqsj/adminaddgua", 302)
+		}
+
+	}
+	c.TplName = "dqsjadminaddgua.html"
+}
+func (c *DqsjController) AdminUpGua() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminUpGua Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminUpGua Post")
+		pid := c.Input().Get("pid")
+		name := c.Input().Get("name")
+		info := c.Input().Get("info")
+		probability := c.Input().Get("probability")
+		if len(name) != 0 && len(info) != 0 {
+			err := models.UpGuaItem(name, info, probability, pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/admingua", 302)
+		} else {
+			c.Redirect("/dqsj/adminupgua", 302)
+		}
+
+	}
+	pid := c.Input().Get("pid")
+	obj, err := models.GetOneGuaItem(pid)
+	if err != nil {
+		beego.Error(err)
+	}
+	c.Data["GuaItem"] = obj
+	c.TplName = "dqsjadminupgua.html"
+}
+func (c *DqsjController) Post() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminWx Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminWx Post")
+	}
+	op := c.Input().Get("op")
+	request_json := `{"errcode":1,"errmsg":"request_json error"}`
+	switch op {
+	case "wx":
+		err := models.UpWxAttributeTime(int64(0), int64(0))
+		if err != nil {
+			beego.Debug(err)
+		} else {
+			request_json = `{"errcode":0,"errmsg":""}`
+		}
+		break
+	case "pan":
+		bpan := c.Input().Get("bpan")
+		beego.Debug("bpan", bpan)
+		if len(bpan) > 0 {
+			vbpan := false
+			if bpan == "true" {
+				vbpan = true
+			}
+			_, err := models.UpConfigPan(vbpan)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				request_json = fmt.Sprintf(`{"errcode":0,"errmsg":"","data":"%s"}`, bpan)
+			}
+		}
+		break
+	}
+	c.Ctx.WriteString(request_json)
 }
 
 //主页
@@ -759,7 +1200,11 @@ func (c *DqsjController) Home() {
 	if err != nil {
 		beego.Debug(err)
 	}
-	c.Data["DqsjHome"] = obj
+	c.Data["HuoDong"] = ""
+	if obj != nil {
+		c.Data["HuoDong"] = obj.HuoDong
+		beego.Debug("HuoDong:", obj.HuoDong)
+	}
 	obj1, err := models.GetAllDqsjHDState1()
 	if err != nil {
 		beego.Debug(err)
@@ -770,6 +1215,13 @@ func (c *DqsjController) Home() {
 		}
 	}
 	c.Data["DqsjHuoDong"] = obj1
+
+	config, err := models.GetConfigPan()
+	bpan := false
+	if config != nil {
+		bpan = config.Bpan
+	}
+	c.Data["Bpan"] = bpan
 
 	c.TplName = "dqsjhome.html"
 }
@@ -837,6 +1289,14 @@ func (c *DqsjController) Cai() {
 		beego.Error(err)
 	}
 	c.Data["CaiTips"] = tips
+
+	config, err := models.GetConfigPan()
+	bpan := false
+	if config != nil {
+		bpan = config.Bpan
+	}
+	c.Data["Bpan"] = bpan
+
 	c.TplName = "dqsjcai.html"
 }
 
@@ -888,6 +1348,62 @@ func (c *DqsjController) Pan() {
 	c.TplName = "dqsjpan.html"
 }
 
+func (c *DqsjController) Gua() {
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Gua Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Gua Post")
+	}
+	//微信分享
+	token := getDqsjToken()
+	if len(token) > 0 {
+		beego.Debug("http_dqsj_token :", token)
+	}
+	appId := ""
+	isdebug := "flase"
+	iniconf, err := config.NewConfig("json", "conf/myconfig.json")
+	if err != nil {
+		beego.Debug(err)
+	} else {
+		appId = iniconf.String("qax580::appid")
+		isdebug = iniconf.String("qax580::isdebug")
+	}
+	url := "http://www.baoguangguang.cn/dqsj/gua"
+	if isdebug == "true" {
+		url = "http://localhost:8080/dqsj/gua"
+	}
+	timestamp := time.Now().Unix()
+	noncestr := getNonceStr(16, KC_RAND_KIND_ALL)
+	ticket := getDqsjTicket(token)
+	c.Data["AppId"] = appId
+	c.Data["TimesTamp"] = timestamp
+	c.Data["NonceStr"] = noncestr
+	c.Data["Ticket"] = signatureWxJs(ticket, noncestr, timestamp, url)
+	wxShareCon := models.WxShareCon{}
+	wxShareCon.Title = "大签世界火盆烤肉欢迎您的到来！"
+	wxShareCon.Link = url
+	wxShareCon.ImgUrl = "http://182.92.167.29:8080/static/img/dqsjicon.jpg"
+	c.Data["WxShareCon"] = wxShareCon
+
+	guaitem, err := models.GetAllGuaItemState1()
+	if err != nil {
+		beego.Error(err)
+	}
+	var guas []models.DqsjGuaItem
+	for i := 0; i < len(guaitem); i++ {
+		for j := 0; j < int(guaitem[i].Probability); j++ {
+			guas = append(guas, guaitem[i])
+		}
+	}
+	rand.Seed(time.Now().UnixNano())
+	ri := rand.Intn(len(guas))
+	rguaitem := guas[ri]
+	beego.Debug("rguaitem :", rguaitem)
+	beego.Debug("guas len", len(guas), "ri :", ri)
+	c.Data["GuaItem"] = rguaitem
+	c.TplName = "dqsjgua1.html"
+}
 func (c *DqsjController) GuangGao() {
 	if c.Ctx.Input.IsGet() {
 		beego.Debug("GuangGao Get")

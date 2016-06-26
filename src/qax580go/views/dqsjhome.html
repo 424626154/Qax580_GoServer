@@ -128,7 +128,7 @@
 </div>
 <div style="	padding-left: 10px;
 	padding-right: 10px;">
-	<h3>{{.DqsjHome.HuoDong}}</h3>
+	<h3>{{.HuoDong}}</h3>
 <ul class="list-group">
 {{range .DqsjHuoDong}}
   <li class="list-group-item">{{.ShowId}}.{{.Content}}</li>
@@ -177,15 +177,24 @@
   <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
     <div class="container-fluid">
       <div class="row">
-        <button class="col-xs-4 col-md-4 poll_home_but" onclick="onHome()">
+      {{if eq .Bpan true}}
+              <button class="col-xs-4 col-md-4 poll_home_but" onclick="onHome()">
           <font class="poll_nav_font">主页</font>
         </button>
         <button class="col-xs-4 col-md-4 footer_div poll_home_but" onclick="onCai()">
           <font class="poll_nav_font">菜单</font>
         </button>
-        <button class="col-xs-4 col-md-4 footer_div poll_home_but" onclick="onPan()">
-          <font class="poll_nav_font">幸运盘</font>
+                <button class="col-xs-4 col-md-4 footer_div poll_home_but" onclick="onPan()">
+          <font class="poll_nav_font">转盘</font>
         </button>
+      {{else}}
+              <button class="col-xs-6 col-md-6 poll_home_but" onclick="onHome()">
+          <font class="poll_nav_font">主页</font>
+        </button>
+        <button class="col-xs-6 col-md-6 footer_div poll_home_but" onclick="onCai()">
+          <font class="poll_nav_font">菜单</font>
+        </button>
+      {{end}}
       </div>
     </div>
   </nav>

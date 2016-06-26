@@ -193,6 +193,7 @@ function drawRouletteWheel() {
 		  ctx.rotate(angle + arc / 2 + Math.PI / 2);
 		  
 		  /** 下面代码根据奖品类型、奖品名称长度渲染不同效果，如字体、颜色、图片效果。(具体根据实际情况改变) **/
+		  var max_text = 4;
 		  if(text.indexOf("M")>0){//流量包
 			  var texts = text.split("M");
 			  for(var j = 0; j<texts.length; j++){
@@ -203,8 +204,14 @@ function drawRouletteWheel() {
 					  ctx.fillText(texts[j], -ctx.measureText(texts[j]).width / 2, j * line_height);
 				  }
 			  }
-		  }else if(text.indexOf("M") == -1 && text.length>6){//奖品名称长度超过一定范围 
-			  text = text.substring(0,6)+"||"+text.substring(6);
+		  }else if(text.indexOf("M") == -1 && text.length>max_text&&text.length<2*max_text-1){//奖品名称长度超过一定范围 
+			  text = text.substring(0,max_text)+"||"+text.substring(max_text);
+			  var texts = text.split("||");
+			  for(var j = 0; j<texts.length; j++){
+				  ctx.fillText(texts[j], -ctx.measureText(texts[j]).width / 2, j * line_height);
+			  }
+		 }else if(text.indexOf("M") == -1 && text.length>max_text){//奖品名称长度超过一定范围 
+			  text = text.substring(0,max_text)+"||"+text.substring(max_text,2*max_text-1)+"||"+text.substring(2*max_text-1);
 			  var texts = text.split("||");
 			  for(var j = 0; j<texts.length; j++){
 				  ctx.fillText(texts[j], -ctx.measureText(texts[j]).width / 2, j * line_height);
@@ -304,7 +311,7 @@ function drawRouletteWheel() {
         // alert("onCloseDialog")
   }
   function showDialog(txt){
-  	$('#dialog_info').html('您获得'+txt)
+  	$('#dialog_info').html('<h3>获得'+txt+"</h3>")
     $('#mymodal').show();
      // alert("showDialog")
   }
@@ -345,17 +352,14 @@ function drawRouletteWheel() {
 <div class="modal" id="mymodal">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" onclick="onCloseDialog()">
-          <span aria-hidden="true">&times;</span>
-          <span class="sr-only">Close</span>
-        </button>
-        <h4 class="modal-title" id="dialog_title">大签世界</h4>
+      
+      <div>
+      <img src="/static/img/dqsj/gx.png" width="20%" style="display:block; margin:0 auto;">
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="text-align:center">
         <p id="dialog_info">恭喜您获得</p>
       </div>
-            <div class="modal-footer">
+       <div class="modal-footer" style="text-align:center">
         <button type="button" class="btn btn-default" data-dismiss="modal" onclick="onCloseDialog()">关闭</button>
       </div>
     </div>    <!-- /.modal-content --> </div>

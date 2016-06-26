@@ -52,11 +52,12 @@
    </nav>
 <!---->
 <form id="add" class="form-inline" method="post" action="/dqsj/adminguanggao" enctype="multipart/form-data">
-   <h3>{{.DqsjHome.HuoDong}}</h3>
+   <h3>{{.HuoDong}}</h3>
   <div class="form-group">
     <input type="text" class="form-control" id="huodong" name="huodong" placeholder="输入活动标题"></div>
     <div>
-  <button type="button" class="btn btn-default" onclick="addHuoDongTitle();" >修改</button>
+    <div style="height:4px"></div>
+  <button type="button" class="btn btn-danger" onclick="addHuoDongTitle();" >修改</button>
   </div>
 </form>
 
@@ -66,7 +67,9 @@
     <label for="">增加活动内容:</label>
     <input type="text" class="form-control" id="content" name="content" placeholder="输入增加活动内容"></div>
     <div>
+    <div style="height:4px"></div>
   <button type="button" class="btn btn-default" onclick="addHuoDongItem();" >添加活动</button>
+  <div style="height:4px"></div>
   </div>
 </form>
 
@@ -76,11 +79,11 @@
   <div >{{.Content}}</div>
     <div class="time_font">{{timeformat .Time}}</div>
     {{if eq .State 0}}
-    <a href="/dqsj/adminhuodong?op=state&id={{.Id}}" >上线(发布)</a>
+    <a class="btn btn-default" href="/dqsj/adminhuodong?op=state&id={{.Id}}" >上线</a>
     {{else}}
-    <a href="/dqsj/adminhuodong?op=state1&id={{.Id}}" >下线(已发布)</a>
+    <a class="btn btn-info" href="/dqsj/adminhuodong?op=state1&id={{.Id}}" >下线</a>
     {{end}}
-    <a href="/dqsj/adminhuodong?op=del&id={{.Id}}" >删除</a>
+    <a class="btn btn-danger" href="/dqsj/adminhuodong?op=del&id={{.Id}}" >删除</a>
   </li>
   {{end}}
 </ul>
