@@ -651,9 +651,10 @@ type DqsjHuoDong struct {
 }
 
 type DqsjConfig struct {
-	Id   int64
-	Bpan bool //转盘
-	Time int64
+	Id         int64
+	Bpan       bool   //转盘
+	ShareTitle string //分享内容
+	Time       int64
 }
 
 func RegisterDB() {
@@ -4190,7 +4191,7 @@ func GetAllGuaItemState1() ([]DqsjGuaItem, error) {
 
 /******管理员配置******/
 func UpConfigPan(bpan bool) (int64, error) {
-	obj, err := GetConfigPan()
+	obj, err := GetConfig()
 	if err != nil {
 		return 0, err
 	}
@@ -4213,7 +4214,31 @@ func UpConfigPan(bpan bool) (int64, error) {
 	}
 }
 
-func GetConfigPan() (*DqsjConfig, error) {
+func UpConfigShare(title string) (int64, error) {
+	obj, err := GetConfig()
+	if err != nil {
+		return 0, err
+	}
+	create_time := time.Now().Unix()
+	if obj != nil {
+		o := orm.NewOrm()
+		cate := &DqsjConfig{Id: obj.Id}
+		cate.ShareTitle = title
+		id, err := o.Update(cate, "share_title")
+		return id, err
+	} else {
+		o := orm.NewOrm()
+		cate := &DqsjConfig{ShareTitle: title, Time: create_time}
+		// 插入数据
+		_, err = o.Insert(cate)
+		if err != nil {
+			return 0, err
+		}
+		return cate.Id, nil
+	}
+}
+
+func GetConfig() (*DqsjConfig, error) {
 	o := orm.NewOrm()
 	var objs []DqsjConfig
 	_, err := o.QueryTable("dqsj_config").OrderBy("-id").All(&objs)

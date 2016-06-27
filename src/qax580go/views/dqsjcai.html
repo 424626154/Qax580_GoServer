@@ -78,19 +78,22 @@
 		<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 			<div class="container-fluid">
 				<div class="row">
-				 {{if eq .Bpan true}}
-				 				 					<button class="col-xs-4 col-md-4 poll_home_but" onclick="onHome()"> <font class="poll_nav_font">主页</font>
+					{{if eq .Bpan true}}
+					<button class="col-xs-4 col-md-4 poll_home_but" onclick="onHome()"> <font class="poll_nav_font">主页</font>
 					</button>
 					<button class="col-xs-4 col-md-4 footer_div poll_home_but" onclick="onCai()"> <font class="poll_nav_font">菜单</font>
 					</button>
-					<button class="col-xs-4 col-md-4 footer_div poll_home_but" onclick="onPan()"> <font class="poll_nav_font">转盘</font>
+					<button class="col-xs-4 col-md-4 footer_div poll_home_but" onclick="onPan()">
+						<font class="poll_nav_font">转盘</font>
 					</button>
-				 {{else}}
-				 					<button class="col-xs-6 col-md-6 poll_home_but" onclick="onHome()"> <font class="poll_nav_font">主页</font>
+					{{else}}
+					<button class="col-xs-6 col-md-6 poll_home_but" onclick="onHome()">
+						<font class="poll_nav_font">主页</font>
 					</button>
-					<button class="col-xs-6 col-md-6 footer_div poll_home_but" onclick="onCai()"> <font class="poll_nav_font">菜单</font>
+					<button class="col-xs-6 col-md-6 footer_div poll_home_but" onclick="onCai()">
+						<font class="poll_nav_font">菜单</font>
 					</button>
-				 {{end}}
+					{{end}}
 				</div>
 			</div>
 		</nav>

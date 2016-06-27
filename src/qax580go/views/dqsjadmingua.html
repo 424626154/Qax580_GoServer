@@ -26,7 +26,6 @@
 <div class="btn-group" role="group" aria-label="...">
   <a type="button" class="btn btn-default" href="/dqsj/adminaddgua">添加刮刮乐元素</a>
 </div>
-
 <ul class="list-group">
 	{{range .GuaItem}}
 	<li class="list-group-item">
@@ -38,7 +37,7 @@
 	    	<div><a style="color: #00db00"  href="/dqsj/admingua?op=state1&id={{.Id}}" >(已上线)下线</a></div>
 	    {{end}}	
 		<div>
-		<a href="/dqsj/adminupgua?pid={{.Id}}" >修改</a></div>
+		<a href="/dqsj/adminupgua?pid={{.Id}}" >修改</a>
 		<a href="/dqsj/admingua?op=del&id={{.Id}}" >删除</a></div>
 	</li>
 	{{end}}

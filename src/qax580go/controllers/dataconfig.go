@@ -63,3 +63,4 @@ const COOKIE_FROM_ALL = "from_all"
 
 const DQSJ_USERNAME = "dqsj_username"
 const DQSJ_PASSWORD = "dqsj_password"
+const DQSJ_SHARE_TITLE = "大签世界火盆烤肉欢迎您的到来！"

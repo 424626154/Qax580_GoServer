@@ -394,7 +394,7 @@ func (c *DqsjController) AdminPan() {
 	}
 	c.Data["PanItem"] = panitem
 
-	config, err := models.GetConfigPan()
+	config, err := models.GetConfig()
 	bpan := false
 	if config != nil {
 		bpan = config.Bpan
@@ -1102,6 +1102,35 @@ func (c *DqsjController) AdminUpGua() {
 	c.Data["GuaItem"] = obj
 	c.TplName = "dqsjadminupgua.html"
 }
+
+func (c *DqsjController) AdminShare() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminShare Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminShare Post")
+		name := c.Input().Get("name")
+		if len(name) != 0 {
+			_, err := models.UpConfigShare(name)
+			if err != nil {
+				beego.Debug(err)
+			}
+		}
+	}
+	config, err := models.GetConfig()
+	if err != nil {
+		beego.Debug(err)
+	}
+	c.Data["Title"] = config.ShareTitle
+	c.TplName = "dqsjadminshare.html"
+}
 func (c *DqsjController) Post() {
 	bool, _ := chackDqsjAccount(c.Ctx)
 	if bool {
@@ -1182,7 +1211,7 @@ func (c *DqsjController) Home() {
 	c.Data["NonceStr"] = noncestr
 	c.Data["Ticket"] = signatureWxJs(ticket, noncestr, timestamp, url)
 	wxShareCon := models.WxShareCon{}
-	wxShareCon.Title = "大签世界火盆烤肉欢迎您的到来！"
+	wxShareCon.Title = getShareTitle()
 	wxShareCon.Link = url
 	wxShareCon.ImgUrl = "http://182.92.167.29:8080/static/img/dqsjicon.jpg"
 	c.Data["WxShareCon"] = wxShareCon
@@ -1216,7 +1245,7 @@ func (c *DqsjController) Home() {
 	}
 	c.Data["DqsjHuoDong"] = obj1
 
-	config, err := models.GetConfigPan()
+	config, err := models.GetConfig()
 	bpan := false
 	if config != nil {
 		bpan = config.Bpan
@@ -1260,7 +1289,7 @@ func (c *DqsjController) Cai() {
 	c.Data["NonceStr"] = noncestr
 	c.Data["Ticket"] = signatureWxJs(ticket, noncestr, timestamp, url)
 	wxShareCon := models.WxShareCon{}
-	wxShareCon.Title = "大签世界火盆烤肉欢迎您的到来！"
+	wxShareCon.Title = getShareTitle()
 	wxShareCon.Link = url
 	wxShareCon.ImgUrl = "http://182.92.167.29:8080/static/img/dqsjicon.jpg"
 	c.Data["WxShareCon"] = wxShareCon
@@ -1290,7 +1319,7 @@ func (c *DqsjController) Cai() {
 	}
 	c.Data["CaiTips"] = tips
 
-	config, err := models.GetConfigPan()
+	config, err := models.GetConfig()
 	bpan := false
 	if config != nil {
 		bpan = config.Bpan
@@ -1334,7 +1363,7 @@ func (c *DqsjController) Pan() {
 	c.Data["NonceStr"] = noncestr
 	c.Data["Ticket"] = signatureWxJs(ticket, noncestr, timestamp, url)
 	wxShareCon := models.WxShareCon{}
-	wxShareCon.Title = "大签世界火盆烤肉欢迎您的到来！"
+	wxShareCon.Title = getShareTitle()
 	wxShareCon.Link = url
 	wxShareCon.ImgUrl = "http://182.92.167.29:8080/static/img/dqsjicon.jpg"
 	c.Data["WxShareCon"] = wxShareCon
@@ -1381,7 +1410,7 @@ func (c *DqsjController) Gua() {
 	c.Data["NonceStr"] = noncestr
 	c.Data["Ticket"] = signatureWxJs(ticket, noncestr, timestamp, url)
 	wxShareCon := models.WxShareCon{}
-	wxShareCon.Title = "大签世界火盆烤肉欢迎您的到来！"
+	wxShareCon.Title = getShareTitle()
 	wxShareCon.Link = url
 	wxShareCon.ImgUrl = "http://182.92.167.29:8080/static/img/dqsjicon.jpg"
 	c.Data["WxShareCon"] = wxShareCon
@@ -1429,6 +1458,9 @@ func (c *DqsjController) GuangGao() {
 	if isdebug == "true" {
 		url = "http://localhost:8080/dqsj/guanggao"
 	}
+	id := c.Input().Get("id")
+	url = fmt.Sprintf("%s?op=con&id=%s", url, id)
+	beego.Debug("wx url :", url)
 	timestamp := time.Now().Unix()
 	noncestr := getNonceStr(16, KC_RAND_KIND_ALL)
 	ticket := getDqsjTicket(token)
@@ -1437,7 +1469,7 @@ func (c *DqsjController) GuangGao() {
 	c.Data["NonceStr"] = noncestr
 	c.Data["Ticket"] = signatureWxJs(ticket, noncestr, timestamp, url)
 	wxShareCon := models.WxShareCon{}
-	wxShareCon.Title = "大签世界火盆烤肉欢迎您的到来！"
+	wxShareCon.Title = getShareTitle()
 	wxShareCon.Link = url
 	wxShareCon.ImgUrl = "http://182.92.167.29:8080/static/img/dqsjicon.jpg"
 	c.Data["WxShareCon"] = wxShareCon
@@ -1593,4 +1625,17 @@ func chackDqsjAccount(ctx *context.Context) (bool, string) {
 		return false, username
 	}
 
+}
+
+func getShareTitle() string {
+	title := DQSJ_SHARE_TITLE
+	config, err := models.GetConfig()
+	if err != nil {
+		beego.Error(err)
+	}
+	if config != nil && len(config.ShareTitle) != 0 {
+		title = config.ShareTitle
+	}
+	beego.Debug("getShareTitle :", title)
+	return title
 }
