@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"path"
 	"qax580go/models"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -1131,6 +1132,115 @@ func (c *DqsjController) AdminShare() {
 	c.Data["Title"] = config.ShareTitle
 	c.TplName = "dqsjadminshare.html"
 }
+
+/*
+*大签世界会员
+ */
+func (c *DqsjController) AdminMember() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	op := c.Input().Get("op")
+	beego.Debug("op :", op)
+	switch op {
+	case "del":
+		id := c.Input().Get("id")
+		err := models.DeleteMember(id)
+		if err != nil {
+			beego.Error(err)
+		}
+		c.Redirect("/dqsj/adminmember", 302)
+		return
+	}
+	objs, err := models.GetAllMember()
+	if err != nil {
+		beego.Error(err)
+	}
+	like := c.Input().Get("like")
+	if len(like) > 0 {
+		objs, err = models.GetLikeMember(like)
+		if err != nil {
+			beego.Error(err)
+		}
+	}
+	c.Data["Objs"] = objs
+	c.TplName = "dqsjadminmember.html"
+}
+
+func (c *DqsjController) AdminAddMember() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminAddMember Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminAddMember Post")
+		account := c.Input().Get("account")
+		name := c.Input().Get("name")
+		phone := c.Input().Get("phone")
+		beernum := c.Input().Get("beernum")
+		if len(account) != 0 {
+			err := models.AddMember(account, name, phone, beernum)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/adminmember", 302)
+		} else {
+			c.Redirect("/dqsj/adminaddmember", 302)
+		}
+
+	}
+	c.TplName = "dqsjadminaddmember.html"
+}
+
+func (c *DqsjController) AdminUpMember() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminUpMember Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminUpMember Post")
+		pid := c.Input().Get("pid")
+		account := c.Input().Get("account")
+		name := c.Input().Get("name")
+		phone := c.Input().Get("phone")
+		beernum := c.Input().Get("beernum")
+		if len(account) != 0 && len(pid) != 0 {
+			err := models.UpMember(account, name, phone, beernum, pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/dqsj/adminmember", 302)
+		} else {
+			c.Redirect("/dqsj/adminupmember", 302)
+		}
+
+	}
+	pid := c.Input().Get("pid")
+	obj, err := models.GetOneMember(pid)
+	if err != nil {
+		beego.Error(err)
+	}
+	c.Data["Obj"] = obj
+	beego.Debug("pid", pid, obj)
+	c.TplName = "dqsjadminupmember.html"
+}
+
 func (c *DqsjController) Post() {
 	bool, _ := chackDqsjAccount(c.Ctx)
 	if bool {
@@ -1140,10 +1250,10 @@ func (c *DqsjController) Post() {
 		return
 	}
 	if c.Ctx.Input.IsGet() {
-		beego.Debug("AdminWx Get")
+		beego.Debug("Post Get")
 	}
 	if c.Ctx.Input.IsPost() {
-		beego.Debug("AdminWx Post")
+		beego.Debug("Post Post")
 	}
 	op := c.Input().Get("op")
 	request_json := `{"errcode":1,"errmsg":"request_json error"}`
@@ -1169,6 +1279,36 @@ func (c *DqsjController) Post() {
 				beego.Error(err)
 			} else {
 				request_json = fmt.Sprintf(`{"errcode":0,"errmsg":"","data":"%s"}`, bpan)
+			}
+		}
+		break
+	case "beer_ded":
+		num := c.Input().Get("num")
+		id := c.Input().Get("id")
+		if len(num) > 0 && len(id) > 0 {
+			beernumi, err := strconv.ParseInt(num, 10, 64)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				obj, err := models.GetOneMember(id)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					if obj != nil {
+						beernum := obj.BeerNum
+						if obj.BeerNum-beernumi > 0 {
+							beernum = obj.BeerNum - beernumi
+						} else {
+							beernum = 0
+						}
+						err = models.UpMemberBeer(id, beernum)
+						if err != nil {
+							beego.Error(err)
+						} else {
+							request_json = fmt.Sprintf(`{"errcode":0,"errmsg":"","data":"%s"}`, beernum)
+						}
+					}
+				}
 			}
 		}
 		break
@@ -1495,6 +1635,193 @@ func (c *DqsjController) GuangGao() {
 	c.TplName = "dqsjguanggao.html"
 }
 
+func (c *DqsjController) Client() {
+	clientJson := ClientJson{}
+	clientJson.ErrCode = 1
+	clientJson.ErrMsg = "未知错误"
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Client Get")
+	}
+	// if c.Ctx.Input.IsPost() {
+	beego.Debug("Client Post")
+	op := c.Input().Get("op")
+	beego.Debug("Client op:", op)
+	switch op {
+	case "login":
+		username := c.Input().Get("username")
+		password := c.Input().Get("password")
+		beego.Debug("username :", username, "password :", password)
+		if len(username) != 0 && len(password) != 0 {
+			admin, err := models.GetOneDqsjAdmin(username)
+			if err != nil {
+				clientJson.ErrMsg = "查询用户名失败"
+			} else {
+				if admin != nil && strings.EqualFold(username, admin.Username) && strings.EqualFold(password, admin.Password) {
+					clientJson.ErrCode = 0
+					clientJson.Data = "登录成功"
+				} else {
+					clientJson.ErrMsg = "登录失败"
+				}
+			}
+		} else {
+			clientJson.ErrMsg = "用户名或密码为空"
+		}
+		break
+	case "member":
+		like := c.Input().Get("like")
+		if len(like) > 0 {
+			objs, err := models.GetLikeMember(like)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				objs_json, err := json.Marshal(objs)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					clientJson.ErrCode = 0
+					clientJson.Data = string(objs_json)
+				}
+			}
+		} else {
+			objs, err := models.GetAllMember()
+			if err != nil {
+				beego.Error(err)
+			} else {
+				objs_json, err := json.Marshal(objs)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					clientJson.ErrCode = 0
+					clientJson.Data = string(objs_json)
+				}
+			}
+		}
+		break
+	case "getone":
+		mid := c.Input().Get("mid")
+		obj, err := models.GetOneMember(mid)
+		if err != nil {
+			beego.Error(err)
+			clientJson.ErrMsg = "参数错误"
+		} else {
+			obj_json, err := json.Marshal(obj)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				clientJson.ErrCode = 0
+				clientJson.Data = string(obj_json)
+			}
+		}
+		break
+	case "up":
+		mid := c.Input().Get("mid")
+		account := c.Input().Get("account")
+		name := c.Input().Get("name")
+		phone := c.Input().Get("phone")
+		beernum := c.Input().Get("beernum")
+		if len(account) != 0 && len(mid) != 0 {
+			err := models.UpMember(account, name, phone, beernum, mid)
+			if err != nil {
+				beego.Error(err)
+				clientJson.ErrMsg = "参数错误"
+			} else {
+				obj, err := models.GetOneMember(mid)
+				if err != nil {
+					beego.Error(err)
+					clientJson.ErrMsg = "参数错误"
+				} else {
+					obj_json, err := json.Marshal(obj)
+					if err != nil {
+						beego.Error(err)
+					} else {
+						clientJson.ErrCode = 0
+						clientJson.Data = string(obj_json)
+					}
+				}
+			}
+
+		} else {
+
+		}
+		break
+	case "deduction":
+		mid := c.Input().Get("id")
+		num := c.Input().Get("num")
+		if len(num) > 0 && len(mid) > 0 {
+			beernumi, err := strconv.ParseInt(num, 10, 64)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				obj, err := models.GetOneMember(mid)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					if obj != nil {
+						beernum := obj.BeerNum
+						if obj.BeerNum-beernumi > 0 {
+							beernum = obj.BeerNum - beernumi
+						} else {
+							beernum = 0
+						}
+						err = models.UpMemberBeer(mid, beernum)
+						if err != nil {
+							beego.Error(err)
+						} else {
+							clientJson.ErrCode = 0
+							clientJson.Data = fmt.Sprintf(`{"Id":%s,"BeerNum":%d}"`, mid, beernum)
+						}
+					}
+				}
+			}
+		}
+		break
+	case "add":
+		account := c.Input().Get("account")
+		name := c.Input().Get("name")
+		phone := c.Input().Get("phone")
+		beernum := c.Input().Get("beernum")
+		if len(account) != 0 {
+			err := models.AddMember(account, name, phone, beernum)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				clientJson.ErrCode = 0
+			}
+
+		} else {
+			clientJson.ErrMsg = "参数错误"
+		}
+		break
+	case "memberdel":
+		id := c.Input().Get("id")
+		if len(id) != 0 {
+			err := models.DeleteMember(id)
+			if err != nil {
+				beego.Error(err)
+				clientJson.ErrMsg = "删除错误"
+			} else {
+				clientJson.ErrCode = 0
+				clientJson.Data = id
+			}
+		} else {
+			clientJson.ErrMsg = "参数错误"
+		}
+		break
+	default:
+		clientJson.ErrMsg = "参数错误"
+		break
+	}
+	// }
+	//struct 到json str
+	body, err := json.Marshal(clientJson)
+	if err != nil {
+		beego.Error(err)
+	}
+	response_json := string(body)
+	beego.Debug("response_json :", response_json)
+	c.Ctx.WriteString(response_json)
+}
+
 func getDqsjToken() string {
 	//https://api.weixin.qq.com/cgi-bin/token?&appid=APPID&secret=APPSECRET
 	wxAttribute, err := models.GetWxAttribute()
@@ -1638,4 +1965,11 @@ func getShareTitle() string {
 	}
 	beego.Debug("getShareTitle :", title)
 	return title
+}
+
+type ClientJson struct {
+	Rtype   string `json:"rtype"`
+	Data    string `json:"data"`
+	ErrCode int64  `json:"errcode"`
+	ErrMsg  string `json:"errmsg"`
 }

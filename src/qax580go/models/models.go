@@ -657,6 +657,15 @@ type DqsjConfig struct {
 	Time       int64
 }
 
+type DqsjMember struct {
+	Id      int64
+	Account string
+	Name    string
+	Phone   string
+	BeerNum int64
+	Time    int64
+}
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -717,6 +726,7 @@ func RegisterDB() {
 	orm.RegisterModel(new(DqsjHuoDong))  //主页获得
 	orm.RegisterModel(new(DqsjGuaItem))  //刮刮乐元素
 	orm.RegisterModel(new(DqsjConfig))   //配置
+	orm.RegisterModel(new(DqsjMember))   //大签世界会员
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -4250,4 +4260,93 @@ func GetConfig() (*DqsjConfig, error) {
 		return &objs[0], nil
 	}
 	return nil, err
+}
+
+/******会员******/
+func AddMember(account string, name string, phone string, beernum string) error {
+	beernumi, err := strconv.ParseInt(beernum, 10, 64)
+	if err != nil {
+		return err
+	}
+	create_time := time.Now().Unix()
+	o := orm.NewOrm()
+	obj := &DqsjMember{Account: account, Name: name, Phone: phone, BeerNum: beernumi, Time: create_time}
+	// 查询数据
+	qs := o.QueryTable("dqsj_member")
+	err = qs.Filter("account", account).One(obj)
+	if err == nil {
+		return err
+	}
+	// 插入数据
+	_, err = o.Insert(obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAllMember() ([]DqsjMember, error) {
+	o := orm.NewOrm()
+	var objs []DqsjMember
+	_, err := o.Raw("SELECT * FROM dqsj_member  ORDER BY id DESC").QueryRows(&objs)
+	return objs, err
+}
+func GetLikeMember(like string) ([]DqsjMember, error) {
+	o := orm.NewOrm()
+	var objs []DqsjMember
+	_, err := o.Raw("SELECT * FROM dqsj_member  WHERE account LIKE ? OR name LIKE ? OR phone LIKE ? ORDER BY id DESC", "%"+like+"%", "%"+like+"%", "%"+like+"%").QueryRows(&objs)
+	return objs, err
+}
+
+func DeleteMember(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjMember{Id: cid}
+	_, err = o.Delete(obj)
+	return err
+}
+
+func UpMember(account string, name string, phone string, beernum string, id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	beernumi, err := strconv.ParseInt(beernum, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjMember{Id: cid}
+	obj.Account = account
+	obj.Name = name
+	obj.Phone = phone
+	obj.BeerNum = beernumi
+	_, err = o.Update(obj, "account", "name", "phone", "beer_num")
+	return err
+}
+
+func GetOneMember(id string) (*DqsjMember, error) {
+	o := orm.NewOrm()
+	var objs []DqsjMember
+	_, err := o.Raw("SELECT * FROM dqsj_member WHERE id = ? ", id).QueryRows(&objs)
+	obj := &DqsjMember{}
+	if len(objs) > 0 {
+		obj = &objs[0]
+	}
+	return obj, err
+}
+func UpMemberBeer(id string, beernum int64) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	obj := &DqsjMember{Id: cid}
+	obj.BeerNum = beernum
+	_, err = o.Update(obj, "account", "beer_num")
+	return err
 }
