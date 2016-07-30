@@ -14,8 +14,12 @@
 	  <title>大签世界</title>
 <body>
 <script type="text/javascript">
-	function onDeduction( num ,id){
-		var post_map = {op:"beer_ded",num:num,id:id} 
+	function onUpDel(pass){
+		if(pass == ""){
+			alert("输入密码错误")
+			return
+		}
+		var post_map = {op:"up_set_delpass",pass:pass} 
       var post_url = "/dqsj/post";
       $.ajax({
                 url : post_url,
@@ -27,7 +31,8 @@
                 success : function (result){
                     // alert(result.errcode)
                     if(result.errcode == 0){
-                     window.location.href="/dqsj/adminmember";  
+                     window.location.href="/dqsj/adminmemberset";  
+                     alert("修改密码成功")
                     }else{
                         alert(result.errmsg)
                     }
@@ -39,53 +44,20 @@
                }
             });
 	}
-
-	function onSearch(search){
-		window.location.href="/dqsj/adminmember?like="+search; 
-	}
 </script>
-
 <div>
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="/dqsj/admin" id="title_font">
+        <a class="navbar-brand" href="/dqsj/adminmember" id="title_font">
           返回</a>
        </div>
    	</div>
    </nav>
-
-<div class="btn-group" role="group" aria-label="...">
-  <a type="button" class="btn btn-default" href="/dqsj/adminaddmember">添加会员</a>
-  <a type="button" class="btn btn-default" href="/dqsj/adminmemberset">会员设置</a>
-</div>
- <div class="input-group">
-      <input type="text" class="form-control" placeholder="输入会员ID/姓名/手机号" id="search" name="search">
-      <span class="input-group-btn">
-        <button class="btn btn-default" type="button" onclick="onSearch(document.getElementById('search').value)">搜索</button>
-      </span>
-    </div>
-<h5>会员列表</h5>
-<ul class="list-group">
-	{{range .Objs}}
-	<li class="list-group-item">
-		<div>会员账号:{{.Account}}</div>	
-		<div>姓名:{{.Name}}  电话:{{.Phone}}</div>
-		<div>啤酒数量:{{.BeerNum}}</div>	
-    {{if eq .Del 1}}
-    <div><span class="label label-danger">删除状态</span></div>  
-    {{end}} 
-		<div style="padding:10px 0px">
-		<a class="btn btn-danger" href="/dqsj/adminupmember?pid={{.Id}}" >修改</a>
-		<a class="btn btn-danger"  href="/dqsj/adminmember?op=del&id={{.Id}}" >删除</a></div>
-		<div style="padding:10px 0px">
-		<input type="text" class="form-control" id="{{.Id}}" name="{{.Id}}" placeholder="输入扣除数量" style="width:80px"><button class="btn btn-danger"  onclick="onDeduction(document.getElementById('{{.Id}}').value,{{.Id}})">扣除</button>
+<h5 style="padding:10px 10px">删除密码:{{.DelPass}}</h5>
+<div style="padding:10px 10px">
+		<input type="text" class="form-control" id="del" name="del" placeholder="输入修改密码" style="width:180px"><button class="btn btn-danger"  onclick="onUpDel(document.getElementById('del').value)">修改删除密码</button>
 		</div>
-		<div class="time_font">{{timeformat .Time}}</div>
-	</li>
-	{{end}}
-</ul>
-
 
 </div>
 

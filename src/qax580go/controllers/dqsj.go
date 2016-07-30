@@ -1240,6 +1240,32 @@ func (c *DqsjController) AdminUpMember() {
 	beego.Debug("pid", pid, obj)
 	c.TplName = "dqsjadminupmember.html"
 }
+func (c *DqsjController) AdminMemberSet() {
+	bool, _ := chackDqsjAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/dqsj/adminlogin", 302)
+		return
+	}
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("AdminMember Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("AdminMember Post")
+	}
+	obj, err := models.GetMemberSet()
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Debug("obj:", obj)
+	pass := ""
+	if obj != nil {
+		pass = obj.DelPass
+	}
+	c.Data["DelPass"] = pass
+	c.TplName = "dqsjadminmemberset.html"
+}
 
 func (c *DqsjController) Post() {
 	bool, _ := chackDqsjAccount(c.Ctx)
@@ -1309,6 +1335,17 @@ func (c *DqsjController) Post() {
 						}
 					}
 				}
+			}
+		}
+		break
+	case "up_set_delpass": //设置解锁密码
+		pass := c.Input().Get("pass")
+		if len(pass) > 0 {
+			_, err := models.UpMemberSetDelPass(pass)
+			if err != nil {
+				beego.Debug(err)
+			} else {
+				request_json = fmt.Sprintf(`{"errcode":0,"errmsg":"","data":"%s"}`, "修改密码成功")
 			}
 		}
 		break
@@ -1670,7 +1707,7 @@ func (c *DqsjController) Client() {
 	case "member":
 		like := c.Input().Get("like")
 		if len(like) > 0 {
-			objs, err := models.GetLikeMember(like)
+			objs, err := models.GetLikeUserMember(like)
 			if err != nil {
 				beego.Error(err)
 			} else {
@@ -1683,7 +1720,7 @@ func (c *DqsjController) Client() {
 				}
 			}
 		} else {
-			objs, err := models.GetAllMember()
+			objs, err := models.GetAllUserMember()
 			if err != nil {
 				beego.Error(err)
 			} else {
@@ -1795,7 +1832,7 @@ func (c *DqsjController) Client() {
 	case "memberdel":
 		id := c.Input().Get("id")
 		if len(id) != 0 {
-			err := models.DeleteMember(id)
+			err := models.DeleteUserMember(id)
 			if err != nil {
 				beego.Error(err)
 				clientJson.ErrMsg = "删除错误"
@@ -1805,6 +1842,26 @@ func (c *DqsjController) Client() {
 			}
 		} else {
 			clientJson.ErrMsg = "参数错误"
+		}
+		break
+	case "lock":
+		pass := c.Input().Get("pass")
+		beego.Debug("pass :", pass)
+		if len(pass) > 0 {
+			obj, err := models.GetMemberSet()
+			if err != nil {
+				beego.Debug(err)
+			} else {
+				if obj != nil {
+					beego.Debug("obj.DelPass  :", obj.DelPass)
+					if strings.EqualFold(obj.DelPass, pass) {
+						clientJson.ErrCode = 0
+						clientJson.Data = fmt.Sprintf(`{"errcode":0,"errmsg":"","data":"%s"}`, "解锁成功")
+					} else {
+
+					}
+				}
+			}
 		}
 		break
 	default:

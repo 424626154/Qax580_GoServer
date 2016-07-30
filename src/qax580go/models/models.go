@@ -663,6 +663,12 @@ type DqsjMember struct {
 	Name    string
 	Phone   string
 	BeerNum int64
+	Del     int16 //删除 0用户未删除 1 用户删除
+	Time    int64
+}
+type DqsjMemberSet struct {
+	Id      int64
+	DelPass string
 	Time    int64
 }
 
@@ -717,16 +723,17 @@ func RegisterDB() {
 	orm.RegisterModel(new(Pdetails))    //订单描述
 	orm.RegisterModel(new(WxAttribute)) //微信基础属性
 	orm.RegisterModel(new(DqsjAdmin))
-	orm.RegisterModel(new(DqsjCaiGroup)) //菜单分组
-	orm.RegisterModel(new(DqsjCaiItem))  //菜单元素
-	orm.RegisterModel(new(DqsjPanItem))  //转盘
-	orm.RegisterModel(new(DqsjCaiTips))  //菜品提示
-	orm.RegisterModel(new(DqsjGuanggao)) //大签世界广告
-	orm.RegisterModel(new(DqsjHome))     //主页内容
-	orm.RegisterModel(new(DqsjHuoDong))  //主页获得
-	orm.RegisterModel(new(DqsjGuaItem))  //刮刮乐元素
-	orm.RegisterModel(new(DqsjConfig))   //配置
-	orm.RegisterModel(new(DqsjMember))   //大签世界会员
+	orm.RegisterModel(new(DqsjCaiGroup))  //菜单分组
+	orm.RegisterModel(new(DqsjCaiItem))   //菜单元素
+	orm.RegisterModel(new(DqsjPanItem))   //转盘
+	orm.RegisterModel(new(DqsjCaiTips))   //菜品提示
+	orm.RegisterModel(new(DqsjGuanggao))  //大签世界广告
+	orm.RegisterModel(new(DqsjHome))      //主页内容
+	orm.RegisterModel(new(DqsjHuoDong))   //主页获得
+	orm.RegisterModel(new(DqsjGuaItem))   //刮刮乐元素
+	orm.RegisterModel(new(DqsjConfig))    //配置
+	orm.RegisterModel(new(DqsjMember))    //大签世界会员
+	orm.RegisterModel(new(DqsjMemberSet)) //大签世界会员设置
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -4292,10 +4299,23 @@ func GetAllMember() ([]DqsjMember, error) {
 	_, err := o.Raw("SELECT * FROM dqsj_member  ORDER BY id DESC").QueryRows(&objs)
 	return objs, err
 }
+func GetAllUserMember() ([]DqsjMember, error) {
+	o := orm.NewOrm()
+	var objs []DqsjMember
+	_, err := o.Raw("SELECT * FROM dqsj_member WHERE del = ? ORDER BY id DESC", 0).QueryRows(&objs)
+	return objs, err
+}
 func GetLikeMember(like string) ([]DqsjMember, error) {
 	o := orm.NewOrm()
 	var objs []DqsjMember
 	_, err := o.Raw("SELECT * FROM dqsj_member  WHERE account LIKE ? OR name LIKE ? OR phone LIKE ? ORDER BY id DESC", "%"+like+"%", "%"+like+"%", "%"+like+"%").QueryRows(&objs)
+	return objs, err
+}
+
+func GetLikeUserMember(like string) ([]DqsjMember, error) {
+	o := orm.NewOrm()
+	var objs []DqsjMember
+	_, err := o.Raw("SELECT * FROM dqsj_member  WHERE account LIKE ? OR name LIKE ? OR phone LIKE ?  AND el = ? ORDER BY id DESC", "%"+like+"%", "%"+like+"%", "%"+like+"%", 0).QueryRows(&objs)
 	return objs, err
 }
 
@@ -4307,6 +4327,21 @@ func DeleteMember(id string) error {
 	o := orm.NewOrm()
 	obj := &DqsjMember{Id: cid}
 	_, err = o.Delete(obj)
+	return err
+}
+
+func DeleteUserMember(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &DqsjMember{Id: cid}
+	cate.Del = 1
+	_, err = o.Update(cate, "del")
+	if err != nil {
+		beego.Error(err)
+	}
 	return err
 }
 
@@ -4349,4 +4384,45 @@ func UpMemberBeer(id string, beernum int64) error {
 	obj.BeerNum = beernum
 	_, err = o.Update(obj, "account", "beer_num")
 	return err
+}
+
+func GetMemberSet() (*DqsjMemberSet, error) {
+	o := orm.NewOrm()
+	var objs []DqsjMemberSet
+	_, err := o.Raw("SELECT * FROM dqsj_member_set ORDER BY id DESC").QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	obj := &DqsjMemberSet{}
+	if len(objs) > 0 {
+		obj = &objs[0]
+		return obj, nil
+	} else {
+		return nil, err
+	}
+
+}
+
+func UpMemberSetDelPass(pass string) (int64, error) {
+	obj, err := GetMemberSet()
+	if err != nil {
+		return 0, err
+	}
+	create_time := time.Now().Unix()
+	if obj != nil {
+		o := orm.NewOrm()
+		cate := &DqsjMemberSet{Id: obj.Id}
+		cate.DelPass = pass
+		id, err := o.Update(cate, "del_pass")
+		return id, err
+	} else {
+		o := orm.NewOrm()
+		cate := &DqsjMemberSet{DelPass: pass, Time: create_time}
+		// 插入数据
+		_, err = o.Insert(cate)
+		if err != nil {
+			return 0, err
+		}
+		return cate.Id, nil
+	}
 }
