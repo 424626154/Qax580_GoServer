@@ -6,13 +6,13 @@
                     {
                         "type": "view", 
                         "name": "咱这580", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri=http%3a%2f%2fwww.zanzhe580.com%2fwxhomeresponse_type=codescope=snsapi_userinfostate=from_qingan#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.zanzhe580.com%2fwxhome&response_type=code&scope=snsapi_userinfo&state=from_qingan#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
                         "type": "view", 
                         "name": "发布信息", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri=http%3a%2f%2fwww.zanzhe580.com%2fwxuploderesponse_type=codescope=snsapi_userinfostate=from_qingan#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.zanzhe580.com%2fwxuplode&response_type=code&scope=snsapi_userinfo&state=from_qingan#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
@@ -24,7 +24,7 @@
                     {
                         "type": "view", 
                         "name": "我的信息", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri=http%3a%2f%2fwww.zanzhe580.com%2fmymessage%0aresponse_type=codescope=snsapi_userinfostate=from_qingan#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri=http%3a%2f%2fwww.zanzhe580.com%2fmymessage%0a&response_type=code&scope=snsapi_userinfo&state=from_qingan#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
@@ -76,7 +76,7 @@
                     {
                         "type": "view", 
                         "name": "一元快洗", 
-                        "url": "http://mp.weixin.qq.com/s?__biz=MzIwMzE5MzQyMw==mid=402988111idx=2sn=3763ebe663ba3745d39a6800e5dde5e6scene=18#rd", 
+                        "url": "http://mp.weixin.qq.com/s?__biz=MzIwMzE5MzQyMw==&mid=402988111&idx=2&sn=3763ebe663ba3745d39a6800e5dde5e6#rd", 
                         "sub_button": [ ]
                     }, 
                     {
@@ -88,7 +88,7 @@
                     {
                         "type": "view", 
                         "name": "意见反馈", 
-                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80redirect_uri= http%3a%2f%2fwww.zanzhe580.com%2fwxfeedbackresponse_type=codescope=snsapi_userinfostate=STATE#wechat_redirect", 
+                        "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx570bbcc8cf9fdd80&redirect_uri= http%3a%2f%2fwww.zanzhe580.com%2fwxfeedback&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect", 
                         "sub_button": [ ]
                     }, 
                     {
