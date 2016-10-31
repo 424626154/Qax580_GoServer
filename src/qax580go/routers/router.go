@@ -65,6 +65,9 @@ func init() {
 	os.Mkdir("imageserver", os.ModePerm)
 	beego.Router("/imageserver/:all", &controllers.ImageHostingController{})
 
+	os.Mkdir("filehosting", os.ModePerm)
+	beego.Router("/filehosting/:all", &controllers.FileHostingController{})
+
 	beego.Router("/admin/home", &controllers.AdminHomeController{})                             //后台主页
 	beego.Router("/admin/modify", &controllers.AdminModifyController{})                         //修改信息
 	beego.Router("/admin/uplode", &controllers.AdminUplodeController{})                         //后台上传
@@ -128,4 +131,7 @@ func init() {
 
 	beego.Router("/admin/dqsj", &controllers.AdminDqsjUserListController{})
 	beego.Router("/admin/adddqsjuser", &controllers.AdminAddDqsjUserController{})
+
+	beego.AutoRouter(&controllers.WxAppController{}) //微信小程序
+
 }

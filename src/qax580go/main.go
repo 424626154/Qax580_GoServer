@@ -201,6 +201,7 @@ func main() {
 
 	beego.SetStaticPath("/game", "game")
 	beego.SetStaticPath("/admin/imageserver", "imageserver")
+	beego.SetStaticPath("/MP_verify_sgqORBlTZH9vHt2f.txt", "mp/MP_verify_sgqORBlTZH9vHt2f.txt")
 
 	beego.AddFuncMap("timeformat", timeFormat)
 	beego.AddFuncMap("timeformat1", timeFormat1)

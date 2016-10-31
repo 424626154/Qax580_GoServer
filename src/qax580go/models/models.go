@@ -672,6 +672,23 @@ type DqsjMemberSet struct {
 	Time    int64
 }
 
+type FileData struct {
+	Id       int64
+	FileName string
+	FileType string
+	Time     int64
+}
+
+type WxAppPost struct {
+	Id      int64
+	Title   string
+	Content string
+	Images  string
+	Time    int64
+}
+
+//微信小程序
+
 func RegisterDB() {
 	// set default database
 	isdebug := "true"
@@ -734,6 +751,8 @@ func RegisterDB() {
 	orm.RegisterModel(new(DqsjConfig))    //配置
 	orm.RegisterModel(new(DqsjMember))    //大签世界会员
 	orm.RegisterModel(new(DqsjMemberSet)) //大签世界会员设置
+	orm.RegisterModel(new(FileData))      //文件数据
+	orm.RegisterModel(new(WxAppPost))     //微信小程序帖子
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -4425,4 +4444,39 @@ func UpMemberSetDelPass(pass string) (int64, error) {
 		}
 		return cate.Id, nil
 	}
+}
+
+//文件数据
+func AddFile(filename string, filetype string) error {
+	create_time := time.Now().Unix()
+	o := orm.NewOrm()
+	obj := &FileData{FileName: filename, FileType: filetype, Time: create_time}
+	// 插入数据
+	_, err := o.Insert(obj)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//微信小程序添加帖子
+func AddWxAppPost(title string, content string, images string) error {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	cate := &WxAppPost{Title: title, Content: content, Images: images, Time: create_time}
+	// 查询数据
+	// qs := o.QueryTable("wx_app_post")
+	// err := qs.Filter("title", title).One(cate)
+	// if err == nil {
+	// 	return err
+	// }
+
+	// 插入数据
+	_, err := o.Insert(cate)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

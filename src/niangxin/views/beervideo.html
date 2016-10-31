@@ -1,0 +1,112 @@
+{{template "adminheader1.html" .}}
+<body>
+<script type="text/javascript">
+  function addVideo(){
+    var title = document.getElementById("title").value;
+    if(title == ""){
+      alert("请输入视频标题");
+      return;
+    }
+    var url = document.getElementById("url").value;
+    if(url == ""){
+      alert("请输入视频链接");
+      return;
+    }
+          var post_map = {op:"addvideo",title:title,url:url} ;
+          var post_url = "/nnadmin/post";
+          $.ajax({
+                    url : post_url,
+                    data:post_map,
+                    cache : false, 
+                    async : true,
+                    type : "POST",
+                    dataType : 'json',
+                    success : function (result){
+                        
+                        if(result.errcode == 0){ 
+                          // alert(result.data)
+                          // upState(result.data)
+                           window.location.href="/nnadmin/beervideo"
+                           alert("添加成功")
+                        }else{
+                            alert(result.errmsg)
+                        }
+                    },
+                   error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   alert(XMLHttpRequest.status);
+                   alert(XMLHttpRequest.readyState);
+                   alert(textStatus);
+                   }
+                });
+  }
+  function delVideo(id){
+     var post_map = {op:"del",id:id} ;
+          var post_url = "/nnadmin/post";
+          $.ajax({
+                    url : post_url,
+                    data:post_map,
+                    cache : false, 
+                    async : true,
+                    type : "POST",
+                    dataType : 'json',
+                    success : function (result){
+                        
+                        if(result.errcode == 0){ 
+                          // alert(result.data)
+                          // upState(result.data)
+                           window.location.href="/nnadmin/beervideo"
+                           alert("删除成功")
+                        }else{
+                            alert(result.errmsg)
+                        }
+                    },
+                   error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   alert(XMLHttpRequest.status);
+                   alert(XMLHttpRequest.readyState);
+                   alert(textStatus);
+                   }
+                });
+  }
+</script>
+<div>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/nnadmin/home" id="title_font">
+          返回</a>
+       </div>
+   	</div>
+   </nav>
+<!---->
+
+<form id="addItem" class="form-inline" method="post" action="" enctype="multipart/form-data">
+  <div class="form-group">
+    <div>
+    <label for="">视频标题:</label>
+    <input type="text" class="form-control" id="title" name="title" placeholder="输入视频标题"></div>
+    <div style="height:4px"></div>
+    <label for="">视频链接:</label>
+    <input type="text" class="form-control" id="url" name="url" placeholder="输入视频链接"></div>
+    <div style="height:4px"></div>
+    <button type="button" class="btn btn-default" onclick="addVideo()" >添加视频</button>
+    <div style="height:4px"></div>
+  </div>
+</form>
+
+<ul class="list-group">
+  {{range .Objs}}
+  <li class="list-group-item">
+  <div >{{.Title}}</div>
+  <div >{{.Url}}</div>
+    <div class="time_font">{{timeformat .Time}}</div>
+    <button class="btn btn-danger" onclick="delVideo({{.Id}})" >删除</button>
+  </li>
+  {{end}}
+</ul>
+<!---->
+
+
+	<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+</body>
+{{template "adminfooter.html" .}}

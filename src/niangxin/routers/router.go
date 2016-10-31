@@ -6,6 +6,6 @@ import (
 )
 
 func init() {
-	beego.Router("/", &controllers.MainController{})
-	beego.AutoRouter(&controllers.NiangXinController{}) //冲洗系统
+	beego.AutoRouter(&controllers.NiangXinController{}) //web服务器
+	beego.AutoRouter(&controllers.NNAdminController{})  //amdin后台
 }

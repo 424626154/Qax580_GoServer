@@ -1267,6 +1267,7 @@ func (c *DqsjController) AdminMemberSet() {
 	c.TplName = "dqsjadminmemberset.html"
 }
 
+//http post
 func (c *DqsjController) Post() {
 	bool, _ := chackDqsjAccount(c.Ctx)
 	if bool {
