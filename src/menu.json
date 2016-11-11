@@ -81,6 +81,12 @@
                     }, 
                     {
                         "type": "view", 
+                        "name": "兰溪信息网", 
+                        "url": "http://lanxixian.com/wap/fabu.asp", 
+                        "sub_button": [ ]
+                    }, 
+                    {
+                        "type": "view", 
                         "name": "580部落", 
                         "url": "http://s.p.qq.com/pub/jump?d=AAAUkV9k", 
                         "sub_button": [ ]
