@@ -1,0 +1,29 @@
+{{template "aheader.html" .}}
+
+<script language="javascript">
+  function toVaild(){
+    var title = document.getElementById("title").value;
+    var content = document.getElementById("content").value;
+    if(title == ""){
+      alert("标题不能为空");
+      return false;
+    }else if(content == ""){
+      alert("内容不能为空");
+      return false;
+    }else{
+      return true;
+    }
+  }
+</script>
+  <form class="" method="post" action="/admin/sendpush" enctype="multipart/form-data" onsubmit="return toVaild()">
+      <div class=""> <font class="up_fnt" for="" style="color:#000">标题</font>
+      <input type="text" class="form-control" id="title" name="title" placeholder="请输入名称"></div>
+    <div class=""> <font class="up_fnt" for="" style="color:#000">内容</font>
+      <input type="text" class="form-control" id="content" name="content" placeholder="请输入简介"></div>
+    <div class="body_right">
+      <button type="submit" class="my_button my_gray">发布</button>
+    </div>
+  </form>
+
+
+{{template "afooter.html" .}}

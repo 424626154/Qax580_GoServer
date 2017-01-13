@@ -1,0 +1,18 @@
+{{template "aheader.html" .}}
+<div class="btn-group" role="group" aria-label="...">
+  <a type="button" class="btn btn-default" href="/admin/sendpush">发送推送</a>
+</div>
+
+<ul class="list-group">
+	{{range .Objs}}
+	<li class="list-group-item">
+		<div>{{.Title}}</div>	
+		<div>{{.Content}}</div>
+		<div>{{.Ostype}}</div>
+		<div>{{.Tokens}}</div>
+		<div class="time_font">{{timeformat1 .Time}}</div>
+	</li>
+	{{end}}
+</ul>
+
+{{template "afooter.html" .}}

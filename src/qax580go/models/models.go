@@ -687,6 +687,29 @@ type WxAppPost struct {
 	Time    int64
 }
 
+/****** BeerMap ******/
+
+type BMMaker struct {
+	Id       int64
+	MId      string
+	Name     string
+	Lng      float64
+	Lat      float64
+	Citycode string
+	Describe string `orm:"size(4096)"`
+	Time     int64
+}
+
+type BMAdmin struct {
+	Id       int64
+	Username string `orm:"size(100)"`
+	Password string `orm:"size(1000)"`
+	Time     int64
+}
+
+
+/****** BeerMap ******/
+
 //微信小程序
 
 func RegisterDB() {
@@ -753,6 +776,8 @@ func RegisterDB() {
 	orm.RegisterModel(new(DqsjMemberSet)) //大签世界会员设置
 	orm.RegisterModel(new(FileData))      //文件数据
 	orm.RegisterModel(new(WxAppPost))     //微信小程序帖子
+	orm.RegisterModel(new(BMMaker))       //地图maker
+	orm.RegisterModel(new(BMAdmin))  //管理员
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -4479,4 +4504,68 @@ func AddWxAppPost(title string, content string, images string) error {
 	}
 
 	return nil
+}
+
+//添加BMMaker
+func AddBMMaker(id string,citycode string, name string, lng string, lat string, describe string) (*BMMaker, error) {
+	o := orm.NewOrm()
+	create_time := time.Now().Unix()
+	flng, err := strconv.ParseFloat(lng, 64)
+	if err != nil {
+		return nil, err
+	}
+	flat, err := strconv.ParseFloat(lat, 64)
+	if err != nil {
+		return nil, err
+	}
+	obj := &BMMaker{MId: id,Citycode:citycode, Name: name, Lng: flng, Lat: flat, Describe: describe, Time: create_time}
+	// 查询数据
+	qs := o.QueryTable("b_m_maker")
+	err = qs.Filter("m_id", obj.MId).One(obj)
+	if err == nil { //存在则更新
+		beego.Debug("maker 存在，更新-----", obj)
+		obj.Name = name
+		obj.Citycode = citycode
+		obj.Lng = flng
+		obj.Lat = flat
+		obj.Describe = describe
+		obj.Time = create_time
+		_, err = o.Update(obj, "citycode","name", "lng", "lat", "describe", "time")
+		if err != nil {
+			beego.Error(err)
+			return nil, err
+		} else {
+			return obj, err
+		}
+	}
+	// 插入数据
+	_, err = o.Insert(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	return obj, nil
+}
+
+func GetMakers() ([]BMMaker, error) {
+	o := orm.NewOrm()
+	var objs []BMMaker
+	_, err := o.QueryTable("b_m_maker").OrderBy("-id").All(&objs)
+	if err != nil {
+		beego.Error(err)
+		return nil, err
+	}
+	return objs, err
+}
+
+
+func GetOneBMAdmin(username string) (*BMAdmin, error) {
+	o := orm.NewOrm()
+	var admins []BMAdmin
+	_, err := o.Raw("SELECT * FROM b_m_admin WHERE username = ? ", username).QueryRows(&admins)
+	admin := &BMAdmin{}
+	if len(admins) > 0 {
+		admin = &admins[0]
+	}
+	return admin, err
 }

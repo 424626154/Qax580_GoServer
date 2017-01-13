@@ -81,5 +81,4 @@ func chackAccount(ctx *context.Context) (bool, string) {
 	} else {
 		return false, username
 	}
-
 }

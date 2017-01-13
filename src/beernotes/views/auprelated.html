@@ -1,0 +1,67 @@
+{{template "aheader.html" .}}
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+            initData();
+        });
+function initData(){
+  // alert({{.Obj}})
+  document.getElementById("id").value = {{.Obj.Id}};
+  document.getElementById("name").value = {{.Obj.Name}};
+  document.getElementById("brief").value = {{.Obj.Brief}};
+  document.getElementById("link").value = {{.Obj.Link}};
+}
+
+  function toVaild(){
+    var id = document.getElementById("id").value;
+    var name = document.getElementById("name").value;
+    var brief = document.getElementById("brief").value;
+    var link = document.getElementById("link").value;
+    if(id != {{.Obj.Id}}){
+      alert("id不可修改");
+      return false;
+    }else if(name == ""){
+      alert("名称不能为空");
+      return false;
+    }else if(brief == ""){
+      alert("简介不能为空");
+      return false;
+    }else if(link == ""){
+      alert("链接不能为空");
+      return false;
+    }else if(checkURL(link) == false){
+      alert("链接格式错误");
+      return false;
+    }else{
+      return true;
+    }
+  }
+
+  function checkURL(URL){
+	    var str=URL;
+	    //判断URL地址的正则表达式为:http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?
+	    //下面的代码中应用了转义字符"\"输出一个字符"/"
+	    var Expression=/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+	    var objExp=new RegExp(Expression);
+	    if(objExp.test(str)==true){
+	    	return true;
+	    }else{
+	    	return false;
+		}
+    }
+</script>
+  <form class="" method="post" action="/admin/uprelated" enctype="multipart/form-data" onsubmit="return toVaild()">
+  <div class=""> <font class="up_fnt" for="" style="color:#000">ID</font>
+      <input type="text" class="form-control" id="id" name="id" placeholder="请输入ID"></div>
+      <div class=""> <font class="up_fnt" for="" style="color:#000">名称</font>
+      <input type="text" class="form-control" id="name" name="name" placeholder="请输入名称"></div>
+    <div class=""> <font class="up_fnt" for="" style="color:#000">简介</font>
+      <input type="text" class="form-control" id="brief" name="brief" placeholder="请输入简介"></div>
+    <div class=""> <font class="up_fnt" for="" style="color:#000">链接</font>
+      <input type="text" class="form-control" id="link" name="link" placeholder="请输入连接"></div>
+    <div class="body_right">
+      <button type="submit" class="my_button my_gray">修改</button>
+    </div>
+  </form>
+
+{{template "afooter.html" .}}

@@ -134,4 +134,6 @@ func init() {
 
 	beego.AutoRouter(&controllers.WxAppController{}) //微信小程序
 
+	beego.AutoRouter(&controllers.BeerMapController{}) //大签世界
+
 }
