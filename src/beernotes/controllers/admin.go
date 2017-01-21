@@ -6,10 +6,12 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"io/ioutil"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 )
@@ -96,9 +98,9 @@ func (c *AdminController) Related() {
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
 	if c.Ctx.Input.IsGet() {
-		beego.Debug("Related Get")
 		op := c.Input().Get("op")
 		id := c.Input().Get("id")
+		beego.Debug("Related id:", id, "op:", op)
 		switch op {
 		case "state0":
 			err := models.UpdateRelatedState(id, 1)
@@ -110,7 +112,7 @@ func (c *AdminController) Related() {
 			}
 			return
 		case "state1":
-			err := models.UpdateRelatedState(id, 1)
+			err := models.UpdateRelatedState(id, 0)
 			if err != nil {
 				beego.Error(err)
 			} else {
@@ -127,7 +129,6 @@ func (c *AdminController) Related() {
 				return
 			}
 			return
-
 		}
 	}
 	if c.Ctx.Input.IsPost() {
@@ -267,6 +268,18 @@ func (c *AdminController) SendPush() {
 			}
 			if len(ios_tokens) > 0 {
 				sendPush(title, content, ios_tokens, ios_ostype)
+			}
+			users, err := models.GetAllUser()
+			if err != nil {
+				beego.Error(err)
+			}
+			if len(users) > 0 {
+				for i := 0; i < len(users); i++ {
+					_, err = models.AddMessage(users[i].Uid, title, content)
+					if err != nil {
+						beego.Error(err)
+					}
+				}
 			}
 			c.Redirect("/admin/apppush", 302)
 			return
@@ -482,4 +495,244 @@ func getTokensStr(ostype string) string {
 	}
 	// beego.Debug("tokens:", tokens)
 	return tokens
+}
+
+func (c *AdminController) WNumber() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("WechatNumber Get")
+		op := c.Input().Get("op")
+		id := c.Input().Get("id")
+		switch op {
+		case "state0":
+			err := models.UpdateWNumberState(id, 1)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/wnumber", 302)
+				return
+			}
+			return
+		case "state1":
+			err := models.UpdateWNumberState(id, 0)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/wnumber", 302)
+				return
+			}
+			return
+		case "del":
+			err := models.DeleteWNumber(id)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/wnumber", 302)
+				return
+			}
+			return
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("WechatNumber Post")
+	}
+	objs, err := models.GetAllWNumber()
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Debug(objs)
+	c.Data["Objes"] = objs
+	c.TplName = "awnumber.html"
+}
+
+func (c *AdminController) AddWNumber() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin AddWNumber Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin AddWNumber Post")
+		image_name := ""
+		title := c.Input().Get("title")
+		info := c.Input().Get("info")
+		number := c.Input().Get("number")
+		if len(title) != 0 && len(info) != 0 && len(number) != 0 {
+			// 获取附件
+			_, fh, err := c.GetFile("image")
+			if err != nil {
+				beego.Error(err)
+			}
+			var attachment string
+			if fh != nil {
+				// 保存附件
+				attachment = fh.Filename
+				t := time.Now().Unix()
+				str2 := fmt.Sprintf("%d", t)
+				s := []string{attachment, str2}
+				h := md5.New()
+				h.Write([]byte(strings.Join(s, ""))) // 需要加密的字符串
+				image_name = hex.EncodeToString(h.Sum(nil))
+				beego.Info(image_name) // 输出加密结果
+				err = c.SaveToFile("image", path.Join("imagehosting", image_name))
+				if err != nil {
+					beego.Error(err)
+					image_name = ""
+				}
+			}
+			if err != nil {
+				beego.Error(err)
+			}
+			beego.Debug("title:", title, "info:", info, "number:", number, "image_name:", image_name)
+			_, err = models.AddWNumber(title, info, number, image_name)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/admin/wnumber", 302)
+		} else {
+			c.Redirect("/admin/addwnumber", 302)
+		}
+	}
+	c.TplName = "aaddwnumber.html"
+}
+
+func (c *AdminController) UpWnumberInfo() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin UpWnumberInfo Get")
+		pid := c.Input().Get("pid")
+		if len(pid) != 0 {
+			obj, err := models.GetWNumber(pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Data["Wxnum"] = obj
+		} else {
+			c.Redirect("/admin/wnumber", 302)
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin UpWnumberInfo Post")
+		id := c.Input().Get("id")
+		title := c.Input().Get("title")
+		info := c.Input().Get("info")
+		number := c.Input().Get("number")
+		beego.Debug(len(id) != 0, len(title) != 0, len(info) != 0, len(number) != 0)
+		if len(id) != 0 && len(title) != 0 && len(info) != 0 && len(number) != 0 {
+			beego.Debug(id)
+			_, err := models.UpdateWNumberInfo(id, title, info, number)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/admin/wnumber", 302)
+			return
+		}
+	}
+	c.TplName = "aupwnumberinfo.html"
+}
+func (c *AdminController) UpWnumberImg() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin UpWnumberImg Get")
+		pid := c.Input().Get("pid")
+		if len(pid) != 0 {
+			obj, err := models.GetWNumber(pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Data["Wxnum"] = obj
+		} else {
+			c.Redirect("/admin/wnumber", 302)
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin UpWnumberImg Post")
+		id := c.Input().Get("id")
+		image_name := ""
+		if len(id) != 0 {
+			// 获取附件
+			_, fh, err := c.GetFile("image")
+			beego.Debug("上传图片:", fh)
+			if err != nil {
+				beego.Error(err)
+			}
+			var attachment string
+			if fh != nil {
+				// 保存附件
+				attachment = fh.Filename
+				t := time.Now().Unix()
+				str2 := fmt.Sprintf("%d", t)
+				s := []string{attachment, str2}
+				h := md5.New()
+				h.Write([]byte(strings.Join(s, ""))) // 需要加密的字符串
+				image_name = hex.EncodeToString(h.Sum(nil))
+				beego.Info(image_name) // 输出加密结果
+				err = c.SaveToFile("image", path.Join("imagehosting", image_name))
+				if err != nil {
+					beego.Error(err)
+					image_name = ""
+				}
+			}
+			if image_name != "" {
+				_, err := models.UpdateWNumberImg(id, image_name)
+				if err != nil {
+					beego.Error(err)
+				} else {
+					c.Redirect("/admin/wnumber", 302)
+					return
+				}
+			}
+		}
+	}
+	c.TplName = "aupwnumberimg.html"
+}
+
+func (c *AdminController) UpdateLog() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin UpdateLog Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin UpdateLog Post")
+	}
+	c.TplName = "aupdatelog.html"
 }

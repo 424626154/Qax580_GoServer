@@ -34,6 +34,11 @@ func RegisterDB() {
 	orm.RegisterModel(new(Token))
 	orm.RegisterModel(new(Push))
 	orm.RegisterModel(new(User))
+	orm.RegisterModel(new(Formula))
+	orm.RegisterModel(new(FormulaComment))
+	orm.RegisterModel(new(FormulaLove))
+	orm.RegisterModel(new(Message))
+	orm.RegisterModel(new(WNumber))
 	// create table
 	orm.RunSyncdb("default", false, true)
 }
@@ -83,6 +88,68 @@ type Push struct {
 	Tokens  string `orm:"size(2000)"`
 	Ostype  string
 	Time    int64
+}
+
+//配方
+type Formula struct {
+	Id           int64
+	Fid          string `orm:"size(100)"`
+	Uid          string `orm:"size(100)"`
+	Username     string `orm:"size(500)"`
+	Fname        string `orm:"size(500)"`  //配方名称
+	Malts        string `orm:"size(2000)"` //麦芽
+	Hopss        string `orm:"size(2000)"` //啤酒花
+	Yeasts       string `orm:"size(2000)"` //酵母
+	Water        int64  //水
+	Accessoriess string `orm:"size(2000)"` //辅料
+	Time         int64
+	Lovenum      int64 //点赞数量
+	Islove       bool  //是否点赞
+	Isdele       bool  //是否可以删除
+}
+
+//配方评论
+type FormulaComment struct {
+	Id         int64
+	Fid        string `orm:"size(100)"`
+	Uid        string `orm:"size(100)"`
+	Username   string `orm:"size(500)"`
+	Comment    string `orm:"size(2000)"`
+	Time       int64
+	Fcid       int64  //被评论的评论
+	Fcuid      string `orm:"size(100)"`
+	Fcusername string `orm:"size(500)"`
+	Lovenum    int64  //点赞数量
+	Islove     bool   //是否点赞
+	Isdele     bool   //是否可以删除
+}
+
+type FormulaLove struct {
+	Id     int64
+	Fid    string `orm:"size(100)"`
+	Uid    string `orm:"size(100)"`
+	Fcid   int64  //被评论的评论
+	Islove bool   //是否点赞
+	Time   int64
+}
+
+type Message struct {
+	Id      int64
+	Uid     string `orm:"size(100)"`
+	Title   string `orm:"size(500)"`
+	Content string `orm:"size(2000)"`
+	Read    bool
+	Time    int64
+}
+
+type WNumber struct {
+	Id     int64
+	Title  string `orm:"size(500)"`
+	Info   string `orm:"size(2000)"`
+	Number string `orm:"size(100)"`
+	Image  string
+	Time   int64
+	State  int8 //0未上线  1 已上线
 }
 
 func GetOneAdmin(username string) (*Admin, error) {
@@ -248,7 +315,7 @@ func RegisterUser(username string, password string, email string) (int64, *User,
 	// 插入数据
 	_, err = o.Insert(obj)
 	if err != nil {
-		return 1006, nil, err
+		return 1003, nil, err
 	}
 	return 0, obj, nil
 }
@@ -257,6 +324,28 @@ func GetOneUser(username string) (*User, error) {
 	o := orm.NewOrm()
 	var objs []User
 	_, err := o.Raw("SELECT * FROM user WHERE username = ? ORDER BY id DESC", username).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], err
+	}
+	return nil, err
+}
+func GetAllUser() ([]User, error) {
+	o := orm.NewOrm()
+	var objs []User
+	_, err := o.Raw("SELECT * FROM user ORDER BY id DESC").QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	return objs, err
+}
+
+func GetOneUserToken(token string) (*User, error) {
+	o := orm.NewOrm()
+	var objs []User
+	_, err := o.Raw("SELECT * FROM user WHERE token = ? ORDER BY id DESC", token).QueryRows(&objs)
 	if err != nil {
 		return nil, err
 	}
@@ -328,4 +417,317 @@ func getUserToken(uid string) string {
 func getUserSecret(uid string) string {
 	secret := "hellobeer"
 	return secret
+}
+
+func AddFormula(uid string, username string, fid string, fname string, malts string, hopss string, yeasts string, water string, accessoriess string) (int64, *Formula, error) {
+	iwater, err := strconv.ParseInt(water, 10, 64)
+	if err != nil {
+		return 1003, nil, err
+	}
+	o := orm.NewOrm()
+	var objs []Formula
+	_, err = o.Raw("SELECT * FROM formula WHERE fid = ? ORDER BY id DESC", fid).QueryRows(&objs)
+	if err != nil {
+		return 1003, nil, err
+	}
+	if len(objs) > 0 {
+		return 1010, nil, err
+	}
+	my_time := time.Now().Unix()
+	obj := &Formula{Uid: uid, Username: username, Fid: fid, Fname: fname, Malts: malts, Hopss: hopss, Yeasts: yeasts, Water: iwater, Accessoriess: accessoriess, Time: my_time}
+	// 插入数据
+	_, err = o.Insert(obj)
+	if err != nil {
+		return 1003, nil, err
+	}
+	return 0, obj, nil
+}
+
+func DeleteFormula(fid string, uid string) error {
+	o := orm.NewOrm()
+	var objs []Formula
+	_, err := o.Raw("SELECT * FROM formula WHERE fid = ? AND uid = ? ORDER BY id DESC", fid, uid).QueryRows(&objs)
+	if err != nil {
+		return err
+	}
+	if len(objs) > 0 {
+		o := orm.NewOrm()
+		cate := &Formula{Id: objs[0].Id}
+		_, err = o.Delete(cate)
+		if err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func GetFormula() ([]Formula, error) {
+	o := orm.NewOrm()
+	var objs []Formula
+	_, err := o.Raw("SELECT * FROM formula ORDER BY id DESC").QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	return objs, err
+}
+
+func AddFormulaComment(fid string, uid string, username string, comment string, fcid string) (*FormulaComment, error) {
+	o := orm.NewOrm()
+	var objs []FormulaComment
+	_, err := o.Raw("SELECT * FROM formula_comment WHERE id = ? ORDER BY id DESC", fcid).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	my_time := time.Now().Unix()
+	beego.Debug("objs:", objs, "fcid:", fcid)
+	if len(objs) > 0 {
+		obj := &FormulaComment{Fid: fid, Uid: uid, Username: username, Comment: comment, Fcid: objs[0].Id, Fcuid: objs[0].Uid, Fcusername: objs[0].Username, Time: my_time}
+		// 插入数据
+		_, err = o.Insert(obj)
+		if err != nil {
+			return obj, err
+		}
+	} else {
+		obj := &FormulaComment{Fid: fid, Uid: uid, Username: username, Comment: comment, Time: my_time}
+		// 插入数据
+		_, err = o.Insert(obj)
+		if err != nil {
+			return obj, err
+		}
+	}
+	return nil, nil
+}
+
+func DeleteFormulaComment(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &FormulaComment{Id: cid}
+	_, err = o.Delete(cate)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func GetFormulaComment() ([]FormulaComment, error) {
+	o := orm.NewOrm()
+	var objs []FormulaComment
+	_, err := o.Raw("SELECT * FROM formula_comment ORDER BY id DESC").QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	return objs, err
+}
+
+func GetFormulaLoveNum(fid string, fcid int64) (int, error) {
+	o := orm.NewOrm()
+	var objs []FormulaLove
+	_, err := o.Raw("SELECT * FROM formula_love WHERE fid = ? AND fcid = ? AND islove = true ORDER BY id DESC", fid, fcid).QueryRows(&objs)
+	if err != nil {
+		return 0, err
+	}
+	return len(objs), err
+}
+
+func GetFormulaLove(uid string, fid string, fcid int64) (bool, error) {
+	o := orm.NewOrm()
+	var objs []FormulaLove
+	_, err := o.Raw("SELECT * FROM formula_love WHERE uid = ? AND fid = ? AND fcid = ? ORDER BY id DESC", uid, fid, fcid).QueryRows(&objs)
+	if err != nil {
+		return false, err
+	}
+	if len(objs) > 0 {
+		return objs[0].Islove, err
+	}
+	return false, err
+}
+
+func AddFormulaLove(uid string, fid string, fcid string, islove bool) (*FormulaLove, error) {
+	o := orm.NewOrm()
+	var objs []FormulaLove
+	_, err := o.Raw("SELECT * FROM formula_love WHERE uid = ? AND fid = ? AND fcid = ? ORDER BY id DESC", uid, fid, fcid).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	my_time := time.Now().Unix()
+	if len(objs) > 0 {
+		obj := &FormulaLove{Id: objs[0].Id}
+		obj.Islove = islove
+		obj.Time = my_time
+		objs[0].Islove = islove
+		_, err = o.Update(obj, "islove", "time")
+		if err != nil {
+			return nil, err
+		}
+		return &objs[0], nil
+	} else {
+		ifcid, err := strconv.ParseInt(fcid, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		obj := &FormulaLove{Uid: uid, Fid: fid, Fcid: ifcid, Islove: islove, Time: my_time}
+		// 插入数据
+		_, err = o.Insert(obj)
+		if err != nil {
+			return nil, err
+		}
+		return obj, nil
+	}
+	return nil, nil
+}
+
+func AddMessage(uid string, title string, content string) (*Message, error) {
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	obj := &Message{Uid: uid, Title: title, Content: content, Time: my_time}
+	// 插入数据
+	_, err := o.Insert(obj)
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+func GetReadMessage(uid string) ([]Message, error) {
+	o := orm.NewOrm()
+	var objs []Message
+	_, err := o.Raw("SELECT * FROM message WHERE uid = ? ORDER BY id DESC", uid).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	if len(objs) > 0 {
+		var temp_objs []Message
+		for i := 0; i < len(objs); i++ {
+			beego.Debug(objs[i].Read)
+			if objs[i].Read == false {
+				temp_objs = append(temp_objs, objs[i])
+			}
+		}
+		return temp_objs, err
+	}
+	return objs, err
+}
+
+func UpMessage(id int64, read bool) (*Message, error) {
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	var objs []Message
+	_, err := o.Raw("SELECT * FROM message WHERE id = ? ORDER BY id DESC", id).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	if len(objs) > 0 {
+		obj := &Message{Id: objs[0].Id}
+		obj.Read = read
+		obj.Time = my_time
+		objs[0].Read = read
+		_, err = o.Update(obj, "read", "time")
+		if err != nil {
+			return nil, err
+		}
+		return &objs[0], nil
+	}
+	return nil, err
+}
+
+func AddWNumber(title string, info string, number string, image string) (*WNumber, error) {
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	obj := &WNumber{Title: title, Info: info, Number: number, Image: image, Time: my_time}
+	// 插入数据
+	_, err := o.Insert(obj)
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+func GetWNumber(id string) (*WNumber, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	var objs []WNumber
+	_, err = o.Raw("SELECT * FROM w_number WHERE id = ? ORDER BY id DESC", cid).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	if len(objs) > 0 {
+		return &objs[0], err
+	}
+	return nil, err
+}
+
+func GetAllWNumber() ([]WNumber, error) {
+	o := orm.NewOrm()
+	var objs []WNumber
+	_, err := o.Raw("SELECT * FROM w_number ORDER BY id DESC").QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	return objs, err
+}
+
+func GetWNumberState(state int8) ([]WNumber, error) {
+	o := orm.NewOrm()
+	var objs []WNumber
+	_, err := o.Raw("SELECT * FROM w_number WHERE state = ? ORDER BY id DESC", state).QueryRows(&objs)
+	if err != nil {
+		return nil, err
+	}
+	return objs, err
+}
+
+func UpdateWNumberState(id string, state int8) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &WNumber{Id: cid}
+	cate.State = state
+	_, err = o.Update(cate, "state")
+	return err
+}
+
+func DeleteWNumber(id string) error {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	o := orm.NewOrm()
+	cate := &WNumber{Id: cid}
+	_, err = o.Delete(cate)
+	return err
+}
+func UpdateWNumberInfo(id string, title string, info string, number string) (*WNumber, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &WNumber{Id: cid}
+	cate.Title = title
+	cate.Info = info
+	cate.Number = number
+	cate.Time = my_time
+	_, err = o.Update(cate, "title", "info", "number", "time")
+	return cate, err
+}
+
+func UpdateWNumberImg(id string, image string) (*WNumber, error) {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	my_time := time.Now().Unix()
+	cate := &WNumber{Id: cid}
+	cate.Image = image
+	cate.Time = my_time
+	_, err = o.Update(cate, "image", "time")
+	return cate, err
 }

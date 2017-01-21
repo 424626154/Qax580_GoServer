@@ -1,0 +1,23 @@
+.time_font{
+	margin:8px 0px;
+	font-size: 12px;
+	color: #c9c9c9;
+    text-align:right
+}
+.footer_div{
+  text-align:center;
+}
+
+.admin_footer_font{
+    font-size: 14px;
+    color: #272727;
+}
+
+.admin_footer_font1{
+    font-size: 40px;
+    color: #272727;
+}
+.image_bg{
+	width: 200px;
+	height: auto;
+}

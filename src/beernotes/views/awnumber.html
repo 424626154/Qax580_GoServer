@@ -1,0 +1,31 @@
+{{template "aheader.html" .}}
+<div class="btn-group" role="group" aria-label="...">
+  <a type="button" class="btn btn-default" href="/admin/addwnumber">添加公众号</a>
+</div>
+<ul class="list-group">
+	{{range .Objes}}
+	<li class="list-group-item">
+		<div>{{.Title}}</div>	
+		<div>{{.Info}}</div>
+		<div>{{.Number}}</div>
+		{{if eq .Image ""}}
+              {{.Image}}
+        {{else}}
+	    	<img class="image_bg" src="{{isImgPath .Image}}" alt="{{isImgPath .Image}}">
+	    {{end}}
+		 {{if eq .State 0}}
+	    	<div><a style="color: #FF0000"  href="/admin/wnumber?op=state0&id={{.Id}}" >(未上线)上线</a></div>
+	    {{else}}
+	    	<div><a style="color: #00db00"  href="/admin/wnumber?op=state1&id={{.Id}}" >(已上线)下线</a></div>
+	    {{end}}	
+		<div>
+		<a href="/admin/upwnumberinfo?pid={{.Id}}" >修改内容</a>
+		<a href="/admin/upwnumberimg?pid={{.Id}}" >修改图片</a>
+		<a href="/admin/wnumber?op=del&id={{.Id}}" >删除</a>
+		</div>
+		<div class="time_font">{{timeformat1 .Time}}</div>
+	</li>
+	{{end}}
+</ul>
+
+{{template "afooter.html" .}}

@@ -5,6 +5,7 @@ import (
 	_ "beernotes/routers"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/config"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -19,6 +20,8 @@ func main() {
 	// 自动建表
 	orm.RunSyncdb("default", false, true)
 	beego.AddFuncMap("timeformat1", timeFormat1)
+	beego.AddFuncMap("versionInfo", versionInfo)
+	beego.AddFuncMap("isImgPath", isImgPath)
 	beego.Run()
 
 }
@@ -58,4 +61,36 @@ func timeFormat1(in int64) (out string) {
 		result = "刚刚发表"
 	}
 	return result
+}
+
+func versionInfo() (out string) {
+	version := "1.0.0_beta"
+	iniconf, err := config.NewConfig("json", "conf/config.json")
+	if err != nil {
+		beego.Error(err)
+	} else {
+		version = iniconf.String("beernotes::versioninfo")
+	}
+	return version
+}
+
+func isImgPath(in string) (out string) {
+	ip := ""
+	port := ""
+	isdebug := "flase"
+	iniconf, err := config.NewConfig("json", "conf/config.json")
+	if err != nil {
+		beego.Error(err)
+	} else {
+		isdebug = iniconf.String("beernotes::isdebug")
+		if isdebug == "true" {
+			ip = iniconf.String("beernotes::debugip")
+		} else {
+			ip = iniconf.String("beernotes::ip")
+		}
+		port = iniconf.String("beernotes::port")
+
+	}
+	// http://182.92.167.29:8080/imagehosting/
+	return fmt.Sprintf("http://%s:%s/imagehosting/%s", ip, port, in)
 }
