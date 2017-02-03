@@ -35,8 +35,8 @@ func (c *AdminController) Home() {
 		op := c.Input().Get("op")
 		switch op {
 		case "back":
-			c.Ctx.SetCookie(BN_USERNAME, "", -1, "/")
-			c.Ctx.SetCookie(BN_PASSWORD, "", -1, "/")
+			c.Ctx.SetCookie(BN_ADMIN_USERNAME, "", -1, "/")
+			c.Ctx.SetCookie(BN_ADMIN_PASSWORD, "", -1, "/")
 			c.Redirect("/admin/login", 302)
 			return
 		}
@@ -56,7 +56,7 @@ func (c *AdminController) Login() {
 		username := c.Input().Get("user")
 		password := c.Input().Get("password")
 		autologin := c.Input().Get("autologin") == "on"
-		beego.Debug("username:", username)
+		beego.Debug("username:", username, "password:", password, "autologin:", autologin)
 		if len(username) != 0 && len(password) != 0 {
 			admin, err := models.GetOneAdmin(username)
 			beego.Debug("admin:", admin)
@@ -69,8 +69,8 @@ func (c *AdminController) Login() {
 				if autologin {
 					maxAge = 1<<31 - 1
 				}
-				c.Ctx.SetCookie(BN_USERNAME, username, maxAge, "/")
-				c.Ctx.SetCookie(BN_PASSWORD, password, maxAge, "/")
+				c.Ctx.SetCookie(BN_ADMIN_USERNAME, username, maxAge, "/")
+				c.Ctx.SetCookie(BN_ADMIN_PASSWORD, password, maxAge, "/")
 				beego.Debug("login ok")
 				c.Redirect("/admin/home", 302)
 				return
@@ -79,7 +79,7 @@ func (c *AdminController) Login() {
 				return
 			}
 		} else {
-			c.Redirect("/admin/home", 302)
+			c.Redirect("/admin/login", 302)
 			return
 		}
 	}
@@ -308,14 +308,14 @@ func (c *AdminController) Admin() {
 }
 
 func chackAccount(ctx *context.Context) (bool, string) {
-	ck, err := ctx.Request.Cookie(BN_USERNAME)
+	ck, err := ctx.Request.Cookie(BN_ADMIN_USERNAME)
 	if err != nil {
 		return false, ""
 	}
 
 	username := ck.Value
 
-	ck, err = ctx.Request.Cookie(BN_PASSWORD)
+	ck, err = ctx.Request.Cookie(BN_ADMIN_PASSWORD)
 	if err != nil {
 		return false, ""
 	}
@@ -553,6 +553,7 @@ func (c *AdminController) WNumber() {
 	c.TplName = "awnumber.html"
 }
 
+//添加公众号
 func (c *AdminController) AddWNumber() {
 	bool, username := chackAccount(c.Ctx)
 	if bool {
@@ -611,6 +612,7 @@ func (c *AdminController) AddWNumber() {
 	c.TplName = "aaddwnumber.html"
 }
 
+//修改公众号内容
 func (c *AdminController) UpWnumberInfo() {
 	bool, username := chackAccount(c.Ctx)
 	if bool {
@@ -653,6 +655,8 @@ func (c *AdminController) UpWnumberInfo() {
 	}
 	c.TplName = "aupwnumberinfo.html"
 }
+
+//修改公众号图片
 func (c *AdminController) UpWnumberImg() {
 	bool, username := chackAccount(c.Ctx)
 	if bool {
@@ -718,6 +722,7 @@ func (c *AdminController) UpWnumberImg() {
 	c.TplName = "aupwnumberimg.html"
 }
 
+//更新日志
 func (c *AdminController) UpdateLog() {
 	bool, username := chackAccount(c.Ctx)
 	if bool {
@@ -735,4 +740,302 @@ func (c *AdminController) UpdateLog() {
 		beego.Debug("Admin UpdateLog Post")
 	}
 	c.TplName = "aupdatelog.html"
+}
+
+func (c *AdminController) KnowBrew() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin KnowBrew Get")
+		op := c.Input().Get("op")
+		id := c.Input().Get("id")
+		switch op {
+		case "state0":
+			err := models.UpdateKnowBrewState(id, 1)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/knowbrew", 302)
+				return
+			}
+			return
+		case "state1":
+			err := models.UpdateKnowBrewState(id, 0)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/knowbrew", 302)
+				return
+			}
+			return
+		case "examine1":
+			err := models.UpdateKnowBrewExamine(id, 1)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/knowbrew", 302)
+				return
+			}
+			return
+		case "examine2":
+			err := models.UpdateKnowBrewExamine(id, 2)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/knowbrew", 302)
+				return
+			}
+			return
+		case "del":
+			err := models.DeleteKnowBrew(id)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/knowbrew", 302)
+				return
+			}
+			return
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin KnowBrew Post")
+	}
+	objs, err := models.GetAllKnowBrew()
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Debug(objs)
+	c.Data["Objes"] = objs
+	c.TplName = "aknowbrew.html"
+}
+
+func (c *AdminController) AddKnowBrew() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin AddKnowBrew Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin AddKnowBrew Post")
+		title := c.Input().Get("name")
+		brief := c.Input().Get("brief")
+		link := c.Input().Get("link")
+		kbtype := c.Input().Get("type")
+		beego.Debug("kbtype:", kbtype)
+		if len(title) != 0 && len(link) != 0 {
+			ikbtype := 0
+			if kbtype == "article" {
+				ikbtype = 1
+			} else if kbtype == "video" {
+				ikbtype = 2
+			}
+			// 获取附件
+			_, err := models.AddAdminKnowBrew(title, brief, link, int8(ikbtype))
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/admin/knowbrew", 302)
+		} else {
+			c.Redirect("/admin/addknowbrew", 302)
+		}
+	}
+	c.TplName = "aaddknowbrew.html"
+}
+
+func (c *AdminController) UpKnowBrew() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin UpKnowBrew Get")
+		pid := c.Input().Get("pid")
+		if len(pid) != 0 {
+			obj, err := models.GetKnowBrew(pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Data["Obj"] = obj
+		} else {
+			c.Redirect("/admin/knowbrew", 302)
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin UpKnowBrew Post")
+		id := c.Input().Get("id")
+		title := c.Input().Get("name")
+		brief := c.Input().Get("brief")
+		link := c.Input().Get("link")
+		kbtype := c.Input().Get("type")
+		beego.Debug("kbtype:", kbtype)
+		if len(id) != 0 && len(title) != 0 && len(link) != 0 {
+			ikbtype := 0
+			if kbtype == "article" {
+				ikbtype = 1
+			} else if kbtype == "video" {
+				ikbtype = 2
+			}
+			// 获取附件
+			_, err := models.UpdateKnowBrew(id, title, brief, link, int8(ikbtype))
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/admin/knowbrew", 302)
+		} else {
+			c.Redirect("/admin/aupknowbrew", 302)
+		}
+	}
+	c.TplName = "aupknowbrew.html"
+}
+
+func (c *AdminController) Business() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin Business Get")
+		op := c.Input().Get("op")
+		id := c.Input().Get("id")
+		switch op {
+		case "state0":
+			err := models.UpdateBusinessState(id, 1)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/business", 302)
+				return
+			}
+			return
+		case "state1":
+			err := models.UpdateBusinessState(id, 0)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/business", 302)
+				return
+			}
+			return
+		case "del":
+			err := models.DeleteBusiness(id)
+			if err != nil {
+				beego.Error(err)
+			} else {
+				c.Redirect("/admin/business", 302)
+				return
+			}
+			return
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin Business Post")
+	}
+	objs, err := models.GetAllBusiness()
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Debug("objs:", objs)
+	c.Data["Objs"] = objs
+	c.TplName = "abusiness.html"
+}
+
+func (c *AdminController) AddBusiness() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin AddBusiness Get")
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin AddBusiness Post")
+		title := c.Input().Get("name")
+		brief := c.Input().Get("brief")
+		link := c.Input().Get("link")
+		if len(title) != 0 && len(link) != 0 {
+			// 获取附件
+			_, err := models.AddBusiness(title, brief, link)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/admin/business", 302)
+		} else {
+			c.Redirect("/admin/addbusiness", 302)
+		}
+	}
+	c.TplName = "aaddbusiness.html"
+}
+
+func (c *AdminController) UpBusiness() {
+	bool, username := chackAccount(c.Ctx)
+	if bool {
+
+	} else {
+		c.Redirect("/admin/login", 302)
+		return
+	}
+	c.Data["isUser"] = bool
+	c.Data["User"] = username
+	if c.Ctx.Input.IsGet() {
+		beego.Debug("Admin UpBusiness Get")
+		pid := c.Input().Get("pid")
+		if len(pid) != 0 {
+			obj, err := models.GetOneBusiness(pid)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Data["Obj"] = obj
+		} else {
+			c.Redirect("/admin/business", 302)
+		}
+	}
+	if c.Ctx.Input.IsPost() {
+		beego.Debug("Admin UpBusiness Post")
+		id := c.Input().Get("id")
+		title := c.Input().Get("name")
+		brief := c.Input().Get("brief")
+		link := c.Input().Get("link")
+		kbtype := c.Input().Get("type")
+		beego.Debug("kbtype:", kbtype)
+		if len(id) != 0 && len(title) != 0 && len(link) != 0 {
+			// 获取附件
+			_, err := models.UpdateBusiness(id, title, brief, link)
+			if err != nil {
+				beego.Error(err)
+			}
+			c.Redirect("/admin/business", 302)
+		} else {
+			c.Redirect("/admin/upbusiness", 302)
+		}
+	}
+	c.TplName = "aupbusiness.html"
 }

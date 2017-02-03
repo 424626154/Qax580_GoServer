@@ -1,0 +1,22 @@
+{{template "aheader.html" .}}
+<div class="btn-group" role="group" aria-label="...">
+  <a type="button" class="btn btn-default" href="/admin/addbusiness">添加商家</a>
+</div>
+<ul class="list-group">
+	{{range .Objs}}
+	<li class="list-group-item">
+		<div>{{.Title}}</div>	
+		<div>{{.Brief}}</div>
+		<a href="{{.Link}}">{{.Link}}</a>	
+		 {{if eq .State 0}}
+	    	<div><a style="color: #FF0000"  href="/admin/business?op=state0&id={{.Id}}" >(未上线)上线</a></div>
+	    {{else}}
+	    	<div><a style="color: #00db00"  href="/admin/business?op=state1&id={{.Id}}" >(已上线)下线</a></div>
+	    {{end}}	
+		<div>
+		<a href="/admin/upbusiness?pid={{.Id}}" >修改</a>
+		<a href="/admin/business?op=del&id={{.Id}}" >删除</a></div>
+	</li>
+	{{end}}
+</ul>
+{{template "afooter.html" .}}
