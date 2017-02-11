@@ -1,8 +1,5 @@
 package controllers
 
-const BN_ADMIN_USERNAME = "bn_admin_username"
-const BN_ADMIN_PASSWORD = "bn_admin_password"
-
 const BN_USERNAME = "bn_username"
 const BN_PASSWORD = "bn_password"
 
