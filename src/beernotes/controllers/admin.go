@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/context"
+	// "github.com/astaxie/beego/context"
 	"io/ioutil"
 	"net/http"
 	"path"

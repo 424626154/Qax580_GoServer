@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"beernotes/models"
+	"strings"
 )
 
 type WebController struct {
 	beego.Controller
 }
-<<<<<<< HEAD
 
 func (c *WebController) Home() {
 	if c.Ctx.Input.IsGet() {
@@ -205,5 +206,3 @@ func chackUserAccount(ctx *context.Context) (bool, string) {
 		return false, username
 	}
 }
-=======
->>>>>>> parent of e4442bb... 相关周边
