@@ -21,3 +21,38 @@
 	width: 200px;
 	height: auto;
 }
+.list_item{
+    background-color: #ebebeb;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.list_line{
+    height: 4px;
+}
+.list_bg{
+    padding-top: 6px;
+    padding-left:4px;
+    padding-right: 4px
+}
+
+
+.wnumber_img_div {
+  height: 90px;
+  width: 90px;
+  padding: 10px;
+}
+
+.wnumber_info_div {
+  position: relative;
+  top: -80px;
+  left: 100px;
+  padding-right: 100px;
+}
+
+.wnumber_img_item{
+    width: 80px;
+    height: 80px;
+    background-size: 80px 80px;
+}

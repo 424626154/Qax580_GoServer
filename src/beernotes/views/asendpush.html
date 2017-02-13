@@ -1,6 +1,9 @@
 {{template "aheader.html" .}}
 
 <script language="javascript">
+$(document).ready(function(){
+            document.getElementById("title_font").href="/admin/apppush"
+        });
   function toVaild(){
     var title = document.getElementById("title").value;
     var content = document.getElementById("content").value;

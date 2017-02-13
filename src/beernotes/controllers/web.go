@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"beernotes/models"
 	"strings"
 )
@@ -18,7 +19,7 @@ func (c *WebController) Home() {
 		beego.Debug("Web Home Post")
 	}
 	op := c.Input().Get("op")
-	if op == "logout" {
+	if op == "logout"{
 		c.Ctx.SetCookie(BN_USERNAME, "", -1, "/")
 		c.Ctx.SetCookie(BN_PASSWORD, "", -1, "/")
 		c.Redirect("/web/home", 302)
@@ -33,27 +34,27 @@ func (c *WebController) Home() {
 			beego.Error(err)
 		}
 		c.Data["Objs"] = objs
-	} else if mytype == "knowbrew" {
-		objs, err := models.GetKnowBrewSAE(1, 1)
+	}else if mytype == "knowbrew"{
+		objs, err := models.GetKnowBrewSAE(1,1)
 		if err != nil {
 			beego.Error(err)
 		}
 		c.Data["Objs"] = objs
-	} else if mytype == "website" {
+	}else if mytype == "website"{
 		objs, err := models.GetAllRelatedState(1)
 		if err != nil {
 			beego.Error(err)
 		}
 		c.Data["Objs"] = objs
 	} else {
-		objs, err := models.GetKnowBrewSAE(1, 1)
+		objs, err := models.GetKnowBrewSAE(1,1)
 		if err != nil {
 			beego.Error(err)
 		}
 		c.Data["Objs"] = objs
 	}
 	bool, username := chackUserAccount(c.Ctx)
-	beego.Debug("bool:", bool)
+	beego.Debug("bool:",bool)
 	c.Data["isUser"] = bool
 	c.Data["User"] = username
 	c.TplName = "home.html"
@@ -80,7 +81,7 @@ func (c *WebController) App() {
 	c.Data["Ios"] = "ios_download_512"
 	c.TplName = "app.html"
 }
-func (c *WebController) Login() {
+func (c *WebController) Login(){
 	if c.Ctx.Input.IsGet() {
 		beego.Debug("Web Login Post")
 	}
@@ -120,22 +121,22 @@ func (c *WebController) Login() {
 	}
 	c.TplName = "login.html"
 }
-func (c *WebController) Register() {
+func (c *WebController) Register(){
 	if c.Ctx.Input.IsGet() {
 		beego.Debug("Web Register Post")
 		err := c.Input().Get("err")
-		if len(err) > 0 {
-			if err == "1004" {
+		if len(err) > 0{
+			if err == "1004"{
 				c.Data["Error"] = "用户名已存在"
-			} else if err == "1005" {
+			}else if err == "1005"{
 				c.Data["Error"] = "邮箱已注册"
-			} else if err == "1006" {
+			}else if err == "1006"{
 				c.Data["Error"] = "数据库操作失败"
-			} else {
+			}else{
 				c.Data["Error"] = ""
 			}
-		} else {
-			c.Data["Error"] = ""
+		}else{
+				c.Data["Error"] = ""
 		}
 	}
 	if c.Ctx.Input.IsPost() {
@@ -146,7 +147,7 @@ func (c *WebController) Register() {
 		beego.Debug("username:", username)
 		beego.Debug("password:", password)
 		beego.Debug("email:", email)
-		if len(username) != 0 && len(password) != 0 && len(email) != 0 {
+		if len(username) != 0 && len(password) != 0 && len(email) != 0{
 			code, _, err := models.RegisterUser(username, password, email)
 			if err != nil {
 				beego.Error(err)
@@ -180,6 +181,7 @@ func (c *WebController) Register() {
 	c.TplName = "register.html"
 }
 
+
 func chackUserAccount(ctx *context.Context) (bool, string) {
 	ck, err := ctx.Request.Cookie(BN_USERNAME)
 	if err != nil {
@@ -206,3 +208,5 @@ func chackUserAccount(ctx *context.Context) (bool, string) {
 		return false, username
 	}
 }
+
+

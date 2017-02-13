@@ -1,0 +1,53 @@
+{{template "aheader.html" .}}
+<div class="btn-group" role="group" aria-label="...">
+  <a type="button" class="btn btn-default" href="/admin/addknowbrew">添加资料</a>
+</div>
+<ul class="list-group">
+	{{range .Objes}}
+	<li class="list-group-item">
+		<div>{{.Title}}</div>	
+		<div>{{.Brief}}</div>
+		<div>{{.Link}}</div>
+		<div>
+		   {{if eq .From 0}}
+            <span class="label label-primary">个人</span>
+            {{end}} 
+           {{if eq .From 1}}
+            <span class="label label-primary">官方</span>
+            {{end}}
+            {{if eq .Type 1}}
+            <span class="label label-primary">文章</span>
+            {{end}} 
+           {{if eq .Type 2}}
+            <span class="label label-primary">视频</span>
+            {{end}}
+		</div>
+		{{if eq .Examine 0}}
+	    	<div>
+	    	<a style="color: #00db00"  href="/admin/knowbrew?op=examine1&id={{.Id}}" >审核通过</a>
+	    	<a style="color: #FF0000"  href="/admin/knowbrew?op=examine2&id={{.Id}}" >审核驳回</a>
+	    	</div>
+	    {{else if eq .Examine 1}}
+	    	 {{if eq .State 0}}
+	    	<div><a style="color: #FF0000"  href="/admin/knowbrew?op=state0&id={{.Id}}" >(未上线)上线</a></div>
+		    {{else}}
+		    	<div><a style="color: #00db00"  href="/admin/knowbrew?op=state1&id={{.Id}}" >(已上线)下线</a></div>
+		    {{end}}	
+	    	<div>
+	    	<a style="color: #00db00"  href="/admin/knowbrew?op=examine2&id={{.Id}}" >审核驳回</a>
+	    	</div>
+	    {{else if eq .Examine 2}}
+	    	<div>
+	    	<a style="color: #00db00"  href="/admin/knowbrew?op=examine1&id={{.Id}}" >审核通过</a>
+	    	</div>
+	    {{end}}	
+	    <div>
+	    <a href="/admin/upknowbrew?pid={{.Id}}" >修改</a>
+		<a href="/admin/knowbrew?op=del&id={{.Id}}" >删除</a>
+		</div>
+		<div class="time_font">{{timeformat1 .Time}}</div>
+	</li>
+	{{end}}
+</ul>
+
+{{template "afooter.html" .}}

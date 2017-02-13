@@ -1,9 +1,9 @@
 {
 	"beernotes": {
-		"isdebug": "true",
+		"isdebug": "false",
 		"port": "9090",
 		"debugip": "127.0.0.1",
 		"ip": "182.92.167.29",
-		"versioninfo": "1.0.1_Beta"
+		"versioninfo": "1.0.4_Beta"
 	}
 }
